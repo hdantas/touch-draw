@@ -1,5 +1,118 @@
-<com.bignerdranch.android.draganddraw.BoxDrawingView
+<LinearLayout
+    android:id="@+id/fragmentContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    />
+    android:orientation="vertical">
+
+    <com.bignerdranch.android.draganddraw.BoxDrawingView
+        android:id="@+id/viewBox"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+
+        <RadioGroup
+            android:id="@+id/buttonShape"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            >
+
+            <RadioButton
+                android:id="@+id/buttonRectangle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/rectangle"
+                />
+
+            <RadioButton
+                android:id="@+id/buttonTriangle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/triangle"/>
+
+            <RadioButton
+                android:id="@+id/buttonCircle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/circle"/>
+        </RadioGroup>
+        <!--<RelativeLayout-->
+        <!--android:layout_weight="2"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="fill_parent"-->
+        <!-->-->
+
+        <at.markushi.ui.CircleButton
+            android:id="@+id/buttonRed"
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:src="@drawable/ic_action_tick"
+            app:cb_color="@color/red"
+            app:cb_pressedRingWidth="8dip"/>
+
+        <at.markushi.ui.CircleButton
+            android:id="@+id/buttonGreen"
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:src="@drawable/ic_action_tick"
+            app:cb_color="@color/green"
+            app:cb_pressedRingWidth="8dip"/>
+
+        <at.markushi.ui.CircleButton
+            android:id="@+id/buttonBlue"
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:src="@drawable/ic_action_tick"
+            app:cb_color="@color/blue"
+            app:cb_pressedRingWidth="8dip"/>
+
+
+        <!--<RadioButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/radioButtonYellow"-->
+        <!--android:layout_toRightOf="@id/radioButtonRed"/>-->
+
+        <!--<RadioButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/radioButtonBlue"-->
+        <!--android:layout_toRightOf="@id/radioButtonYellow"/>-->
+
+        <!--<RadioButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/radioButtonOrange"-->
+        <!--android:layout_below="@id/radioButtonRed"/>-->
+
+        <!--<RadioButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/radioButtonGreen"-->
+        <!--android:layout_below="@id/radioButtonYellow"-->
+        <!--android:layout_toRightOf="@id/radioButtonOrange"/>-->
+
+        <!--<RadioButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/radioButtonPurple"-->
+        <!--android:layout_below="@id/radioButtonBlue"-->
+        <!--android:layout_toRightOf="@id/radioButtonGreen"/>-->
+        <!--</RelativeLayout>-->
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -5,4 +5,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <string name="rectangle">R</string>
+    <string name="triangle">T</string>
+    <string name="circle">C</string>
+
 </resources>
