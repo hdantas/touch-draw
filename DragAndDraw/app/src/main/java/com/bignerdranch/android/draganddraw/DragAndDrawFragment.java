@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 
 /**
  * Created by nuno on 10/16/14.
@@ -16,10 +17,18 @@ public class DragAndDrawFragment extends Fragment {
     static final String TAG = DragAndDrawFragment.class.getSimpleName();
 
     RadioGroup mButtonShape;
-    DrawableShape mShape = DrawableShape.RECTANGLE;
-    DrawableColor mColor = DrawableColor.RED;
+    ToggleButtonGroupTableLayout mButtonColor;
+    DrawableShape mShape;
+    int mColor;
+    int mAlpha;
     BoxDrawingView mBoxView;
-    at.markushi.ui.CircleButton mButtonRed, mButtonGreen, mButtonBlue;
+    CircleRadioButton mButtonRed, mButtonGreen, mButtonBlue, mButtonOrange, mButtonYellow, mButtonPurple;
+    SeekBar mAlphaBar;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -27,56 +36,70 @@ public class DragAndDrawFragment extends Fragment {
 
         mBoxView = (BoxDrawingView) v.findViewById(R.id.viewBox);
 
-        mButtonRed = (at.markushi.ui.CircleButton) v.findViewById(R.id.buttonRed);
-        mButtonRed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mColor = DrawableColor.RED;
-                updateColor();
-            }
-        });
+        mButtonRed = (CircleRadioButton) v.findViewById(R.id.buttonRed);
+        mButtonGreen = (CircleRadioButton) v.findViewById(R.id.buttonGreen);
+        mButtonBlue = (CircleRadioButton) v.findViewById(R.id.buttonBlue);
+        mButtonOrange = (CircleRadioButton) v.findViewById(R.id.buttonOrange);
+        mButtonYellow = (CircleRadioButton) v.findViewById(R.id.buttonYellow);
+        mButtonPurple = (CircleRadioButton) v.findViewById(R.id.buttonPurple);
 
-        mButtonGreen = (at.markushi.ui.CircleButton) v.findViewById(R.id.buttonGreen);
-        mButtonGreen.setOnClickListener(new View.OnClickListener() {
+        mButtonColor = (ToggleButtonGroupTableLayout) v.findViewById(R.id.buttonColor);
+        int checkedButtonId = mButtonColor.getCheckedRadioButtonId();
+        if (checkedButtonId != -1) {
+            Log.d(TAG, "onCreateView: checkedRadioButtonId " +
+                    getResources().getResourceEntryName(checkedButtonId));
+        }
+        mButtonColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mColor = DrawableColor.GREEN;
                 updateColor();
             }
         });
-
-        mButtonBlue = (at.markushi.ui.CircleButton) v.findViewById(R.id.buttonBlue);
-        mButtonBlue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mColor = DrawableColor.BLUE;
-                updateColor();
-            }
-        });
-        updateColor();
 
         mButtonShape = (RadioGroup) v.findViewById(R.id.buttonShape);
-        updateShape(mButtonShape.getCheckedRadioButtonId());
         mButtonShape.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                updateShape(checkedId);
+                updateShape();
             }
         });
+
+        mAlphaBar = (SeekBar) v.findViewById(R.id.alphaBar);
+        mAlpha = mAlphaBar.getProgress();
+        mAlphaBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mAlpha = 100 - progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                updateColor();
+            }
+        });
+
+        updateColor();
+        updateShape();
 
         return v;
     }
 
-    private void updateShape(int checkedId) {
+    private void updateShape() {
+        int checkedId = mButtonShape.getCheckedRadioButtonId();
         switch (checkedId) {
-            case R.id.buttonRectangle:
-                mShape = DrawableShape.RECTANGLE;
-                break;
             case R.id.buttonTriangle:
                 mShape = DrawableShape.TRIANGLE;
                 break;
             case R.id.buttonCircle:
                 mShape = DrawableShape.CIRCLE;
+                break;
+            default:
+                mShape = DrawableShape.RECTANGLE;
         }
 
         Log.d(TAG, "UpdatedShape checkedId: " + checkedId + " shape: " + mShape);
@@ -86,9 +109,30 @@ public class DragAndDrawFragment extends Fragment {
     }
 
     private void updateColor() {
-        Log.d(TAG, "UpdatedColor color: " + mColor);
+        int checkedId = mButtonColor.getCheckedRadioButtonId();
+        switch (checkedId) {
+            case R.id.buttonRed:
+                mColor = DrawableColor.RED;
+                break;
+            case R.id.buttonGreen:
+                mColor = DrawableColor.GREEN;
+                break;
+            case R.id.buttonBlue:
+                mColor = DrawableColor.BLUE;
+                break;
+            case R.id.buttonOrange:
+                mColor = DrawableColor.ORANGE;
+                break;
+            case R.id.buttonYellow:
+                mColor = DrawableColor.YELLOW;
+                break;
+            case R.id.buttonPurple:
+                mColor = DrawableColor.PURPLE;
+        }
+
         if (mBoxView != null) {
-            mBoxView.setDrawableColor(mColor);
+            Log.d(TAG, "UpdatedColor color: " + mColor + " alpha " + mAlpha);
+            mBoxView.setDrawableColor(mColor, mAlpha);
         }
     }
 

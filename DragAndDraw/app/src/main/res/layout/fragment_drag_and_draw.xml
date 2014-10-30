@@ -14,104 +14,141 @@
         />
 
     <LinearLayout
+        android:id="@+id/toolBar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
 
-        <RadioGroup
-            android:id="@+id/buttonShape"
+        <LinearLayout
+            android:id="@+id/shapeOptions"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             >
 
-            <RadioButton
-                android:id="@+id/buttonRectangle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <RadioGroup
+                android:id="@+id/buttonShape"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:checked="true"
-                android:text="@string/rectangle"
+                android:orientation="horizontal"
+                >
+
+                <RadioButton
+                    android:id="@+id/buttonRectangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/rectangle"
+                    />
+
+                <RadioButton
+                    android:id="@+id/buttonTriangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/triangle"
+                    />
+
+                <RadioButton
+                    android:id="@+id/buttonCircle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/circle"/>
+            </RadioGroup>
+
+            <SeekBar
+                android:id="@+id/alphaBar"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:progress="50"
                 />
+        </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/buttonTriangle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+        <com.bignerdranch.android.draganddraw.ToggleButtonGroupTableLayout
+            android:id="@+id/buttonColor"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/triangle"/>
+                >
 
-            <RadioButton
-                android:id="@+id/buttonCircle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                <com.bignerdranch.android.draganddraw.CircleRadioButton
+                    android:id="@+id/buttonRed"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/red"
+                    app:cb_pressedRingWidth="5dip"
+                    />
+
+                <com.bignerdranch.android.draganddraw.CircleRadioButton
+                    android:id="@+id/buttonGreen"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/green"
+                    app:cb_pressedRingWidth="5dip"/>
+
+                <com.bignerdranch.android.draganddraw.CircleRadioButton
+                    android:id="@+id/buttonBlue"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/blue"
+                    app:cb_pressedRingWidth="5dip"
+                    android:checked="true"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/circle"/>
-        </RadioGroup>
-        <!--<RelativeLayout-->
-        <!--android:layout_weight="2"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="fill_parent"-->
-        <!-->-->
+                >
 
-        <at.markushi.ui.CircleButton
-            android:id="@+id/buttonRed"
-            android:layout_width="64dip"
-            android:layout_height="64dip"
-            android:src="@drawable/ic_action_tick"
-            app:cb_color="@color/red"
-            app:cb_pressedRingWidth="8dip"/>
+                <com.bignerdranch.android.draganddraw.CircleRadioButton
+                    android:id="@+id/buttonOrange"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/orange"
+                    app:cb_pressedRingWidth="5dip"
+                    />
 
-        <at.markushi.ui.CircleButton
-            android:id="@+id/buttonGreen"
-            android:layout_width="64dip"
-            android:layout_height="64dip"
-            android:src="@drawable/ic_action_tick"
-            app:cb_color="@color/green"
-            app:cb_pressedRingWidth="8dip"/>
+                <com.bignerdranch.android.draganddraw.CircleRadioButton
+                    android:id="@+id/buttonYellow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/yellow"
+                    app:cb_pressedRingWidth="5dip"/>
 
-        <at.markushi.ui.CircleButton
-            android:id="@+id/buttonBlue"
-            android:layout_width="64dip"
-            android:layout_height="64dip"
-            android:src="@drawable/ic_action_tick"
-            app:cb_color="@color/blue"
-            app:cb_pressedRingWidth="8dip"/>
-
-
-        <!--<RadioButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/radioButtonYellow"-->
-        <!--android:layout_toRightOf="@id/radioButtonRed"/>-->
-
-        <!--<RadioButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/radioButtonBlue"-->
-        <!--android:layout_toRightOf="@id/radioButtonYellow"/>-->
-
-        <!--<RadioButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/radioButtonOrange"-->
-        <!--android:layout_below="@id/radioButtonRed"/>-->
-
-        <!--<RadioButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/radioButtonGreen"-->
-        <!--android:layout_below="@id/radioButtonYellow"-->
-        <!--android:layout_toRightOf="@id/radioButtonOrange"/>-->
-
-        <!--<RadioButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/radioButtonPurple"-->
-        <!--android:layout_below="@id/radioButtonBlue"-->
-        <!--android:layout_toRightOf="@id/radioButtonGreen"/>-->
-        <!--</RelativeLayout>-->
+                <com.bignerdranch.android.draganddraw.CircleRadioButton
+                    android:id="@+id/buttonPurple"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/purple"
+                    app:cb_pressedRingWidth="5dip"/>
+            </TableRow>
+        </com.bignerdranch.android.draganddraw.ToggleButtonGroupTableLayout>
 
     </LinearLayout>
 

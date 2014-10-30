@@ -32,12 +32,9 @@ public class BoxDrawingView extends View {
     public BoxDrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // The actual color will be chosen later
         mBoxPaint = new Paint();
-
-        // Paint the background off-white
         mBackgroundPaint = new Paint();
-        mBackgroundPaint.setColor(getResources().getColor(R.color.white));
+        mBackgroundPaint.setColor(getResources().getColor(DrawableColor.BACKGROUND_COLOR));
 
     }
 
@@ -57,13 +54,13 @@ public class BoxDrawingView extends View {
                     canvas.drawRect(left, top, right, bottom, box.getPaint());
                     break;
                 case TRIANGLE:
-                    // TODO
+                    // TODO implement drawing triangles
                     break;
-                case CIRCLE:
-                    float x = box.getCurrent().x - box.getOrigin().x;
-                    float y = box.getCurrent().y - box.getOrigin().y;
-                    float radius = (float) Math.sqrt(x * x + y * y);
-                    canvas.drawCircle(box.getOrigin().x, box.getOrigin().y, radius, box.getPaint());
+                case CIRCLE: // TODO improve resolution circles, they look pixelated
+                    double x = box.getCurrent().x - box.getOrigin().x;
+                    double y = box.getCurrent().y - box.getOrigin().y;
+                    double radius = Math.sqrt(x * x + y * y);
+                    canvas.drawCircle(box.getOrigin().x, box.getOrigin().y, (float) radius, box.getPaint());
             }
         }
     }
@@ -72,17 +69,15 @@ public class BoxDrawingView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         PointF curr = new PointF(event.getX(), event.getY());
 
-        Log.i(TAG, "Received event at x=" + curr.x + ", y=" + curr.y + ":");
+//        Log.d(TAG, "Received event at x=" + curr.x + ", y=" + curr.y + ":");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.i(TAG, " ACTION_DOWN");
                 // Reset drawing state
                 mCurrentBox = new Box(curr, mDrawableShape, new Paint(mBoxPaint));
                 mBoxes.add(mCurrentBox);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                Log.i(TAG, " ACTION_MOVE");
                 if (mCurrentBox != null) {
                     mCurrentBox.setCurrent(curr);
                     invalidate();
@@ -90,16 +85,13 @@ public class BoxDrawingView extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-                Log.i(TAG, " ACTION_UP");
                 mCurrentBox = null;
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-                Log.i(TAG, " ACTION_CANCEL");
                 mCurrentBox = null;
                 break;
         }
-
         return true;
     }
 
@@ -108,21 +100,13 @@ public class BoxDrawingView extends View {
         Log.d(TAG, "received shape: " + mDrawableShape);
     }
 
-    public void setDrawableColor(DrawableColor drawableColor) {
-        int alpha = 0x99 << 24; // (0x99 := 0xFF * 0.6, 60% translucent (40% opaque)
+    public void setDrawableColor(int drawableColor, int alpha) {
+        int alphaOffset = ((0xFF * alpha) / 100) << 24; // (e.g. 0x99 := 0xFF * 0.6, 60% translucent (40% opaque)
+        mBoxPaint.setColor(getResources().getColor(drawableColor) - alphaOffset);
 
-        switch (drawableColor) {
-            case RED:
-                mBoxPaint.setColor(getResources().getColor(R.color.red) - alpha);
-                break;
-            case GREEN:
-                mBoxPaint.setColor(getResources().getColor(R.color.green) - alpha);
-                break;
-            case BLUE:
-                mBoxPaint.setColor(getResources().getColor(R.color.blue) - alpha);
-        }
-        Log.d(TAG, String.format("received color: %s\tpaint: 0x%8s",
-                        drawableColor.toString(),
-                        Integer.toHexString(mBoxPaint.getColor()).replace(' ', '0')));
+        Log.d(TAG, String.format("received color: %s\tpaint: 0x%8s\talpha: %d",
+                DrawableColor.toString(drawableColor),
+                Integer.toHexString(mBoxPaint.getColor()).replace(' ', '0'),
+                alpha));
     }
 }
