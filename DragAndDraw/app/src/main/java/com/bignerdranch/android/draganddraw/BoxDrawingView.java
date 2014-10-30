@@ -3,6 +3,7 @@ package com.bignerdranch.android.draganddraw;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,6 +24,8 @@ public class BoxDrawingView extends View {
     private Paint mBackgroundPaint;
     private DrawableShape mDrawableShape = DrawableShape.RECTANGLE;
 
+    private Path path; // to draw triangles
+
     // Used when creating the view in code
     public BoxDrawingView(Context context) {
         this(context, null);
@@ -35,6 +38,8 @@ public class BoxDrawingView extends View {
         mBoxPaint = new Paint();
         mBackgroundPaint = new Paint();
         mBackgroundPaint.setColor(getResources().getColor(DrawableColor.BACKGROUND_COLOR));
+
+        path = new Path(); // Path is used to draw triangles
 
     }
 
@@ -53,14 +58,22 @@ public class BoxDrawingView extends View {
                 case RECTANGLE:
                     canvas.drawRect(left, top, right, bottom, box.getPaint());
                     break;
+
                 case TRIANGLE:
-                    // TODO implement drawing triangles
+                    path.reset();
+                    path.moveTo(box.getOrigin().x, box.getOrigin().y);
+                    path.lineTo(box.getCurrent().x, box.getCurrent().y);
+                    path.lineTo(2 * box.getCurrent().x - box.getOrigin().x, box.getOrigin().y);
+                    path.close();
+
+                    canvas.drawPath(path, box.getPaint());
                     break;
-                case CIRCLE: // TODO improve resolution circles, they look pixelated
-                    double x = box.getCurrent().x - box.getOrigin().x;
-                    double y = box.getCurrent().y - box.getOrigin().y;
-                    double radius = Math.sqrt(x * x + y * y);
-                    canvas.drawCircle(box.getOrigin().x, box.getOrigin().y, (float) radius, box.getPaint());
+
+                case CIRCLE:
+                    float x_circle = box.getCurrent().x - box.getOrigin().x;
+                    float y_circle = box.getCurrent().y - box.getOrigin().y;
+                    float radius = (float) Math.sqrt(x_circle * x_circle + y_circle * y_circle);
+                    canvas.drawCircle(box.getOrigin().x, box.getOrigin().y, radius, box.getPaint());
             }
         }
     }

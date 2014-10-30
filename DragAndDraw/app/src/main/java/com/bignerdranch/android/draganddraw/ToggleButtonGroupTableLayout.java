@@ -20,11 +20,9 @@ import android.widget.TableRow;
  *
  */
 public class ToggleButtonGroupTableLayout extends TableLayout implements OnClickListener {
-
     private static final String TAG = ToggleButtonGroupTableLayout.class.getSimpleName();
-    private static final String BUNDLE_KEY_ACTIVE_RADIO_BUTTON_ID = "active_radio_button_id";
+
     private RadioButton activeRadioButton;
-//    private RadioButton activeRadioButtonId;
 
     public ToggleButtonGroupTableLayout(Context context) {
         super(context);
@@ -126,7 +124,7 @@ public class ToggleButtonGroupTableLayout extends TableLayout implements OnClick
                 }
             }
         }
-        super.performClick();
+        super.performClick(); // to inform the parent the selected button may have changed
         Log.d(TAG, "onRestoreInstanceState " + getResources().getResourceEntryName(activeRadioButton.getId()));
 
     }
@@ -148,6 +146,7 @@ public class ToggleButtonGroupTableLayout extends TableLayout implements OnClick
 
     /**
      * Convenience class to save / restore the state.
+     * adapted from: https://github.com/CharlesHarley/Example-Android-SavingInstanceState/blob/master/src/com/example/android/savinginstancestate/views/LockCombinationPicker.java
      */
     protected static class SavedState extends BaseSavedState {
 

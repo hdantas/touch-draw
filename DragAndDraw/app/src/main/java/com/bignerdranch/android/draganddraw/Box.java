@@ -17,6 +17,7 @@ public class Box {
         mOrigin = mCurrent = origin;
         mShape = shape;
         mPaint = paint;
+        mPaint.setAntiAlias(true);
     }
 
     public PointF getCurrent() {
