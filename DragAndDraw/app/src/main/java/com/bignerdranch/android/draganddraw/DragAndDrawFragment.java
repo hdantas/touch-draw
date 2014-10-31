@@ -1,6 +1,12 @@
 package com.bignerdranch.android.draganddraw;
 
+import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,11 +30,21 @@ public class DragAndDrawFragment extends Fragment {
     BoxDrawingView mBoxView;
     CircleRadioButton mButtonRed, mButtonGreen, mButtonBlue, mButtonOrange, mButtonYellow, mButtonPurple;
     SeekBar mAlphaBar;
+    private ShakeListener mShaker;
+
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+        mShaker.resume();
+        super.onResume();
     }
+
+    @Override
+    public void onPause() {
+        mShaker.pause();
+        super.onPause();
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,7 +85,8 @@ public class DragAndDrawFragment extends Fragment {
         mAlphaBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mAlpha = 100 - progress;
+                mAlpha = progress;
+                updateColor();
             }
 
             @Override
@@ -79,9 +96,19 @@ public class DragAndDrawFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                updateColor();
+
             }
         });
+
+        final Vibrator vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        mShaker = new ShakeListener(getActivity());
+        mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
+            public void onShake() {
+                vibe.vibrate(300);
+                mBoxView.clearBoxes();
+            }
+        });
+
 
         updateColor();
         updateShape();
@@ -134,6 +161,26 @@ public class DragAndDrawFragment extends Fragment {
             Log.d(TAG, "UpdatedColor color: " + mColor + " alpha " + mAlpha);
             mBoxView.setDrawableColor(mColor, mAlpha);
         }
+        setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
+    }
+
+    public void setSeekBarColor(SeekBar seekBar, int newColor, int newAlpha) {
+        LayerDrawable ld = (LayerDrawable) seekBar.getProgressDrawable();
+
+        int transformedColor = (newColor & 0x00FFFFFF) | (newAlpha << 24);
+        Log.d(TAG, String.format("transformedColor: 0x%8s  |  alpha: 0x%2s",
+                        Integer.toHexString(transformedColor).replace(' ', '0'),
+                        Integer.toHexString(newAlpha).replace(' ', '0'))
+        );
+
+        ColorFilter filter = new LightingColorFilter(0, transformedColor);
+        ld.setColorFilter(filter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            seekBar.getThumb().setColorFilter(filter);
+        }
+
+        seekBar.setAlpha(((float) newAlpha) / 255);
     }
 
 }

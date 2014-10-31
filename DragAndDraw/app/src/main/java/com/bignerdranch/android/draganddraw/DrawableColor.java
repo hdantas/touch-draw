@@ -12,7 +12,7 @@ public class DrawableColor{
     public static final int RED = R.color.red;
     public static final int GREEN = R.color.green;
     public static final int BLUE = R.color.blue;
-    public static final int YELLOW = R.color.yellow;
+    public static final int YELLOW = R.color.Gold;
     public static final int ORANGE = R.color.orange;
     public static final int PURPLE = R.color.purple;
     public static final int WHITE = R.color.white;

@@ -6,10 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.RadioButton;
 
@@ -60,11 +57,6 @@ public class CircleRadioButton extends RadioButton {
     @Override
     public void setChecked(boolean checked) {
         super.setChecked(checked);
-        if (checked) {
-            Log.d(TAG, "setChecked CHECK: " + getResources().getResourceEntryName(getId()));
-        } else {
-            Log.d(TAG, "setChecked CLEAR: " + getResources().getResourceEntryName(getId()));
-        }
         invalidate();
     }
 

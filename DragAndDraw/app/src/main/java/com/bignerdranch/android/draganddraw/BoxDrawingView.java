@@ -5,18 +5,25 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by nuno on 10/16/14.
  */
 public class BoxDrawingView extends View {
+
     private static final String TAG = BoxDrawingView.class.getSimpleName();
+
+    private static final String EXTRA_STATE = "extra_state";
+    private static final String EXTRA_BOXES = "extra_boxes";
 
     private ArrayList<Box> mBoxes = new ArrayList<Box>();
     private Box mCurrentBox;
@@ -114,7 +121,7 @@ public class BoxDrawingView extends View {
     }
 
     public void setDrawableColor(int drawableColor, int alpha) {
-        int alphaOffset = ((0xFF * alpha) / 100) << 24; // (e.g. 0x99 := 0xFF * 0.6, 60% translucent (40% opaque)
+        int alphaOffset = (0xFF - alpha) << 24;
         mBoxPaint.setColor(getResources().getColor(drawableColor) - alphaOffset);
 
         Log.d(TAG, String.format("received color: %s\tpaint: 0x%8s\talpha: %d",
@@ -122,4 +129,37 @@ public class BoxDrawingView extends View {
                 Integer.toHexString(mBoxPaint.getColor()).replace(' ', '0'),
                 alpha));
     }
+
+    public void clearBoxes() {
+        mBoxes = new ArrayList<Box>();
+        invalidate();
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Log.d(TAG, "onSaveInstance state");
+
+        Parcelable savedState = super.onSaveInstanceState();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EXTRA_STATE, savedState);
+        Log.d(TAG, "onSaveInstance savedState");
+        bundle.putSerializable(EXTRA_BOXES, mBoxes);
+        Log.d(TAG, "onSaveInstance mBoxes");
+
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        Log.d(TAG, "onRestoreInstanceState");
+        Parcelable restoredState = ((Bundle) state).getParcelable(EXTRA_STATE);
+        Serializable serializable = ((Bundle) state).getSerializable(EXTRA_BOXES);
+
+        if (serializable instanceof ArrayList) {
+            mBoxes = (ArrayList<Box>) serializable;
+        }
+
+        super.onRestoreInstanceState(restoredState);
+    }
+
 }

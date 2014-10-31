@@ -66,7 +66,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:progress="50"
+                android:progress="127"
+                android:max="255"
                 />
         </LinearLayout>
 
@@ -110,7 +111,6 @@
                     android:button="@null"
                     app:cb_color="@color/blue"
                     app:cb_pressedRingWidth="5dip"
-                    android:checked="true"
                     />
             </TableRow>
 
@@ -136,7 +136,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:button="@null"
-                    app:cb_color="@color/yellow"
+                    app:cb_color="@color/Gold"
                     app:cb_pressedRingWidth="5dip"/>
 
                 <com.bignerdranch.android.draganddraw.CircleRadioButton
@@ -146,7 +146,8 @@
                     android:layout_weight="1"
                     android:button="@null"
                     app:cb_color="@color/purple"
-                    app:cb_pressedRingWidth="5dip"/>
+                    app:cb_pressedRingWidth="5dip"
+                    android:checked="true"/>
             </TableRow>
         </com.bignerdranch.android.draganddraw.ToggleButtonGroupTableLayout>
 
