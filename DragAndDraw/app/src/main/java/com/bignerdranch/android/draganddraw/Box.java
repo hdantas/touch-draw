@@ -20,16 +20,31 @@ public class Box implements Parcelable{
 
     }
 
+    private long mId;
     private PointF mOrigin;
     private PointF mCurrent;
     private DrawableShape mShape;
     private Paint mPaint;
 
     public Box(PointF origin, DrawableShape shape, Paint paint) {
-        mOrigin = mCurrent = origin;
+        this(origin, origin, shape, paint);
+    }
+
+    public Box(PointF origin, PointF current, DrawableShape shape, Paint paint) {
+        mId = -1;
+        mOrigin = origin;
+        mCurrent = current;
         mShape = shape;
         mPaint = paint;
         mPaint.setAntiAlias(true);
+    }
+
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(long id) {
+        mId = id;
     }
 
     public PointF getCurrent() {
