@@ -19,20 +19,32 @@ public class DrawingManager {
     private SharedPreferences mPrefs;
     private long mCurrentDrawingId;
 
-    public DrawingManager(Context mAppContext) {
+    private static DrawingManager sDrawingManager;
+    private Context mAppContext;
+
+    // The private constructor forces users to use DrawingManager.get(Context
+    private DrawingManager(Context appContext) {
+        mAppContext = appContext;
         mHelper = new DrawingDatabaseHelper(mAppContext);
         mPrefs = mAppContext.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        mCurrentDrawingId = mPrefs.getLong(PREF_CURRENT_DRAWING_ID, -1);
+        mCurrentDrawingId = -1;
+    }
+
+    public static DrawingManager get(Context c) {
+        if (sDrawingManager == null) {
+            // Use the application context to avoid leaking activities
+            sDrawingManager = new DrawingManager(c.getApplicationContext());
+        }
+        return sDrawingManager;
     }
 
     public Drawing startNewDrawing() {
         // Insert a drawing into the db
+        Drawing drawing = insertDrawing();
+        mCurrentDrawingId = drawing.getId();
+        mPrefs.edit().putLong(PREF_CURRENT_DRAWING_ID, mCurrentDrawingId).apply();
+        Log.d(TAG, "startNewDrawing: id " + mCurrentDrawingId);
         return insertDrawing();
-    }
-
-    public void stopDrawing() {
-        mCurrentDrawingId = -1;
-        mPrefs.edit().remove(PREF_CURRENT_DRAWING_ID).apply();
     }
 
     private Drawing insertDrawing() {
@@ -57,14 +69,37 @@ public class DrawingManager {
         return drawing;
     }
 
+    public Drawing getLastDrawing() {
+        mCurrentDrawingId = mPrefs.getLong(PREF_CURRENT_DRAWING_ID, -1);
+        Log.d(TAG, "getLastDrawing id: " + mCurrentDrawingId);
+        return getDrawing(mCurrentDrawingId);
+    }
+
     public void insertBox(Box box) {
         if (mCurrentDrawingId != -1) {
             mHelper.insertBox(mCurrentDrawingId, box);
         } else {
-            Log.e(TAG, "Box received with no associated drawing.");
+            Log.e(TAG, "Box received with no associated drawing.", new Exception());
         }
     }
 
+    public void insertBoxes (ArrayList<Box> boxes) {
+        for (Box box : boxes) {
+            insertBox(box);
+        }
+    }
+
+    public void removeAllBoxes () {
+        mHelper.removeAllBoxes(mCurrentDrawingId);
+    }
+
+    // Retrieve boxes of current drawing
+    public ArrayList<Box> getBoxes() {
+        Log.d(TAG, "getBoxes: id: " + mCurrentDrawingId + " size: " + getBoxes(mCurrentDrawingId).size());
+        return getBoxes(mCurrentDrawingId);
+    }
+
+    // Retrieve boxes of an arbitrary drawing
     public ArrayList<Box> getBoxes(long drawingId) {
         ArrayList<Box> boxes = new ArrayList<Box>();
 
@@ -77,7 +112,7 @@ public class DrawingManager {
             }
             cursor.close();
         } else {
-            Log.e(TAG, "Box received with no associated drawing.");
+            Log.e(TAG, "Box requested with no associated drawing. ",  new Exception());
         }
         return boxes;
     }

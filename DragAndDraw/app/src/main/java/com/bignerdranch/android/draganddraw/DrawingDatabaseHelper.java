@@ -73,7 +73,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
 
     public long insertBox(long drawingId, Box box) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_DRAWING_ID, drawingId);
+        cv.put(COLUMN_BOX_ID, drawingId);
         cv.put(COLUMN_BOX_ORIGIN_X, box.getOrigin().x);
         cv.put(COLUMN_BOX_ORIGIN_Y, box.getOrigin().y);
         cv.put(COLUMN_BOX_CURRENT_X, box.getCurrent().x);
@@ -82,6 +82,14 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_BOX_SHAPE, box.getShape().name());
 
         return getWritableDatabase().insert(TABLE_BOX, null, cv);
+    }
+
+    public int removeAllBoxes(long drawingId) {
+        return getWritableDatabase().delete(
+                TABLE_BOX, //table
+                COLUMN_BOX_ID + " = ?", // WHERE clause
+                new String[]{String.valueOf(drawingId)} // WHERE args
+        );
     }
 
     public DrawingCursor queryDrawings() {
@@ -120,7 +128,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(id)}, //with this value
                 null, // group by
                 null, // having
-                COLUMN_DRAWING_ID + " asc" // order by
+                COLUMN_BOX_ID + " asc" // order by
         );
         return new BoxCursor(wrapped);
 
@@ -174,7 +182,8 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                     getFloat(getColumnIndex(COLUMN_BOX_CURRENT_X)),
                     getFloat(getColumnIndex(COLUMN_BOX_CURRENT_Y))
             );
-            Paint paint = new Paint(getInt(getColumnIndex(COLUMN_BOX_COLOR)));
+            Paint paint = new Paint();
+            paint.setColor(getInt(getColumnIndex(COLUMN_BOX_COLOR)));
             DrawableShape shape = DrawableShape.valueOf(
                     getString(getColumnIndex(COLUMN_BOX_SHAPE))
             );

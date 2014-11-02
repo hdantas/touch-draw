@@ -20,18 +20,18 @@ import android.widget.SeekBar;
  * Created by nuno on 10/16/14.
  */
 public class DragAndDrawFragment extends Fragment {
-    static final String TAG = DragAndDrawFragment.class.getSimpleName();
+    private static final String TAG = DragAndDrawFragment.class.getSimpleName();
 
-    RadioGroup mButtonShape;
-    ToggleButtonGroupTableLayout mButtonColor;
-    DrawableShape mShape;
-    int mColor;
-    int mAlpha;
-    BoxDrawingView mBoxView;
-    CircleRadioButton mButtonRed, mButtonGreen, mButtonBlue, mButtonOrange, mButtonYellow, mButtonPurple;
-    SeekBar mAlphaBar;
+    private RadioGroup mButtonShape;
+    private ToggleButtonGroupTableLayout mButtonColor;
+    private DrawableShape mShape;
+    private int mColor;
+    private int mAlpha;
+    private BoxDrawingView mBoxView;
+    private SeekBar mAlphaBar;
     private ShakeListener mShaker;
-
+    private Drawing mDrawing;
+    private DrawingManager mDrawingManager;
 
     @Override
     public void onResume() {
@@ -47,24 +47,25 @@ public class DragAndDrawFragment extends Fragment {
 
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDrawingManager = DrawingManager.get(getActivity());
+        mDrawing = mDrawingManager.getLastDrawing();
+        if (mDrawing == null) { // if there was no last drawing
+            mDrawing = mDrawingManager.startNewDrawing();
+            Log.d(TAG, "onCreate: Created new Drawing with id " + mDrawing.getId());
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_drag_and_draw, container, false);
 
         mBoxView = (BoxDrawingView) v.findViewById(R.id.viewBox);
-
-        mButtonRed = (CircleRadioButton) v.findViewById(R.id.buttonRed);
-        mButtonGreen = (CircleRadioButton) v.findViewById(R.id.buttonGreen);
-        mButtonBlue = (CircleRadioButton) v.findViewById(R.id.buttonBlue);
-        mButtonOrange = (CircleRadioButton) v.findViewById(R.id.buttonOrange);
-        mButtonYellow = (CircleRadioButton) v.findViewById(R.id.buttonYellow);
-        mButtonPurple = (CircleRadioButton) v.findViewById(R.id.buttonPurple);
+        mBoxView.setDrawingManager(mDrawingManager);
+        mBoxView.loadBoxes();
 
         mButtonColor = (ToggleButtonGroupTableLayout) v.findViewById(R.id.buttonColor);
-        int checkedButtonId = mButtonColor.getCheckedRadioButtonId();
-        if (checkedButtonId != -1) {
-            Log.d(TAG, "onCreateView: checkedRadioButtonId " +
-                    getResources().getResourceEntryName(checkedButtonId));
-        }
         mButtonColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +130,7 @@ public class DragAndDrawFragment extends Fragment {
                 mShape = DrawableShape.RECTANGLE;
         }
 
-        Log.d(TAG, "UpdatedShape checkedId: " + checkedId + " shape: " + mShape);
+//        Log.d(TAG, "UpdatedShape checkedId: " + checkedId + " shape: " + mShape);
         if (mBoxView != null) {
             mBoxView.setDrawableShape(mShape);
         }
@@ -158,7 +159,7 @@ public class DragAndDrawFragment extends Fragment {
         }
 
         if (mBoxView != null) {
-            Log.d(TAG, "UpdatedColor color: " + mColor + " alpha " + mAlpha);
+//            Log.d(TAG, "UpdatedColor color: " + mColor + " alpha " + mAlpha);
             mBoxView.setDrawableColor(mColor, mAlpha);
         }
         setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
@@ -168,10 +169,10 @@ public class DragAndDrawFragment extends Fragment {
         LayerDrawable ld = (LayerDrawable) seekBar.getProgressDrawable();
 
         int transformedColor = (newColor & 0x00FFFFFF) | (newAlpha << 24);
-        Log.d(TAG, String.format("transformedColor: 0x%8s  |  alpha: 0x%2s",
-                        Integer.toHexString(transformedColor).replace(' ', '0'),
-                        Integer.toHexString(newAlpha).replace(' ', '0'))
-        );
+//        Log.d(TAG, String.format("transformedColor: 0x%8s  |  alpha: 0x%2s",
+//                        Integer.toHexString(transformedColor).replace(' ', '0'),
+//                        Integer.toHexString(newAlpha).replace(' ', '0'))
+//        );
 
         ColorFilter filter = new LightingColorFilter(0, transformedColor);
         ld.setColorFilter(filter);
@@ -183,4 +184,10 @@ public class DragAndDrawFragment extends Fragment {
         seekBar.setAlpha(((float) newAlpha) / 255);
     }
 
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop: saved " + mDrawingManager.getBoxes().size());
+        super.onStop();
+    }
 }
