@@ -9,4 +9,7 @@
     <string name="triangle">T</string>
     <string name="circle">C</string>
 
+    <string name="export_image">Export Image</string>
+    <string name="share">Share Image</string>
+
 </resources>

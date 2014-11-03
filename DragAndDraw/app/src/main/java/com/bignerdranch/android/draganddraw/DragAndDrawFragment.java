@@ -1,6 +1,7 @@
 package com.bignerdranch.android.draganddraw;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.LayerDrawable;
@@ -11,10 +12,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.Toast;
+
+import java.io.FileOutputStream;
+import java.util.UUID;
 
 /**
  * Created by nuno on 10/16/14.
@@ -32,6 +40,7 @@ public class DragAndDrawFragment extends Fragment {
     private ShakeListener mShaker;
     private Drawing mDrawing;
     private DrawingManager mDrawingManager;
+    private Bitmap mBitmap;
 
     @Override
     public void onResume() {
@@ -49,6 +58,8 @@ public class DragAndDrawFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         mDrawingManager = DrawingManager.get(getActivity());
         mDrawing = mDrawingManager.getLastDrawing();
         if (mDrawing == null) { // if there was no last drawing
@@ -62,6 +73,7 @@ public class DragAndDrawFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_drag_and_draw, container, false);
 
         mBoxView = (BoxDrawingView) v.findViewById(R.id.viewBox);
+        mBoxView.setDrawingCacheEnabled(true);
         mBoxView.setDrawingManager(mDrawingManager);
         mBoxView.loadBoxes();
 
@@ -190,4 +202,69 @@ public class DragAndDrawFragment extends Fragment {
         Log.d(TAG, "onStop: saved " + mDrawingManager.getBoxes().size());
         super.onStop();
     }
+
+    private void saveImage() {
+        if (!mBoxView.isDrawingCacheEnabled()) {
+            Log.d(TAG, "saveImage Failed to save image");
+            return;
+        }
+
+        Boolean success = false;
+        // Create a filename
+        String filename = UUID.randomUUID().toString() + ".png";
+        // Save the jpeg data to disk
+        FileOutputStream os = null;
+        try {
+            os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+            mBitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
+            /* Write bitmap to file using PNG (lossless). */
+            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.close();
+            success = true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error writing to file " + filename, e);
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error closing file " + filename, e);
+            }
+        }
+
+        String toastText;
+        if (success) {
+            toastText = "Successfully saved image to "
+                    + getActivity().getFilesDir() + "/" + filename;
+        } else {
+            toastText = "Failed to save image!";
+        }
+        Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.drag_and_draw, menu);
+        Log.d(TAG, "onCreateOptionsMenu size: " + menu.size());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.export_image:
+                saveImage();
+                return true;
+            case R.id.share_image:
+                Toast.makeText(getActivity(), "Share image", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.settings:
+                Toast.makeText(getActivity(), "Settings", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

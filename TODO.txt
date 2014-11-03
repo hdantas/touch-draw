@@ -1,7 +1,6 @@
 FEATURES TO IMPLEMENT
 
-allow exporting canvas as image
 when deleting add animation sucking down the image (also confirm deletion)
+hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
 add gallery, "chrome tabs overview"-like
-hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
