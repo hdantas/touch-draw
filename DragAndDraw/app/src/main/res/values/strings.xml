@@ -13,5 +13,8 @@
     <string name="export_image">Export Image</string>
     <string name="share_image">Share Image</string>
     <string name="new_image">New Image</string>
+    <string name="delete_image">Delete Image</string>
+
+    <string name="drawing_item_content_description">Thumbnail preview</string>
 
 </resources>

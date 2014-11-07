@@ -57,13 +57,16 @@ public class DragAndDrawFragment extends Fragment {
     public void onPause() { //TODO is this the best place to return intent?
         Log.d(TAG, "onPause: saved " + mDrawingManager.getBoxes().size());
         mShaker.pause();
-        saveImage(true);
-        Intent intent = new Intent(getActivity(), PhotoGalleryActivity.class);
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
+        saveImageCompressed();
+        returnFromIntent();
         super.onPause();
     }
 
+    public void returnFromIntent() {
+        Intent intent = new Intent(getActivity(), PhotoGalleryActivity.class);
+        getActivity().setResult(Activity.RESULT_OK, intent);
+        getActivity().finish();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -215,30 +218,55 @@ public class DragAndDrawFragment extends Fragment {
     }
 
 
-    private boolean saveImage() {
-        return saveImage(false);
+    private boolean saveImageCompressed() {
+        // Create a filename
+        String filename = mDrawing.getFilename();
+        return saveImage(true, filename);
     }
 
-    private boolean saveImage(boolean compressImage) {
+    private boolean saveImageUncompressed() {
+        // Create a filename, append _full to it
+        String filename = mDrawing.getFilename().replace(".png", "_full.png");
+        return saveImage(false, filename);
+    }
+
+    private boolean saveImage(boolean compressImage, String filename) {
         if (!mBoxView.isDrawingCacheEnabled()) {
             Log.d(TAG, "saveImage Failed to save image");
             return false;
         }
 
         Boolean success = false;
-        // Create a filename
-        String filename = mDrawing.getFilename();
+
         // Save the jpeg data to disk
         FileOutputStream os = null;
         try {
             os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
             if (compressImage) {
-                int dstWidth = mBoxView.getWidth() / PhotoGalleryFragment.THUMBNAILS_PER_ROW;
-                int dstHeight = mBoxView.getHeight() / PhotoGalleryFragment.THUMBNAILS_PER_ROW;
+
+                int thumbnail_width = (int) getResources().getDimension(R.dimen.thumbnail_width);
+                float ratio = mBoxView.getWidth() / thumbnail_width;
+                int thumbnail_height = (int) (mBoxView.getHeight() / ratio);
+
+
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+//                    Point size = new Point();
+//                    getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+//                    ratio = size.x / thumbnail_width;
+//                    thumbnail_height = (int) (size.y / ratio);
+//                } else {
+//                    ratio = getActivity().getWindowManager().getDefaultDisplay().getWidth()
+//                            / thumbnail_width;
+//
+//                    thumbnail_height = (int) (getActivity().getWindowManager()
+//                            .getDefaultDisplay().getHeight() / ratio);
+//                }
                 mBitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
-                        dstWidth, dstHeight, false);
+                        thumbnail_width, thumbnail_height, false);
 
                 Log.d(TAG, "saveImage compressed DrawingId " + mDrawing.getId() +
+                        " width/height: " + thumbnail_width + "/" + thumbnail_height +
+                        " ratio: " + ratio +
                         " filename: " + mDrawing.getFilename());
             } else {
                 mBitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
@@ -272,7 +300,7 @@ public class DragAndDrawFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.export_image:
-                Boolean status = saveImage();
+                Boolean status = saveImageUncompressed();
                 String toastText = status ? "Successfully saved image" : "Failed to save image!";
                 Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
                 return true;
@@ -293,13 +321,20 @@ public class DragAndDrawFragment extends Fragment {
                         getResources().getString(R.string.new_image),
                         Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.settings:
+            case R.id.delete_image:
                 Toast.makeText(getActivity(),
-                        getResources().getString(R.string.action_settings),
+                        getResources().getString(R.string.delete_image),
                         Toast.LENGTH_SHORT).show();
+                deleteDrawing();
+                returnFromIntent();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteDrawing() {
+        mDrawingManager.removeAllBoxes(mDrawing.getId());
+        mDrawingManager.removeDrawing(mDrawing.getId());
     }
 
 }

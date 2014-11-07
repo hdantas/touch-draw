@@ -100,6 +100,15 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                 new String[]{Long.toString(drawing.getId())} // WHERE args
         );
     }
+
+    public int removeDrawing(long drawingId) {
+        return getWritableDatabase().delete(
+                TABLE_DRAWING, //table
+                COLUMN_DRAWING_ID + " = ?", // WHERE clause
+                new String[]{String.valueOf(drawingId)} // WHERE args
+        );
+    }
+
     public int removeAllBoxes(long drawingId) {
         return getWritableDatabase().delete(
                 TABLE_BOX, //table

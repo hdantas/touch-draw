@@ -87,6 +87,10 @@ public class DrawingManager {
         return drawing;
     }
 
+    public void removeDrawing(long id) {
+        mHelper.removeDrawing(id);
+    }
+
     public void insertBox(Box box) {
         if (mCurrentDrawingId != -1) {
             mHelper.insertBox(mCurrentDrawingId, box);
@@ -102,7 +106,11 @@ public class DrawingManager {
     }
 
     public void removeAllBoxes () {
-        mHelper.removeAllBoxes(mCurrentDrawingId);
+        removeAllBoxes(mCurrentDrawingId);
+    }
+
+    public void removeAllBoxes (long drawingId) {
+        mHelper.removeAllBoxes(drawingId);
     }
 
     // Retrieve boxes of current drawing

@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 public class PhotoGalleryFragment extends Fragment {
     private static final String TAG = PhotoGalleryFragment.class.getSimpleName();
     private static final int REQUEST_CHANGE = 0;
-    public static int THUMBNAILS_PER_ROW;
 
     GridView mGridView;
     ArrayList<Drawing> mItems;
@@ -40,7 +37,6 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        THUMBNAILS_PER_ROW = getActivity().getResources().getInteger(R.integer.thumbnails_per_row);
 
         setHasOptionsMenu(true);
         setRetainInstance(true);
@@ -48,6 +44,7 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     public void updateItems() {
+        Log.i(TAG, "updateItems");
         new FetchItemsTask().execute();
     }
 
@@ -57,16 +54,6 @@ public class PhotoGalleryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
         mGridView = (GridView) v.findViewById(R.id.gridView);
-        int column_width;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point size = new Point();
-            getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-            column_width = size.x / THUMBNAILS_PER_ROW;
-        } else {
-            int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-            column_width = width / THUMBNAILS_PER_ROW;
-        }
-        mGridView.setColumnWidth(column_width);
         setupAdapter();
 
         // On click start DragAndDrawFragment to edit it
@@ -87,9 +74,8 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult requestCode " + requestCode + " resultCode " + resultCode);
-        if (resultCode != Activity.RESULT_OK) {
-            updateItems();
-        }
+        updateItems();
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -162,32 +148,16 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.d(TAG, "getView position: " + position + " item id " + getItem(position).getId() + " convertView " + convertView);
             ViewHolder viewHolder; // view lookup cache stored in tag
             // Check if an existing view is being reused, otherwise inflate the view
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.drawing, parent, false);
+                        .inflate(R.layout.drawing_item, parent, false);
 
-                ImageView imageView = (ImageView) convertView
+                viewHolder.mImageView = (ImageView) convertView
                         .findViewById(R.id.drawing_imageView);
-
-                int thumbnail_width, thumbnail_height;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                    Point size = new Point();
-                    getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-                    thumbnail_width = size.x / THUMBNAILS_PER_ROW;
-                    thumbnail_height = size.y / THUMBNAILS_PER_ROW;
-                } else {
-                    thumbnail_width = getActivity().getWindowManager().getDefaultDisplay()
-                            .getWidth() / THUMBNAILS_PER_ROW;
-                    thumbnail_height = getActivity().getWindowManager().getDefaultDisplay()
-                            .getHeight() / THUMBNAILS_PER_ROW;
-                }
-
-                imageView.getLayoutParams().width = thumbnail_width;
-                imageView.getLayoutParams().height = thumbnail_height;
-                viewHolder.mImageView = imageView;
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();

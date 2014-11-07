@@ -13,7 +13,8 @@
         android:title="@string/share_image"
         app:showAsAction="ifRoom|withText"/>
     <item
-        android:id="@+id/settings"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:id="@+id/delete_image"
+        android:title="@string/delete_image"
+        android:icon="@android:drawable/ic_menu_delete"
+        app:showAsAction="ifRoom|withText"/>
 </menu>
