@@ -6,16 +6,14 @@
         android:id="@+id/export_image"
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/export_image"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom|withText" />
     <item
         android:id="@+id/share_image"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/share"
-        app:showAsAction="ifRoom"
-        />
+        android:title="@string/share_image"
+        app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/settings"
         android:title="@string/action_settings"
-        app:showAsAction="never"
-        />
+        app:showAsAction="never"/>
 </menu>

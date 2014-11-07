@@ -1,6 +1,13 @@
 FEATURES TO IMPLEMENT
 
-when deleting add animation sucking down the image (also confirm deletion)
-hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
+BUGFIX: adjust size of tiles in gallery
+allow deletion of images from gallery (long press, multiple selections) and from inside "editor"
+save image to phone gallery, not to private storage
+add sharing intent
+add deletion animation for custom view (also confirm deletion)
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
-add gallery, "chrome tabs overview"-like
+replace actionbar with toolbar floating over the content
+hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
+prettify gallery, "chrome tabs overview"-like
+on creating new image, use CardFlip animation from Google's AnimationsDemo project.
+populate settings

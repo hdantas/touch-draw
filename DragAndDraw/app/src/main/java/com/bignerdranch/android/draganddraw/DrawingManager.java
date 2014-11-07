@@ -1,7 +1,6 @@
 package com.bignerdranch.android.draganddraw;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -12,11 +11,9 @@ import java.util.ArrayList;
 public class DrawingManager {
     private static final String TAG = DrawingManager.class.getSimpleName();
 
-    private static final String PREFS_FILE = "drawings";
     private static final String PREF_CURRENT_DRAWING_ID = "DrawingManager.currentDrawingId";
 
     private DrawingDatabaseHelper mHelper;
-    private SharedPreferences mPrefs;
     private long mCurrentDrawingId;
 
     private static DrawingManager sDrawingManager;
@@ -26,7 +23,6 @@ public class DrawingManager {
     private DrawingManager(Context appContext) {
         mAppContext = appContext;
         mHelper = new DrawingDatabaseHelper(mAppContext);
-        mPrefs = mAppContext.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         mCurrentDrawingId = -1;
     }
 
@@ -42,9 +38,8 @@ public class DrawingManager {
         // Insert a drawing into the db
         Drawing drawing = insertDrawing();
         mCurrentDrawingId = drawing.getId();
-        mPrefs.edit().putLong(PREF_CURRENT_DRAWING_ID, mCurrentDrawingId).apply();
         Log.d(TAG, "startNewDrawing: id " + mCurrentDrawingId);
-        return insertDrawing();
+        return drawing;
     }
 
     private Drawing insertDrawing() {
@@ -53,10 +48,33 @@ public class DrawingManager {
         return drawing;
     }
 
+    public void updateDrawing(Drawing drawing) {
+        mHelper.updateDrawing(drawing);
+        Log.d(TAG, "updateDrawing, updated drawing with id: " + drawing.getId());
+
+    }
+
     public DrawingDatabaseHelper.DrawingCursor queryDrawings() {
         return mHelper.queryDrawings();
     }
 
+    public ArrayList<Drawing> getAllDrawings() {
+        ArrayList<Drawing> drawingArrayList = new ArrayList<Drawing>();
+        DrawingDatabaseHelper.DrawingCursor cursor = queryDrawings();
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            drawingArrayList.add(cursor.getDrawing());
+            cursor.moveToNext();
+        }
+        Log.d(TAG, "getAllDrawings queried " + drawingArrayList.size() + " drawings.");
+        return drawingArrayList;
+    }
+
+    public Drawing loadDrawing(long id) {
+        mCurrentDrawingId = id;
+        Log.d(TAG, "loadDrawing with id " + id);
+        return getDrawing(id);
+    }
     public Drawing getDrawing(long id) {
         Drawing drawing = null;
         DrawingDatabaseHelper.DrawingCursor cursor = mHelper.queryDrawing(id);
@@ -67,12 +85,6 @@ public class DrawingManager {
         }
         cursor.close();
         return drawing;
-    }
-
-    public Drawing getLastDrawing() {
-        mCurrentDrawingId = mPrefs.getLong(PREF_CURRENT_DRAWING_ID, -1);
-        Log.d(TAG, "getLastDrawing id: " + mCurrentDrawingId);
-        return getDrawing(mCurrentDrawingId);
     }
 
     public void insertBox(Box box) {

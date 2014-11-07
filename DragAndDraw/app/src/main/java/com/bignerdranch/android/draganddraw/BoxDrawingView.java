@@ -87,7 +87,6 @@ public class BoxDrawingView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         PointF curr = new PointF(event.getX(), event.getY());
 
-//        Log.d(TAG, "Received event at x=" + curr.x + ", y=" + curr.y + ":");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // Reset drawing state
@@ -117,17 +116,11 @@ public class BoxDrawingView extends View {
 
     public void setDrawableShape(DrawableShape drawableShape) {
         mDrawableShape = drawableShape;
-//        Log.d(TAG, "setDrawableShape shape: " + mDrawableShape);
     }
 
     public void setDrawableColor(int drawableColor, int alpha) {
         int alphaOffset = (0xFF - alpha) << 24;
         mBoxPaint.setColor(getResources().getColor(drawableColor) - alphaOffset);
-
-//        Log.d(TAG, String.format("recsetDrawableColor color: %s\tpaint: 0x%8s\talpha: %d",
-//                DrawableColor.toString(drawableColor),
-//                Integer.toHexString(mBoxPaint.getColor()).replace(' ', '0'),
-//                alpha));
     }
 
     public void clearBoxes() {

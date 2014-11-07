@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -23,6 +24,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_DRAWING = "drawing";
     private static final String COLUMN_DRAWING_ID = "_id";
     private static final String COLUMN_DRAWING_START_DATE = "start_date";
+    private static final String COLUMN_DRAWING_THUMBNAIL_FILENAME = "thumbnail_filename";
 
     private static final String TABLE_BOX = "box";
     private static final String COLUMN_BOX_ID = "drawing_id";
@@ -43,18 +45,19 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
         // Create the "drawing" table
         db.execSQL("create table " + TABLE_DRAWING + " (" +
                 COLUMN_DRAWING_ID + " integer primary key autoincrement, " +
-                COLUMN_DRAWING_START_DATE + " integer)");
+                COLUMN_DRAWING_START_DATE + " integer, " +
+                COLUMN_DRAWING_THUMBNAIL_FILENAME + " text)");
 
         // Create the "box" table
         db.execSQL("create table " + TABLE_BOX + " (" +
-                COLUMN_BOX_ID + " integer references " +
+                        COLUMN_BOX_ID + " integer references " +
                         TABLE_DRAWING + "(" + COLUMN_DRAWING_ID + "), " +
-                COLUMN_BOX_ORIGIN_X + " real, " +
-                COLUMN_BOX_ORIGIN_Y + " real, " +
-                COLUMN_BOX_CURRENT_X + " real, " +
-                COLUMN_BOX_CURRENT_Y + " real, " +
-                COLUMN_BOX_COLOR + " integer, " +
-                COLUMN_BOX_SHAPE + " varchar(10))"
+                        COLUMN_BOX_ORIGIN_X + " real, " +
+                        COLUMN_BOX_ORIGIN_Y + " real, " +
+                        COLUMN_BOX_CURRENT_X + " real, " +
+                        COLUMN_BOX_CURRENT_Y + " real, " +
+                        COLUMN_BOX_COLOR + " integer, " +
+                        COLUMN_BOX_SHAPE + " varchar(10))"
         );
     }
 
@@ -67,6 +70,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
     public long insertDrawing(Drawing drawing) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_DRAWING_START_DATE, drawing.getStartDate().getTime());
+        cv.put(COLUMN_DRAWING_THUMBNAIL_FILENAME, drawing.getFilename());
 
         return getWritableDatabase().insert(TABLE_DRAWING, null, cv);
     }
@@ -84,6 +88,18 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
         return getWritableDatabase().insert(TABLE_BOX, null, cv);
     }
 
+    public void updateDrawing(Drawing drawing) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DRAWING_START_DATE, drawing.getStartDate().getTime());
+        cv.put(COLUMN_DRAWING_THUMBNAIL_FILENAME, drawing.getFilename());
+
+        getWritableDatabase().update(
+                TABLE_DRAWING,//table
+                cv, // cv
+                COLUMN_DRAWING_ID + " = ?", // WHERE clause
+                new String[]{Long.toString(drawing.getId())} // WHERE args
+        );
+    }
     public int removeAllBoxes(long drawingId) {
         return getWritableDatabase().delete(
                 TABLE_BOX, //table
@@ -154,11 +170,19 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
             if (isBeforeFirst() || isAfterLast()) {
                 return null;
             }
+
             Drawing drawing = new Drawing();
+
             long drawingId = getLong(getColumnIndex(COLUMN_DRAWING_ID));
             drawing.setId(drawingId);
+
             long startDate = getLong(getColumnIndex(COLUMN_DRAWING_START_DATE));
             drawing.setStartDate(new Date(startDate));
+
+            String thumbnailFilename = getString(getColumnIndex(COLUMN_DRAWING_THUMBNAIL_FILENAME));
+            drawing.setFilename(thumbnailFilename);
+
+            Log.d(TAG, "getDrawing: drawing id " + drawing.getId());
             return drawing;
         }
     }

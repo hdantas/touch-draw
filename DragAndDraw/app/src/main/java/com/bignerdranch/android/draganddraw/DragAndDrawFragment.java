@@ -1,10 +1,12 @@
 package com.bignerdranch.android.draganddraw;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
-import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -22,13 +24,15 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
-import java.util.UUID;
 
 /**
  * Created by nuno on 10/16/14.
  */
 public class DragAndDrawFragment extends Fragment {
     private static final String TAG = DragAndDrawFragment.class.getSimpleName();
+
+    public static final String EXTRA_DRAWING_ID =
+            "com.bignerdranch.android.criminalintent.extra_drawing_id";
 
     private RadioGroup mButtonShape;
     private ToggleButtonGroupTableLayout mButtonColor;
@@ -41,6 +45,7 @@ public class DragAndDrawFragment extends Fragment {
     private Drawing mDrawing;
     private DrawingManager mDrawingManager;
     private Bitmap mBitmap;
+    private Boolean mViewVisible = true;
 
     @Override
     public void onResume() {
@@ -49,8 +54,13 @@ public class DragAndDrawFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
+    public void onPause() { //TODO is this the best place to return intent?
+        Log.d(TAG, "onPause: saved " + mDrawingManager.getBoxes().size());
         mShaker.pause();
+        saveImage(true);
+        Intent intent = new Intent(getActivity(), PhotoGalleryActivity.class);
+        getActivity().setResult(Activity.RESULT_OK, intent);
+        getActivity().finish();
         super.onPause();
     }
 
@@ -60,9 +70,15 @@ public class DragAndDrawFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+
+        Bundle extras = getActivity().getIntent().getExtras();
+        long drawingId = extras.getLong(EXTRA_DRAWING_ID, -1);
+
         mDrawingManager = DrawingManager.get(getActivity());
-        mDrawing = mDrawingManager.getLastDrawing();
-        if (mDrawing == null) { // if there was no last drawing
+        if(drawingId != -1) {
+            mDrawing = mDrawingManager.loadDrawing(drawingId);
+            Log.d(TAG, "onCreate: Loaded Drawing with id " + mDrawing.getId());
+        } else {
             mDrawing = mDrawingManager.startNewDrawing();
             Log.d(TAG, "onCreate: Created new Drawing with id " + mDrawing.getId());
         }
@@ -117,7 +133,7 @@ public class DragAndDrawFragment extends Fragment {
         mShaker = new ShakeListener(getActivity());
         mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
             public void onShake() {
-                vibe.vibrate(300);
+                vibe.vibrate(getResources().getInteger(R.integer.vibration_millis));
                 mBoxView.clearBoxes();
             }
         });
@@ -178,7 +194,7 @@ public class DragAndDrawFragment extends Fragment {
     }
 
     public void setSeekBarColor(SeekBar seekBar, int newColor, int newAlpha) {
-        LayerDrawable ld = (LayerDrawable) seekBar.getProgressDrawable();
+        Drawable drawable = seekBar.getProgressDrawable();
 
         int transformedColor = (newColor & 0x00FFFFFF) | (newAlpha << 24);
 //        Log.d(TAG, String.format("transformedColor: 0x%8s  |  alpha: 0x%2s",
@@ -187,37 +203,47 @@ public class DragAndDrawFragment extends Fragment {
 //        );
 
         ColorFilter filter = new LightingColorFilter(0, transformedColor);
-        ld.setColorFilter(filter);
+        drawable.setColorFilter(filter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             seekBar.getThumb().setColorFilter(filter);
         }
 
-        seekBar.setAlpha(((float) newAlpha) / 255);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            seekBar.setAlpha(((float) newAlpha) / 255);
+        }
     }
 
 
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop: saved " + mDrawingManager.getBoxes().size());
-        super.onStop();
+    private boolean saveImage() {
+        return saveImage(false);
     }
 
-    private void saveImage() {
+    private boolean saveImage(boolean compressImage) {
         if (!mBoxView.isDrawingCacheEnabled()) {
             Log.d(TAG, "saveImage Failed to save image");
-            return;
+            return false;
         }
 
         Boolean success = false;
         // Create a filename
-        String filename = UUID.randomUUID().toString() + ".png";
+        String filename = mDrawing.getFilename();
         // Save the jpeg data to disk
         FileOutputStream os = null;
         try {
             os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-            mBitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
-            /* Write bitmap to file using PNG (lossless). */
+            if (compressImage) {
+                int dstWidth = mBoxView.getWidth() / PhotoGalleryFragment.THUMBNAILS_PER_ROW;
+                int dstHeight = mBoxView.getHeight() / PhotoGalleryFragment.THUMBNAILS_PER_ROW;
+                mBitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
+                        dstWidth, dstHeight, false);
+
+                Log.d(TAG, "saveImage compressed DrawingId " + mDrawing.getId() +
+                        " filename: " + mDrawing.getFilename());
+            } else {
+                mBitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
+            }
+            /* Write bitmap to file using PNG (lossless) */
             mBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
             os.close();
             success = true;
@@ -233,38 +259,47 @@ public class DragAndDrawFragment extends Fragment {
             }
         }
 
-        String toastText;
-        if (success) {
-            toastText = "Successfully saved image to "
-                    + getActivity().getFilesDir() + "/" + filename;
-        } else {
-            toastText = "Failed to save image!";
-        }
-        Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
+        return success;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.drag_and_draw, menu);
-        Log.d(TAG, "onCreateOptionsMenu size: " + menu.size());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.export_image:
-                saveImage();
+                Boolean status = saveImage();
+                String toastText = status ? "Successfully saved image" : "Failed to save image!";
+                Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.share_image:
-                Toast.makeText(getActivity(), "Share image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),
+                        getResources().getString(R.string.share_image),
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.new_image:
+                int translation = mViewVisible ? 100 - mBoxView.getHeight() : 0;
+                mViewVisible = !mViewVisible;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mBoxView.animate().translationY(translation).withLayer();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                    mBoxView.animate().translationY(translation);
+                }
+                Toast.makeText(getActivity(),
+                        getResources().getString(R.string.new_image),
+                        Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings:
-                Toast.makeText(getActivity(), "Settings", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),
+                        getResources().getString(R.string.action_settings),
+                        Toast.LENGTH_SHORT).show();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
 }

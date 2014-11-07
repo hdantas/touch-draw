@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
@@ -35,7 +34,8 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
             fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
         }
 
-        showOverflowMenu();
+
+//        showOverflowMenu();
     }
 
     private void showOverflowMenu() {
@@ -55,9 +55,11 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
         }
 
     }
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Intercept HW menu button clicks to prevent showing duplicate menus
-        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
-    }
+
+    // Intercept menu button to prevent duplicate menus
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        // Intercept HW menu button clicks to prevent showing duplicate menus
+//        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
+//    }
 }
