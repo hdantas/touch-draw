@@ -1,8 +1,7 @@
 FEATURES TO IMPLEMENT
 
-allow deletion of images from gallery (long press, multiple selections) and from inside "editor"
-save image to phone gallery, not to private storage
 add sharing intent
+BUGFIX: highlight thumbnail when drawing is selected for deletion
 
 replace actionbar with toolbar floating over the content
 hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.

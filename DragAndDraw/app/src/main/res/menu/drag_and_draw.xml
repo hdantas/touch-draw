@@ -3,18 +3,18 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".DragAndDrawActivity">
     <item
-        android:id="@+id/export_image"
+        android:id="@+id/export_drawing"
         android:icon="@android:drawable/ic_menu_save"
-        android:title="@string/export_image"
+        android:title="@string/export_drawing"
         app:showAsAction="ifRoom|withText" />
     <item
-        android:id="@+id/share_image"
+        android:id="@+id/share_drawing"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/share_image"
+        android:title="@string/share_drawing"
         app:showAsAction="ifRoom|withText"/>
     <item
-        android:id="@+id/delete_image"
-        android:title="@string/delete_image"
+        android:id="@+id/delete_drawing"
+        android:title="@string/delete_drawing"
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="ifRoom|withText"/>
 </menu>

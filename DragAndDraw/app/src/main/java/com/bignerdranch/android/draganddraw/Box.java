@@ -9,17 +9,19 @@ import android.graphics.PointF;
 public class Box{
 
     private long mId;
+    private int mOrder; // order of the box in the drawing
     private PointF mOrigin;
     private PointF mCurrent;
     private DrawableShape mShape;
     private Paint mPaint;
 
-    public Box(PointF origin, DrawableShape shape, Paint paint) {
-        this(origin, origin, shape, paint);
+    public Box(int order, PointF origin, DrawableShape shape, Paint paint) {
+        this(order, origin, origin, shape, paint);
     }
 
-    public Box(PointF origin, PointF current, DrawableShape shape, Paint paint) {
+    public Box(int order, PointF origin, PointF current, DrawableShape shape, Paint paint) {
         mId = -1;
+        mOrder = order;
         mOrigin = origin;
         mCurrent = current;
         mShape = shape;
@@ -55,4 +57,7 @@ public class Box{
         return mPaint;
     }
 
+    public int getOrder() {
+        return mOrder;
+    }
 }

@@ -1,6 +1,7 @@
 package com.bignerdranch.android.draganddraw;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,7 +25,10 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import java.io.FileOutputStream;
+import com.bignerdranch.android.utils.BitmapUtils;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Created by nuno on 10/16/14.
@@ -44,8 +49,7 @@ public class DragAndDrawFragment extends Fragment {
     private ShakeListener mShaker;
     private Drawing mDrawing;
     private DrawingManager mDrawingManager;
-    private Bitmap mBitmap;
-    private Boolean mViewVisible = true;
+    private boolean mViewVisible = true;
 
     @Override
     public void onResume() {
@@ -54,15 +58,27 @@ public class DragAndDrawFragment extends Fragment {
     }
 
     @Override
-    public void onPause() { //TODO is this the best place to return intent?
+    public void onPause() {
         Log.d(TAG, "onPause: saved " + mDrawingManager.getBoxes().size());
         mShaker.pause();
-        saveImageCompressed();
-        returnFromIntent();
+        if (mDrawing != null) {
+            saveDrawingCompressed();
+        }
         super.onPause();
     }
 
+    public void goBack() {
+        // The user has pushed the back button
+        Log.i(TAG, "goBack");
+        returnFromIntent();
+    }
+
     public void returnFromIntent() {
+        Log.i(TAG, "returnFromIntent");
+        // if mDrawing is null it has been deleted
+        if (mDrawing != null) {
+            mDrawingManager.updateDrawing(mDrawing);
+        }
         Intent intent = new Intent(getActivity(), PhotoGalleryActivity.class);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
@@ -75,10 +91,10 @@ public class DragAndDrawFragment extends Fragment {
 
 
         Bundle extras = getActivity().getIntent().getExtras();
-        long drawingId = extras.getLong(EXTRA_DRAWING_ID, -1);
+        long drawingId = extras.getLong(EXTRA_DRAWING_ID, -1L);
 
         mDrawingManager = DrawingManager.get(getActivity());
-        if(drawingId != -1) {
+        if (drawingId != -1) {
             mDrawing = mDrawingManager.loadDrawing(drawingId);
             Log.d(TAG, "onCreate: Loaded Drawing with id " + mDrawing.getId());
         } else {
@@ -218,76 +234,62 @@ public class DragAndDrawFragment extends Fragment {
     }
 
 
-    private boolean saveImageCompressed() {
-        // Create a filename
-        String filename = mDrawing.getFilename();
-        return saveImage(true, filename);
-    }
-
-    private boolean saveImageUncompressed() {
-        // Create a filename, append _full to it
-        String filename = mDrawing.getFilename().replace(".png", "_full.png");
-        return saveImage(false, filename);
-    }
-
-    private boolean saveImage(boolean compressImage, String filename) {
+    private boolean saveDrawingCompressed() {
         if (!mBoxView.isDrawingCacheEnabled()) {
-            Log.d(TAG, "saveImage Failed to save image");
+            Log.d(TAG, "saveDrawing Failed to save drawing");
             return false;
         }
 
-        Boolean success = false;
+        int thumbnail_width = (int) getResources().getDimension(R.dimen.thumbnail_width);
+        float ratio = mBoxView.getWidth() / thumbnail_width;
+        int thumbnail_height = (int) (mBoxView.getHeight() / ratio);
 
-        // Save the jpeg data to disk
-        FileOutputStream os = null;
-        try {
-            os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-            if (compressImage) {
+        Bitmap bitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
+                thumbnail_width, thumbnail_height, false);
 
-                int thumbnail_width = (int) getResources().getDimension(R.dimen.thumbnail_width);
-                float ratio = mBoxView.getWidth() / thumbnail_width;
-                int thumbnail_height = (int) (mBoxView.getHeight() / ratio);
+        Log.d(TAG, "saveDrawing compressed DrawingId " + mDrawing.getId() +
+                " width/height: " + thumbnail_width + "/" + thumbnail_height +
+                " ratio: " + ratio +
+                " filename: " + mDrawing.getFilename());
 
+        /* Write bitmap to file using format defined in Drawing */
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
+        return BitmapUtils.saveBitmapToPrivateInternalStorage
+                (getActivity(),mDrawing.getFilename(), bitmap, format);
 
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-//                    Point size = new Point();
-//                    getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-//                    ratio = size.x / thumbnail_width;
-//                    thumbnail_height = (int) (size.y / ratio);
-//                } else {
-//                    ratio = getActivity().getWindowManager().getDefaultDisplay().getWidth()
-//                            / thumbnail_width;
-//
-//                    thumbnail_height = (int) (getActivity().getWindowManager()
-//                            .getDefaultDisplay().getHeight() / ratio);
-//                }
-                mBitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
-                        thumbnail_width, thumbnail_height, false);
+    }
 
-                Log.d(TAG, "saveImage compressed DrawingId " + mDrawing.getId() +
-                        " width/height: " + thumbnail_width + "/" + thumbnail_height +
-                        " ratio: " + ratio +
-                        " filename: " + mDrawing.getFilename());
-            } else {
-                mBitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
-            }
-            /* Write bitmap to file using PNG (lossless) */
-            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-            os.close();
-            success = true;
-        } catch (Exception e) {
-            Log.e(TAG, "Error writing to file " + filename, e);
-        } finally {
-            try {
-                if (os != null) {
-                    os.close();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error closing file " + filename, e);
-            }
+    private boolean saveDrawingToGallery() {
+        boolean success;
+
+        Bitmap bitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
+        String filename = "Drawing " + mDrawing.getId() + " "
+                + DateFormat.getDateInstance().format(new Date())
+                + "." + mDrawing.getFileFormat().toLowerCase();
+
+        success = BitmapUtils.saveBitmapToAlbumPublicExternalStorage
+                (getActivity(), filename, bitmap, format);
+
+        if (!success) {
+            Log.e(TAG, "saveDrawingToGallery FAIL", new Exception());
+            return false;
         }
 
-        return success;
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, mDrawing.getStartDate().getTime());
+
+        String mime_type = "image/" + mDrawing.getFileFormat().toLowerCase();
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + mime_type);
+
+        String filePath = BitmapUtils.getAlbumPublicExternalStorageDir(getActivity()).getPath()
+                + "/" + filename;
+        values.put(MediaStore.MediaColumns.DATA, filePath);
+
+        getActivity().getContentResolver()
+                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        return true;
     }
 
     @Override
@@ -299,17 +301,18 @@ public class DragAndDrawFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.export_image:
-                Boolean status = saveImageUncompressed();
-                String toastText = status ? "Successfully saved image" : "Failed to save image!";
+            case R.id.export_drawing:
+                boolean success = saveDrawingToGallery();
+                String toastText =
+                        success ? "Successfully saved drawing" : "Failed to save drawing!";
                 Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.share_image:
+            case R.id.share_drawing:
                 Toast.makeText(getActivity(),
-                        getResources().getString(R.string.share_image),
+                        getResources().getString(R.string.share_drawing),
                         Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.new_image:
+            case R.id.new_drawing:
                 int translation = mViewVisible ? 100 - mBoxView.getHeight() : 0;
                 mViewVisible = !mViewVisible;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -318,12 +321,12 @@ public class DragAndDrawFragment extends Fragment {
                     mBoxView.animate().translationY(translation);
                 }
                 Toast.makeText(getActivity(),
-                        getResources().getString(R.string.new_image),
+                        getResources().getString(R.string.new_drawing),
                         Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.delete_image:
+            case R.id.delete_drawing:
                 Toast.makeText(getActivity(),
-                        getResources().getString(R.string.delete_image),
+                        getResources().getString(R.string.delete_drawing),
                         Toast.LENGTH_SHORT).show();
                 deleteDrawing();
                 returnFromIntent();
@@ -333,8 +336,8 @@ public class DragAndDrawFragment extends Fragment {
     }
 
     private void deleteDrawing() {
-        mDrawingManager.removeAllBoxes(mDrawing.getId());
-        mDrawingManager.removeDrawing(mDrawing.getId());
+        mDrawingManager.removeDrawing(mDrawing);
+        mDrawing = null;
     }
 
 }

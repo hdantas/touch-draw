@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+
 /**
  * Created by nuno on 1/11/14.
  */
 public class Drawing {
+
+    private static final String fileFormat = "png";
 
     private long mId;
     private Date mStartDate; //when the drawing was initiate
@@ -22,7 +25,7 @@ public class Drawing {
         mId = -1;
         mBoxes = new ArrayList<Box>();
         mStartDate = new Date();
-        mFilename = UUID.randomUUID().toString() + ".png";
+        mFilename = UUID.randomUUID().toString() + "." + fileFormat;
 
     }
 
@@ -58,9 +61,15 @@ public class Drawing {
         mFilename = filename;
     }
 
+    public String getSimpleFilename() {
+            return mFilename.replace("." + fileFormat, "");
+    }
+
     public Uri getUri(Context context) {
         return Uri.fromFile(new File(context.getFilesDir(), mFilename));
     }
 
-
+    public String getFileFormat() {
+        return fileFormat.toUpperCase();
+    }
 }

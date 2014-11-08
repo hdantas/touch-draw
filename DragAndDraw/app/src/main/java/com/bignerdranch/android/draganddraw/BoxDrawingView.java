@@ -90,7 +90,7 @@ public class BoxDrawingView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // Reset drawing state
-                mCurrentBox = new Box(curr, mDrawableShape, new Paint(mBoxPaint));
+                mCurrentBox = new Box(mBoxes.size(), curr, mDrawableShape, new Paint(mBoxPaint));
                 mBoxes.add(mCurrentBox);
                 break;
 

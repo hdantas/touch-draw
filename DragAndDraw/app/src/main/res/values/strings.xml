@@ -10,10 +10,10 @@
     <string name="triangle">T</string>
     <string name="circle">C</string>
 
-    <string name="export_image">Export Image</string>
-    <string name="share_image">Share Image</string>
-    <string name="new_image">New Image</string>
-    <string name="delete_image">Delete Image</string>
+    <string name="export_drawing">Export Drawing</string>
+    <string name="share_drawing">Share Drawing</string>
+    <string name="new_drawing">New Drawing</string>
+    <string name="delete_drawing">Delete Drawing</string>
 
     <string name="drawing_item_content_description">Thumbnail preview</string>
 

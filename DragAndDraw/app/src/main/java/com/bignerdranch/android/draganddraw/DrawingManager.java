@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by nuno on 1/11/14.
@@ -49,6 +50,8 @@ public class DrawingManager {
     }
 
     public void updateDrawing(Drawing drawing) {
+        // update Date
+        drawing.setStartDate(new Date());
         mHelper.updateDrawing(drawing);
         Log.d(TAG, "updateDrawing, updated drawing with id: " + drawing.getId());
 
@@ -87,8 +90,10 @@ public class DrawingManager {
         return drawing;
     }
 
-    public void removeDrawing(long id) {
-        mHelper.removeDrawing(id);
+    public void removeDrawing(Drawing drawing) {
+        removeAllBoxes(drawing.getId());
+        mAppContext.deleteFile(drawing.getFilename());
+        mHelper.removeDrawing(drawing.getId());
     }
 
     public void insertBox(Box box) {

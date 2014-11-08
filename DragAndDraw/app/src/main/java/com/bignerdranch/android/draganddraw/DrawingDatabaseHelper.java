@@ -28,6 +28,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_BOX = "box";
     private static final String COLUMN_BOX_ID = "drawing_id";
+    private static final String COLUMN_BOX_ORDER = "box_order";
     private static final String COLUMN_BOX_ORIGIN_X = "origin_x";
     private static final String COLUMN_BOX_ORIGIN_Y = "origin_y";
     private static final String COLUMN_BOX_CURRENT_X = "current_x";
@@ -51,7 +52,8 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
         // Create the "box" table
         db.execSQL("create table " + TABLE_BOX + " (" +
                         COLUMN_BOX_ID + " integer references " +
-                        TABLE_DRAWING + "(" + COLUMN_DRAWING_ID + "), " +
+                                TABLE_DRAWING + "(" + COLUMN_DRAWING_ID + "), " +
+                        COLUMN_BOX_ORDER + " integer, " +
                         COLUMN_BOX_ORIGIN_X + " real, " +
                         COLUMN_BOX_ORIGIN_Y + " real, " +
                         COLUMN_BOX_CURRENT_X + " real, " +
@@ -78,6 +80,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
     public long insertBox(long drawingId, Box box) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_BOX_ID, drawingId);
+        cv.put(COLUMN_BOX_ORDER, box.getOrder());
         cv.put(COLUMN_BOX_ORIGIN_X, box.getOrigin().x);
         cv.put(COLUMN_BOX_ORIGIN_Y, box.getOrigin().y);
         cv.put(COLUMN_BOX_CURRENT_X, box.getCurrent().x);
@@ -118,7 +121,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public DrawingCursor queryDrawings() {
-        // Equivalent to "SELECT * FROM drawing ORDER BY start_time ASC"
+        // Equivalent to "SELECT * FROM drawing ORDER BY start_time DESC"
         Cursor wrapped = getReadableDatabase().query(
                 TABLE_DRAWING, // table
                 null, // all columns
@@ -126,7 +129,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                 null, // selection args
                 null, // group by
                 null, // having
-                COLUMN_DRAWING_ID + " asc" //order by
+                COLUMN_DRAWING_START_DATE + " desc" //order by
         );
         return new DrawingCursor(wrapped);
     }
@@ -153,7 +156,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(id)}, //with this value
                 null, // group by
                 null, // having
-                COLUMN_BOX_ID + " asc" // order by
+                COLUMN_BOX_ORDER + " asc" // order by
         );
         return new BoxCursor(wrapped);
 
@@ -207,6 +210,8 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                 return null;
             }
 
+            int order = getInt(getColumnIndex(COLUMN_BOX_ORDER));
+
             PointF origin = new PointF(
                     getFloat(getColumnIndex(COLUMN_BOX_ORIGIN_X)),
                     getFloat(getColumnIndex(COLUMN_BOX_ORIGIN_Y))
@@ -220,7 +225,8 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
             DrawableShape shape = DrawableShape.valueOf(
                     getString(getColumnIndex(COLUMN_BOX_SHAPE))
             );
-            return new Box(origin, current, shape, paint);
+
+            return new Box(order, origin, current, shape, paint);
         }
     }
 }
