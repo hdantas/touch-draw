@@ -1,6 +1,5 @@
 FEATURES TO IMPLEMENT
 
-add sharing intent
 BUGFIX: highlight thumbnail when drawing is selected for deletion
 
 replace actionbar with toolbar floating over the content

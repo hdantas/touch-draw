@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import com.bignerdranch.android.utils.BitmapUtils;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -255,7 +257,7 @@ public class DragAndDrawFragment extends Fragment {
         /* Write bitmap to file using format defined in Drawing */
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         return BitmapUtils.saveBitmapToPrivateInternalStorage
-                (getActivity(),mDrawing.getFilename(), bitmap, format);
+                (getActivity(), mDrawing.getFilename(), bitmap, format);
 
     }
 
@@ -265,7 +267,7 @@ public class DragAndDrawFragment extends Fragment {
         Bitmap bitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         String filename = "Drawing " + mDrawing.getId() + " "
-                + DateFormat.getDateInstance().format(new Date())
+                + DateFormat.getDateTimeInstance().format(new Date())
                 + "." + mDrawing.getFileFormat().toLowerCase();
 
         success = BitmapUtils.saveBitmapToAlbumPublicExternalStorage
@@ -289,6 +291,7 @@ public class DragAndDrawFragment extends Fragment {
         getActivity().getContentResolver()
                 .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
+        mDrawing.setDrawingUri(Uri.fromFile(new File(filePath)));
         return true;
     }
 
@@ -308,6 +311,17 @@ public class DragAndDrawFragment extends Fragment {
                 Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.share_drawing:
+                saveDrawingToGallery();
+                Uri uri = mDrawing.getDrawingUri();
+
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                Log.d(TAG, "onOptionsItemSelected uri: " + uri);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                shareIntent.setType("image/" + mDrawing.getFileFormat());
+                shareIntent = Intent.createChooser(shareIntent,
+                        getString(R.string.share_drawing_to));
+                startActivity(shareIntent);
                 Toast.makeText(getActivity(),
                         getResources().getString(R.string.share_drawing),
                         Toast.LENGTH_SHORT).show();
@@ -325,10 +339,10 @@ public class DragAndDrawFragment extends Fragment {
                         Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.delete_drawing:
+                deleteDrawing();
                 Toast.makeText(getActivity(),
                         getResources().getString(R.string.delete_drawing),
                         Toast.LENGTH_SHORT).show();
-                deleteDrawing();
                 returnFromIntent();
                 return true;
         }

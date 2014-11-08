@@ -20,6 +20,7 @@ public class Drawing {
     private Date mStartDate; //when the drawing was initiate
     private ArrayList<Box> mBoxes;
     private String mFilename;
+    private Uri mDrawingUri;
 
     public Drawing() {
         mId = -1;
@@ -71,5 +72,13 @@ public class Drawing {
 
     public String getFileFormat() {
         return fileFormat.toUpperCase();
+    }
+
+    public Uri getDrawingUri() {
+        return mDrawingUri;
+    }
+
+    public void setDrawingUri(Uri drawingUri) {
+        mDrawingUri = drawingUri;
     }
 }
