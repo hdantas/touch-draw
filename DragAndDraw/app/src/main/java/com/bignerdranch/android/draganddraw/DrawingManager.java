@@ -110,6 +110,14 @@ public class DrawingManager {
         }
     }
 
+    public void removeBox(long boxOrder) {
+        mHelper.removeBox(boxOrder, mCurrentDrawingId);
+    }
+
+    public void removeBox(long boxOrder, long drawingId) {
+        mHelper.removeBox(boxOrder, drawingId);
+    }
+
     public void removeAllBoxes () {
         removeAllBoxes(mCurrentDrawingId);
     }

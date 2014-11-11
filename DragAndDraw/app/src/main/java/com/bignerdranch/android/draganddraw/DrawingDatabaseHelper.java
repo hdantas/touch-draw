@@ -52,7 +52,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
         // Create the "box" table
         db.execSQL("create table " + TABLE_BOX + " (" +
                         COLUMN_BOX_ID + " integer references " +
-                                TABLE_DRAWING + "(" + COLUMN_DRAWING_ID + "), " +
+                        TABLE_DRAWING + "(" + COLUMN_DRAWING_ID + "), " +
                         COLUMN_BOX_ORDER + " integer, " +
                         COLUMN_BOX_ORIGIN_X + " real, " +
                         COLUMN_BOX_ORIGIN_Y + " real, " +
@@ -109,6 +109,14 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
                 TABLE_DRAWING, //table
                 COLUMN_DRAWING_ID + " = ?", // WHERE clause
                 new String[]{String.valueOf(drawingId)} // WHERE args
+        );
+    }
+
+    public int removeBox(long boxOrder, long drawingId) {
+        return getWritableDatabase().delete(
+                TABLE_BOX, //table
+                COLUMN_BOX_ID + " = ? AND " + COLUMN_BOX_ORDER + " = ?", // WHERE clause
+                new String[]{String.valueOf(drawingId), String.valueOf(boxOrder)} // WHERE args
         );
     }
 

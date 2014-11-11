@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -123,6 +124,17 @@ public class BoxDrawingView extends View {
         mBoxPaint.setColor(getResources().getColor(drawableColor) - alphaOffset);
     }
 
+    public void undoLastBox() {
+        if(mBoxes.size() < 1){
+            return;
+        }
+
+        long boxId = mBoxes.size() - 1;
+        mDrawingManager.removeBox(boxId);
+        mBoxes.remove((int) boxId); // remove last box
+        Toast.makeText(getContext(), "Removed box " + boxId, Toast.LENGTH_SHORT).show();
+        invalidate();
+    }
     public void clearBoxes() {
         mBoxes.clear();
         mDrawingManager.removeAllBoxes();

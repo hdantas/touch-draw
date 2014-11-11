@@ -155,7 +155,7 @@ public class DragAndDrawFragment extends Fragment {
         mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
             public void onShake() {
                 vibe.vibrate(getResources().getInteger(R.integer.vibration_millis));
-                mBoxView.clearBoxes();
+                mBoxView.undoLastBox();
             }
         });
 

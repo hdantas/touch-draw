@@ -1,7 +1,8 @@
 FEATURES TO IMPLEMENT
 
-undo last box on shake
 adapt utils to save in devices w/o external storage
+dont make alpha bar disappear
+add caret to action bar
 
 replace actionbar with toolbar floating over the content
 hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
