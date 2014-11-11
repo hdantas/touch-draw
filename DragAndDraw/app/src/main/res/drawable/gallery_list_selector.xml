@@ -1,0 +1,11 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+          android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
+
+    <!--<item android:state_pressed="true"-->
+          <!--android:drawable="@color/red"/>-->
+
+    <item android:state_long_pressable="true"
+          android:drawable="@color/yellow" />
+
+    <item android:drawable="@color/transparent" />
+</selector>

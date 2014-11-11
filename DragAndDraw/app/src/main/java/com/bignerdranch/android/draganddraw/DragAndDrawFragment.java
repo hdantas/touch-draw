@@ -311,42 +311,40 @@ public class DragAndDrawFragment extends Fragment {
                 Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.share_drawing:
-                saveDrawingToGallery();
-                Uri uri = mDrawing.getDrawingUri();
-
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                Log.d(TAG, "onOptionsItemSelected uri: " + uri);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                shareIntent.setType("image/" + mDrawing.getFileFormat());
-                shareIntent = Intent.createChooser(shareIntent,
-                        getString(R.string.share_drawing_to));
-                startActivity(shareIntent);
+                sendShareIntent();
                 Toast.makeText(getActivity(),
-                        getResources().getString(R.string.share_drawing),
-                        Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.new_drawing:
-                int translation = mViewVisible ? 100 - mBoxView.getHeight() : 0;
-                mViewVisible = !mViewVisible;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    mBoxView.animate().translationY(translation).withLayer();
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                    mBoxView.animate().translationY(translation);
-                }
-                Toast.makeText(getActivity(),
-                        getResources().getString(R.string.new_drawing),
+                        getString(R.string.share_drawing),
                         Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.delete_drawing:
                 deleteDrawing();
                 Toast.makeText(getActivity(),
-                        getResources().getString(R.string.delete_drawing),
+                        getString(R.string.delete_drawing),
                         Toast.LENGTH_SHORT).show();
                 returnFromIntent();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendShareIntent() {
+        saveDrawingToGallery();
+        Uri uri = mDrawing.getDrawingUri();
+        Log.d(TAG, "sendShareIntent uri: " + uri);
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.setType("image/" + mDrawing.getFileFormat());
+
+        // This flag clears the called app from the activity stack, so users arrive in the expected
+        // place next time this application is restarted.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        } else {
+            shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        }
+        shareIntent = Intent.createChooser(shareIntent, getString(R.string.share_drawing_to));
+        startActivity(shareIntent);
     }
 
     private void deleteDrawing() {

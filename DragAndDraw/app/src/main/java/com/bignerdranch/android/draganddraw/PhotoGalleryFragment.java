@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,7 +61,7 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
-        View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
+        View v = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
 
         mGridView = (GridView) v.findViewById(R.id.gridView);
         setupAdapter();
@@ -122,7 +125,8 @@ public class PhotoGalleryFragment extends Fragment {
 
                 @Override
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
+                    DrawingAdapter adapter = (DrawingAdapter) mGridView.getAdapter();
+                    adapter.notifyDataSetChanged();
                 }
 
 
@@ -222,6 +226,7 @@ public class PhotoGalleryFragment extends Fragment {
     // View lookup cache for DrawingAdapter
     private static class ViewHolder {
         ImageView mImageView;
+        ImageView mViewSelected;
     }
 
     private class DrawingAdapter extends ArrayAdapter<Drawing> {
@@ -246,27 +251,50 @@ public class PhotoGalleryFragment extends Fragment {
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.drawing_item, parent, false);
-
+                        .inflate(R.layout.drawing_gallery_overlay_item, parent, false);
                 viewHolder.mImageView = (ImageView) convertView
-                        .findViewById(R.id.drawing_imageView);
+                        .findViewById(R.id.drawing_item_imageView);
+                viewHolder.mViewSelected = (ImageView) convertView
+                        .findViewById(R.id.drawing_item_selected);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
+            final Bitmap bitmap;
             try {
                 String path = getItem(position).getUri(getActivity()).getPath();
                 FileInputStream fileInputStream = new FileInputStream(path);
-                final Bitmap bitmap = BitmapFactory.decodeStream(fileInputStream);
-                viewHolder.mImageView.setImageBitmap(bitmap);
+                bitmap = BitmapFactory.decodeStream(fileInputStream);
                 fileInputStream.close();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    updateItemHue(bitmap, position, viewHolder);
+                }
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Could not load thumbnail", e);
             } catch (IOException e) {
                 Log.e(TAG, "Could not close file", e);
             }
+
+
             return convertView;
+        }
+
+        @TargetApi(11)
+        private void updateItemHue(Bitmap bitmap, int position, ViewHolder viewHolder) {
+            viewHolder.mImageView.setImageBitmap(bitmap);
+
+            if (mGridView.isItemChecked(position)) {
+                ColorFilter filter = new PorterDuffColorFilter(
+                        getResources().getColor(R.color.aqua_translucent),
+                        PorterDuff.Mode.SRC_ATOP);
+                viewHolder.mImageView.setColorFilter(filter);
+                viewHolder.mViewSelected.setVisibility(View.VISIBLE);
+
+            } else {
+                viewHolder.mImageView.clearColorFilter();
+                viewHolder.mViewSelected.setVisibility(View.GONE);
+            }
         }
     }
 }

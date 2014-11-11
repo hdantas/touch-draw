@@ -6,6 +6,10 @@ Organized by: Willie Tsang
 -->
 <resources>
 
+    <color name="transparent">#00000000</color>
+    <color name="green_bit_transparent">#0FA4C639</color>
+    <color name="aqua_translucent">#8a049183</color>
+
     <!-- Android style -->
     <color name="android_green">#A4C639</color>
 
