@@ -6,6 +6,7 @@ Organized by: Willie Tsang
 -->
 <resources>
 
+    <color name="test">#fff09609</color>
     <color name="transparent">#00000000</color>
     <color name="green_bit_transparent">#0FA4C639</color>
     <color name="aqua_translucent">#8a049183</color>

@@ -37,6 +37,7 @@ public class PhotoGalleryFragment extends Fragment {
     private static final String TAG = PhotoGalleryFragment.class.getSimpleName();
     private static final int REQUEST_CHANGE = 0;
 
+    private Toast mToast;
     GridView mGridView;
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
@@ -45,7 +46,7 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-
+        mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         setHasOptionsMenu(true);
         setRetainInstance(true);
         mDrawingManager = DrawingManager.get(getActivity());
@@ -183,8 +184,8 @@ public class PhotoGalleryFragment extends Fragment {
                 intent.putExtra(DragAndDrawFragment.EXTRA_DRAWING_ID, -1L);
                 startActivityForResult(intent, REQUEST_CHANGE);
 
-                String toastText = "Started new activity";
-                Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
+                mToast.setText("Started new activity");
+                mToast.show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -238,7 +239,8 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void remove(Drawing object) {
             Log.d(TAG, "remove drawing with id " + object.getId());
-            Toast.makeText(getActivity(), "Drawing " + object.getId() + " deleted", Toast.LENGTH_SHORT).show();
+            mToast.setText("Drawing " + object.getId() + " deleted");
+            mToast.show();
             mDrawingManager.removeDrawing(object);
             super.remove(object);
         }

@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <RadioButton
+                <com.bignerdranch.android.draganddraw.TintedRadioButton
                     android:id="@+id/buttonRectangle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -75,7 +75,7 @@
                 android:paddingRight="15dip"
                 android:paddingStart="15dip"
                 android:progress="127"
-                />
+                android:indeterminate="false"/>
         </LinearLayout>
 
         <com.bignerdranch.android.draganddraw.ToggleButtonGroupTableLayout
@@ -97,6 +97,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:button="@null"
+                    android:checked="true"
                     app:cb_color="@color/red"
                     app:cb_pressedRingWidth="5dip"
                     />
@@ -152,7 +153,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:button="@null"
-                    android:checked="true"
                     app:cb_color="@color/purple"
                     app:cb_pressedRingWidth="5dip"/>
             </TableRow>

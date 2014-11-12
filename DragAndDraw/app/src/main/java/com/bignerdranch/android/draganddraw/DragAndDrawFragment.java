@@ -51,7 +51,7 @@ public class DragAndDrawFragment extends Fragment {
     private ShakeListener mShaker;
     private Drawing mDrawing;
     private DrawingManager mDrawingManager;
-    private boolean mViewVisible = true;
+    private Toast mToast;
 
     @Override
     public void onResume() {
@@ -90,6 +90,7 @@ public class DragAndDrawFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
         Bundle extras = getActivity().getIntent().getExtras();
         long drawingId = extras.getLong(EXTRA_DRAWING_ID, -1L);
@@ -213,10 +214,10 @@ public class DragAndDrawFragment extends Fragment {
         setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
     }
 
-    public void setSeekBarColor(SeekBar seekBar, int newColor, int newAlpha) {
+    public void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {
         Drawable drawable = seekBar.getProgressDrawable();
 
-        int transformedColor = (newColor & 0x00FFFFFF) | (newAlpha << 24);
+        int transformedColor = (newColor & 0x00FFFFFF) | (alpha << 24);
 //        Log.d(TAG, String.format("transformedColor: 0x%8s  |  alpha: 0x%2s",
 //                        Integer.toHexString(transformedColor).replace(' ', '0'),
 //                        Integer.toHexString(newAlpha).replace(' ', '0'))
@@ -230,10 +231,13 @@ public class DragAndDrawFragment extends Fragment {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            seekBar.setAlpha(((float) newAlpha) / 255);
+            float newAlpha = ((float) alpha)/255;
+            if (newAlpha < .3){
+                newAlpha = 0.3f;
+            }
+            seekBar.setAlpha(newAlpha);
         }
     }
-
 
     private boolean saveDrawingCompressed() {
         if (!mBoxView.isDrawingCacheEnabled()) {
@@ -307,25 +311,23 @@ public class DragAndDrawFragment extends Fragment {
                 boolean success = saveDrawingToGallery();
                 String toastText =
                         success ? "Successfully saved drawing" : "Failed to save drawing!";
-                Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
+                mToast.setText(toastText);
+                mToast.show();
                 return true;
             case R.id.share_drawing:
                 sendShareIntent();
-                Toast.makeText(getActivity(),
-                        getString(R.string.share_drawing),
-                        Toast.LENGTH_SHORT).show();
+                mToast.setText(getString(R.string.share_drawing));
+                mToast.show();
                 return true;
 
             case android.R.id.home: // Respond to the action bar's Up/Home button
-                Toast.makeText(getActivity(), "Navigate up", Toast.LENGTH_SHORT).show();
                 returnFromIntent();
                 return true;
 
             case R.id.delete_drawing:
                 deleteDrawing();
-                Toast.makeText(getActivity(),
-                        getString(R.string.delete_drawing),
-                        Toast.LENGTH_SHORT).show();
+                mToast.setText(getString(R.string.delete_drawing));
+                mToast.show();
                 returnFromIntent();
                 return true;
         }

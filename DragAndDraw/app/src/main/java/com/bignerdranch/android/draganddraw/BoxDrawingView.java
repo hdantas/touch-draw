@@ -26,7 +26,7 @@ public class BoxDrawingView extends View {
     private Paint mBoxPaint;
     private Paint mBackgroundPaint;
     private DrawableShape mDrawableShape = DrawableShape.RECTANGLE;
-
+    private Toast mToast;
     private Path path; // to draw triangles
 
     // Used when creating the view in code
@@ -42,6 +42,7 @@ public class BoxDrawingView extends View {
         mBackgroundPaint = new Paint();
         mBackgroundPaint.setColor(getResources().getColor(DrawableColor.BACKGROUND_COLOR));
         path = new Path(); // Path is used to draw triangles
+        mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
 
     }
 
@@ -126,13 +127,16 @@ public class BoxDrawingView extends View {
 
     public void undoLastBox() {
         if(mBoxes.size() < 1){
+            mToast.setText("There are no boxes");
+            mToast.show();
             return;
         }
 
         long boxId = mBoxes.size() - 1;
         mDrawingManager.removeBox(boxId);
         mBoxes.remove((int) boxId); // remove last box
-        Toast.makeText(getContext(), "Removed box " + boxId, Toast.LENGTH_SHORT).show();
+        mToast.setText("Removed box " + boxId);
+        mToast.show();
         invalidate();
     }
     public void clearBoxes() {
