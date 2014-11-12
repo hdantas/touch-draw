@@ -1,8 +1,7 @@
 FEATURES TO IMPLEMENT
 
-adapt utils to save in devices w/o external storage
 dont make alpha bar disappear
-add caret to action bar
+adapt utils to save in devices w/o external storage
 
 replace actionbar with toolbar floating over the content
 hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
@@ -10,4 +9,5 @@ add deletion animation for custom view (also confirm deletion)
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
 prettify gallery, "chrome tabs overview"-like
 replace deprecated calls for vibration
-
+save bitmaps (compressed and full) in async task
+fancy action bar http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/

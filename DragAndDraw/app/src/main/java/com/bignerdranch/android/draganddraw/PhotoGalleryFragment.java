@@ -287,7 +287,7 @@ public class PhotoGalleryFragment extends Fragment {
             if (mGridView.isItemChecked(position)) {
                 ColorFilter filter = new PorterDuffColorFilter(
                         getResources().getColor(R.color.aqua_translucent),
-                        PorterDuff.Mode.SRC_ATOP); //TODO understand PorterDuff modes better
+                        PorterDuff.Mode.DARKEN);
                 viewHolder.mImageView.setColorFilter(filter);
                 viewHolder.mViewSelected.setVisibility(View.VISIBLE);
 

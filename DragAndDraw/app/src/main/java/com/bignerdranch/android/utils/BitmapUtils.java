@@ -20,6 +20,18 @@ public class BitmapUtils extends FileUtils {
 
     private static final String DIRECTORY_PICTURES_OLD_API = "DCIM";
 
+    // It will save to external storage if present, else it uses internal storage
+    public static boolean saveBitmapToAlbum
+            (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
+        boolean isExternalStorageAvailable = isExternalStorageWritable();
+        if (isExternalStorageAvailable) {
+            return saveBitmapToAlbumPublicExternalStorage(context, filename, bitmap, format);
+        } else {
+            //TODO handle when case when external storage is not available
+        }
+        return false;
+    }
+
     public static boolean saveBitmapToAlbumPublicExternalStorage
             (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
 

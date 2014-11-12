@@ -10,6 +10,7 @@ public class DragAndDrawActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mDragAndDrawFragment = new DragAndDrawFragment();
         return mDragAndDrawFragment;
     }

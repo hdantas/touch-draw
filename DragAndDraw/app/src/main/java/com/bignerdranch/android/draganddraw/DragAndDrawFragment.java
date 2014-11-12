@@ -91,7 +91,6 @@ public class DragAndDrawFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-
         Bundle extras = getActivity().getIntent().getExtras();
         long drawingId = extras.getLong(EXTRA_DRAWING_ID, -1L);
 
@@ -316,6 +315,12 @@ public class DragAndDrawFragment extends Fragment {
                         getString(R.string.share_drawing),
                         Toast.LENGTH_SHORT).show();
                 return true;
+
+            case android.R.id.home: // Respond to the action bar's Up/Home button
+                Toast.makeText(getActivity(), "Navigate up", Toast.LENGTH_SHORT).show();
+                returnFromIntent();
+                return true;
+
             case R.id.delete_drawing:
                 deleteDrawing();
                 Toast.makeText(getActivity(),
@@ -338,7 +343,7 @@ public class DragAndDrawFragment extends Fragment {
 
         // This flag clears the called app from the activity stack, so users arrive in the expected
         // place next time this application is restarted.
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         } else {
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
