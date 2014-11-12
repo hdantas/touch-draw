@@ -32,13 +32,13 @@
             android:orientation="vertical"
             >
 
-            <RadioGroup
+            <com.bignerdranch.android.draganddraw.ColorfulRadioGroup
                 android:id="@+id/buttonShape"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.bignerdranch.android.draganddraw.TintedRadioButton
+                <com.bignerdranch.android.draganddraw.ColorfulRadioButton
                     android:id="@+id/buttonRectangle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -47,7 +47,7 @@
                     android:gravity="center"
                     android:text="@string/rectangle"/>
 
-                <RadioButton
+                <com.bignerdranch.android.draganddraw.ColorfulRadioButton
                     android:id="@+id/buttonTriangle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -55,15 +55,14 @@
                     android:gravity="center"
                     android:text="@string/triangle"/>
 
-                <RadioButton
-
+                <com.bignerdranch.android.draganddraw.ColorfulRadioButton
                     android:id="@+id/buttonCircle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/circle"/>
-            </RadioGroup>
+            </com.bignerdranch.android.draganddraw.ColorfulRadioGroup>
 
             <SeekBar
                 android:id="@+id/alphaBar"

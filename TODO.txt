@@ -1,6 +1,5 @@
 FEATURES TO IMPLEMENT
 
-dont make alpha bar disappear
 adapt utils to save in devices w/o external storage
 
 replace actionbar with toolbar floating over the content

@@ -41,7 +41,7 @@ public class DragAndDrawFragment extends Fragment {
     public static final String EXTRA_DRAWING_ID =
             "com.bignerdranch.android.criminalintent.extra_drawing_id";
 
-    private RadioGroup mButtonShape;
+    private ColorfulRadioGroup mButtonShape;
     private ToggleButtonGroupTableLayout mButtonColor;
     private DrawableShape mShape;
     private int mColor;
@@ -122,7 +122,7 @@ public class DragAndDrawFragment extends Fragment {
             }
         });
 
-        mButtonShape = (RadioGroup) v.findViewById(R.id.buttonShape);
+        mButtonShape = (ColorfulRadioGroup) v.findViewById(R.id.buttonShape);
         mButtonShape.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -208,10 +208,10 @@ public class DragAndDrawFragment extends Fragment {
         }
 
         if (mBoxView != null) {
-//            Log.d(TAG, "UpdatedColor color: " + mColor + " alpha " + mAlpha);
             mBoxView.setDrawableColor(mColor, mAlpha);
         }
         setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
+        mButtonShape.setButtonsColor(getResources().getColor(mColor));
     }
 
     public void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {
