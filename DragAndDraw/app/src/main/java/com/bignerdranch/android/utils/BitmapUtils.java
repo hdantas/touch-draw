@@ -16,47 +16,44 @@ import java.io.FileOutputStream;
  * Created by nuno on 8/11/14.
  */
 public class BitmapUtils extends FileUtils {
-    protected static final String TAG = BitmapUtils.class.getSimpleName();
-
+    private static final String TAG = BitmapUtils.class.getSimpleName();
     private static final String DIRECTORY_PICTURES_OLD_API = "DCIM";
 
     // It will save to external storage if present, else it uses internal storage
-    public static boolean saveBitmapToAlbum
-            (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
-        boolean isExternalStorageAvailable = isExternalStorageWritable();
-        if (isExternalStorageAvailable) {
+    public static File saveBitmapToAlbum
+    (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
+        if (isExternalStorageWritable()) {
             return saveBitmapToAlbumPublicExternalStorage(context, filename, bitmap, format);
         } else {
-            //TODO handle when case when external storage is not available
+            return null;
         }
-        return false;
     }
 
-    public static boolean saveBitmapToAlbumPublicExternalStorage
+    public static File saveBitmapToAlbumPublicExternalStorage
             (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
-
-        return isExternalStorageWritable() &&
-                saveBitmap(getAlbumPublicExternalStorageDir(context), filename, bitmap, format);
+        if (isExternalStorageWritable()) {
+            return saveBitmap(getAlbumPublicExternalStorageDir(context), filename, bitmap, format);
+        } else {
+            return null;
+        }
     }
 
-    public static boolean saveBitmapToPrivateInternalStorage
+    public static File saveBitmapToPrivateInternalStorage
             (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
-        return saveBitmap(getPrivateInternalStorageDir(context), filename,  bitmap, format);
+        return saveBitmap(getPrivateInternalStorageDir(context), filename, bitmap, format);
     }
 
-    protected static boolean saveBitmap
+    protected static File saveBitmap
             (File dir, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
-        boolean success;
         try {
             File file = new File(dir, filename);
             FileOutputStream os = new FileOutputStream(file);
             bitmap.compress(format, 100, os);
-            success = true;
+            return file;
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File " + dir.getPath() + "/" + filename + " not found.", e);
-            success = false;
+            return null;
         }
-        return success;
     }
 
     /* Save public files on the external storage (persistent even after app is uninstalled) */
@@ -65,17 +62,13 @@ public class BitmapUtils extends FileUtils {
         File albumPublicStorage;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
             albumPublicStorage = Environment.getExternalStoragePublicDirectory
-                            (Environment.DIRECTORY_PICTURES + "/" + albumName);
+                    (Environment.DIRECTORY_PICTURES + "/" + albumName);
         } else {
             albumPublicStorage = new File(Environment.getExternalStorageDirectory()
                     .getAbsolutePath() + "/" + DIRECTORY_PICTURES_OLD_API + "/" + albumName);
         }
 
-        if(!makeDir(albumPublicStorage)) {
-            Log.e(TAG, "Failed to create Public Album " + albumPublicStorage.getPath());
-        }
-
-        return albumPublicStorage;
+        return makeDir(albumPublicStorage);
     }
 
 

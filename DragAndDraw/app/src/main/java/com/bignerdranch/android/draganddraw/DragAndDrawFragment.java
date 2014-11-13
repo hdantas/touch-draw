@@ -218,11 +218,6 @@ public class DragAndDrawFragment extends Fragment {
         Drawable drawable = seekBar.getProgressDrawable();
 
         int transformedColor = (newColor & 0x00FFFFFF) | (alpha << 24);
-//        Log.d(TAG, String.format("transformedColor: 0x%8s  |  alpha: 0x%2s",
-//                        Integer.toHexString(transformedColor).replace(' ', '0'),
-//                        Integer.toHexString(newAlpha).replace(' ', '0'))
-//        );
-
         ColorFilter filter = new LightingColorFilter(0, transformedColor);
         drawable.setColorFilter(filter);
 
@@ -231,8 +226,8 @@ public class DragAndDrawFragment extends Fragment {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            float newAlpha = ((float) alpha)/255;
-            if (newAlpha < .3){
+            float newAlpha = ((float) alpha) / 255;
+            if (newAlpha < .3) {
                 newAlpha = 0.3f;
             }
             seekBar.setAlpha(newAlpha);
@@ -259,27 +254,29 @@ public class DragAndDrawFragment extends Fragment {
 
         /* Write bitmap to file using format defined in Drawing */
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
-        return BitmapUtils.saveBitmapToPrivateInternalStorage
+        File file = BitmapUtils.saveBitmapToPrivateInternalStorage
                 (getActivity(), mDrawing.getFilename(), bitmap, format);
+
+        return file != null;
 
     }
 
     private boolean saveDrawingToGallery() {
-        boolean success;
 
         Bitmap bitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         String filename = "Drawing " + mDrawing.getId() + " "
                 + DateFormat.getDateTimeInstance().format(new Date())
                 + "." + mDrawing.getFileFormat().toLowerCase();
+        filename = filename.replace(":", "_"); // ':' is an illegal char
+//        File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
+        File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
 
-        success = BitmapUtils.saveBitmapToAlbumPublicExternalStorage
-                (getActivity(), filename, bitmap, format);
-
-        if (!success) {
+        if (file == null) {
             Log.e(TAG, "saveDrawingToGallery FAIL", new Exception());
             return false;
         }
+
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DATE_TAKEN, mDrawing.getStartDate().getTime());
@@ -287,14 +284,17 @@ public class DragAndDrawFragment extends Fragment {
         String mime_type = "image/" + mDrawing.getFileFormat().toLowerCase();
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + mime_type);
 
-        String filePath = BitmapUtils.getAlbumPublicExternalStorageDir(getActivity()).getPath()
-                + "/" + filename;
-        values.put(MediaStore.MediaColumns.DATA, filePath);
+        values.put(MediaStore.Images.Media.DATA, file.getPath());
 
-        getActivity().getContentResolver()
+        mDrawing.setDrawingUri(Uri.fromFile(file));
+
+        Uri mediaUri = getActivity().getContentResolver()
                 .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Log.d(TAG, "saveDrawingToGallery path " + file.getPath() +
+                        "\n\turiFromFile: " + Uri.fromFile(file) +
+                        "\n\turiFromMedia: " + mediaUri
+        );
 
-        mDrawing.setDrawingUri(Uri.fromFile(new File(filePath)));
         return true;
     }
 
@@ -358,5 +358,6 @@ public class DragAndDrawFragment extends Fragment {
         mDrawingManager.removeDrawing(mDrawing);
         mDrawing = null;
     }
+
 
 }

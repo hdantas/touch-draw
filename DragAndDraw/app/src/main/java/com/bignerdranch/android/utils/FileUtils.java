@@ -13,62 +13,57 @@ import java.io.IOException;
  * Created by nuno on 8/11/14.
  */
 public class FileUtils {
-    protected static final String TAG = FileUtils.class.getSimpleName();
+    private static final String TAG = FileUtils.class.getSimpleName();
+    private static final String DIRECTORY_PUBLIC = "Public";
 
-    public static boolean saveFileToPrivateInternalStorage
+    public static File saveFileToPrivateInternalStorage
             (Context context, String filename, byte[] fileContent) {
         return saveFile(getPrivateInternalStorageDir(context), filename, fileContent);
     }
 
-    public static boolean saveFileToPrivateExternalStorage
-            (Context context, String filename, byte[] fileContent) {
-        return isExternalStorageWritable() &&
-                saveFile(getRootExternalStorageDir(context), filename, fileContent);
-    }
-
-    public static boolean saveFileToCache(Context context, String filename, byte[] fileContent) {
+    public static File saveFileToCache(Context context, String filename, byte[] fileContent) {
         return saveFile(context.getCacheDir(), filename, fileContent);
     }
 
-    protected static boolean saveFile(File dir, String filename, byte[] fileContent){
-        boolean success;
+    protected static File saveFile(File dir, String filename, byte[] fileContent) {
         try {
             File file = new File(dir, filename);
             FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(fileContent);
             outputStream.close();
-            success = true;
+            return file;
         } catch (IOException e) {
-            Log.e(TAG, "Error writing file " + dir.getPath() , e);
-            success = false;
+            Log.e(TAG, "Error writing file " + dir.getPath(), e);
+            return null;
         }
-        return success;
     }
 
     /* Checks if external storage is available for read and write */
-    protected static boolean isExternalStorageWritable() {
+    public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /* Checks if external storage is available to at least read */
-    protected static boolean isExternalStorageReadable() {
+    public static boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     /* Save files on the private internal storage (removed when app is uninstalled) */
-    protected static File getPrivateInternalStorageDir(Context context) {
+    public static File getPrivateInternalStorageDir(Context context) {
         return context.getFilesDir();
     }
 
-    protected static boolean makeDir(File dir) {
-        boolean success = dir.mkdirs() || dir.isDirectory();
-        if (!success) {
+
+    protected static File makeDir(File dir) {
+        if (dir.mkdirs() || dir.isDirectory()) {
+            return dir;
+        } else {
             Log.e(TAG, "Failed to create directory " + dir.getPath());
+            return null;
         }
-        return success;
     }
 
     /* Save private files to the root of the private dir in external storage

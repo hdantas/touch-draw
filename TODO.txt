@@ -1,7 +1,5 @@
 FEATURES TO IMPLEMENT
 
-adapt utils to save in devices w/o external storage
-
 replace actionbar with toolbar floating over the content
 hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
 add deletion animation for custom view (also confirm deletion)
@@ -10,3 +8,5 @@ prettify gallery, "chrome tabs overview"-like
 replace deprecated calls for vibration
 save bitmaps (compressed and full) in async task
 fancy action bar http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/
+consider moving the app to external storage
+force files to be stored to SD card if possible (instead of emulated external storage)
