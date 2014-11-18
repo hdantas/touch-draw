@@ -5,10 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,7 +30,10 @@ public class BoxDrawingView extends View {
     private Paint mBackgroundPaint;
     private DrawableShape mDrawableShape = DrawableShape.RECTANGLE;
     private Toast mToast;
-    private Path path; // to draw triangles
+    private Path mPath; // to draw triangles
+    private Toolbar mToolbar;
+    private boolean mCanToolbarSlideUp = false;
+    private int[] mToolbarOriginalCoordinates;
 
     // Used when creating the view in code
     public BoxDrawingView(Context context) {
@@ -41,7 +47,7 @@ public class BoxDrawingView extends View {
         mBoxPaint = new Paint();
         mBackgroundPaint = new Paint();
         mBackgroundPaint.setColor(getResources().getColor(DrawableColor.BACKGROUND_COLOR));
-        path = new Path(); // Path is used to draw triangles
+        mPath = new Path(); // Path is used to draw triangles
         mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
 
     }
@@ -50,6 +56,7 @@ public class BoxDrawingView extends View {
     protected void onDraw(Canvas canvas) {
         //Fill the background
         canvas.drawPaint(mBackgroundPaint);
+
         for (Box box : mBoxes) {
             float left = Math.min(box.getOrigin().x, box.getCurrent().x);
             float right = Math.max(box.getOrigin().x, box.getCurrent().x);
@@ -62,13 +69,13 @@ public class BoxDrawingView extends View {
                     break;
 
                 case TRIANGLE:
-                    path.reset();
-                    path.moveTo(box.getOrigin().x, box.getOrigin().y);
-                    path.lineTo(box.getCurrent().x, box.getCurrent().y);
-                    path.lineTo(2 * box.getCurrent().x - box.getOrigin().x, box.getOrigin().y);
-                    path.close();
+                    mPath.reset();
+                    mPath.moveTo(box.getOrigin().x, box.getOrigin().y);
+                    mPath.lineTo(box.getCurrent().x, box.getCurrent().y);
+                    mPath.lineTo(2 * box.getCurrent().x - box.getOrigin().x, box.getOrigin().y);
+                    mPath.close();
 
-                    canvas.drawPath(path, box.getPaint());
+                    canvas.drawPath(mPath, box.getPaint());
                     break;
 
                 case CIRCLE:
@@ -101,16 +108,19 @@ public class BoxDrawingView extends View {
                     mCurrentBox.setCurrent(curr);
                     invalidate();
                 }
+                updateToolbarPosition(event.getY());
                 break;
 
             case MotionEvent.ACTION_UP:
                 mDrawingManager.insertBox(mCurrentBox);
                 Log.d(TAG, "onTouchEvent: add box! total: " + mDrawingManager.getBoxes().size());
                 mCurrentBox = null;
+                resetToolbarPosition();
                 break;
 
             case MotionEvent.ACTION_CANCEL:
                 mCurrentBox = null;
+                resetToolbarPosition();
                 break;
         }
         return true;
@@ -126,7 +136,7 @@ public class BoxDrawingView extends View {
     }
 
     public void undoLastBox() {
-        if(mBoxes.size() < 1){
+        if (mBoxes.size() < 1) {
             mToast.setText("There are no boxes");
             mToast.show();
             return;
@@ -139,6 +149,7 @@ public class BoxDrawingView extends View {
         mToast.show();
         invalidate();
     }
+
     public void clearBoxes() {
         mBoxes.clear();
         mDrawingManager.removeAllBoxes();
@@ -157,6 +168,66 @@ public class BoxDrawingView extends View {
         }
     }
 
+    public void setToolbar(Toolbar toolbar) {
+        mToolbar = toolbar;
+    }
 
 
+    private void updateToolbarPosition(float touchY) {
+
+        if (mToolbarOriginalCoordinates == null) {
+            mToolbarOriginalCoordinates = new int[]{
+                    mToolbar.getLeft(),
+                    mToolbar.getTop(),
+                    mToolbar.getRight(),
+                    mToolbar.getBottom()
+            };
+        }
+
+        int threshold = 30;
+
+        int left = mToolbarOriginalCoordinates[0];
+        int top = mToolbarOriginalCoordinates[1];
+        int right = mToolbarOriginalCoordinates[2];
+        int bottom = mToolbarOriginalCoordinates[3];
+
+
+        if (top <= (touchY + threshold)) {
+            top = (int) (touchY + threshold);
+            mToolbar.layout(left, top, right, bottom);
+        }
+
+    }
+
+    private void resetToolbarPosition() {
+
+        if (mToolbarOriginalCoordinates == null) {
+            mToolbarOriginalCoordinates = new int[]{
+                    mToolbar.getLeft(),
+                    mToolbar.getTop(),
+                    mToolbar.getRight(),
+                    mToolbar.getBottom()
+            };
+
+        }
+
+        if (mToolbarOriginalCoordinates[1] < mToolbar.getTop()) {
+            Log.d(TAG, "resetToolbarPosition");
+
+            float originalHeight = mToolbarOriginalCoordinates[3] - mToolbarOriginalCoordinates[1];
+            float deltaY = originalHeight - mToolbar.getHeight();
+            final Animation animation = new TranslateAnimation(0.0f, 0.0f, deltaY, 0.0f);
+            animation.setInterpolator(getContext(), android.R.anim.accelerate_decelerate_interpolator);
+            animation.setDuration(250);
+            mToolbar.startAnimation(animation);
+
+            // Necessary to restore the original height of toolbar, otherwise it will be clipped
+            mToolbar.layout(
+                    mToolbarOriginalCoordinates[0],
+                    mToolbarOriginalCoordinates[1],
+                    mToolbarOriginalCoordinates[2],
+                    mToolbarOriginalCoordinates[3]
+            );
+        }
+    }
 }

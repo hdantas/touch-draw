@@ -1,12 +1,18 @@
 FEATURES TO IMPLEMENT
 
-replace actionbar with toolbar floating over the content
-hide toolbar with an animation when finger is over it while drawing. similar to chrome status bar when pointer is over it.
-add deletion animation for custom view (also confirm deletion)
+fancy action bar http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/
+Add better support to small devices so that two columns are shown without extra white space
+Add material design elements from 3rd party library
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
+
+
+NEXT RELESASE:
+
+Add tablet support
+force files to be stored to SD card if possible (instead of emulated external storage)
+consider moving the app to external storage
+save bitmaps (compressed and full) in async task
 prettify gallery, "chrome tabs overview"-like
 replace deprecated calls for vibration
-save bitmaps (compressed and full) in async task
-fancy action bar http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/
-consider moving the app to external storage
-force files to be stored to SD card if possible (instead of emulated external storage)
+
+

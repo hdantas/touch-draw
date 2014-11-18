@@ -15,6 +15,7 @@ import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,6 +45,7 @@ public class DragAndDrawFragment extends Fragment {
     private ColorfulRadioGroup mButtonShape;
     private ToggleButtonGroupTableLayout mButtonColor;
     private DrawableShape mShape;
+    private Toolbar mToolbar;
     private int mColor;
     private int mAlpha;
     private BoxDrawingView mBoxView;
@@ -109,10 +111,15 @@ public class DragAndDrawFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_drag_and_draw, container, false);
 
+        mToolbar = (Toolbar) v.findViewById(R.id.toolBar);
+
         mBoxView = (BoxDrawingView) v.findViewById(R.id.viewBox);
+
         mBoxView.setDrawingCacheEnabled(true);
         mBoxView.setDrawingManager(mDrawingManager);
+        mBoxView.setToolbar(mToolbar);
         mBoxView.loadBoxes();
+
 
         mButtonColor = (ToggleButtonGroupTableLayout) v.findViewById(R.id.buttonColor);
         mButtonColor.setOnClickListener(new View.OnClickListener() {
@@ -212,6 +219,7 @@ public class DragAndDrawFragment extends Fragment {
         }
         setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
         mButtonShape.setButtonsColor(getResources().getColor(mColor));
+
     }
 
     public void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {
