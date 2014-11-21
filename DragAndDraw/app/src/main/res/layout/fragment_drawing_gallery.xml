@@ -1,13 +1,15 @@
-<GridView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<com.bignerdranch.android.draganddraw.HeaderGridViewCompat
     android:id="@+id/gridView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:columnWidth="@dimen/column_width"
-    android:numColumns="auto_fit"
-    android:stretchMode="spacingWidthUniform"
     android:drawSelectorOnTop="true"
-    >
-</GridView>
-    <!--android:theme="@style/AppTheme"-->
-    <!--android:listSelector="@drawable/gallery_list_selector"-->
+    android:numColumns="auto_fit"
+    android:stretchMode="spacingWidthUniform">
+
+</com.bignerdranch.android.draganddraw.HeaderGridViewCompat>
+

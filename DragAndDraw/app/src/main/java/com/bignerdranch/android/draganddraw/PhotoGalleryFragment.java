@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -22,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
@@ -33,14 +36,47 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends Fragment implements AbsListView.OnScrollListener {
     private static final String TAG = PhotoGalleryFragment.class.getSimpleName();
     private static final int REQUEST_CHANGE = 0;
 
     private Toast mToast;
-    GridView mGridView;
+    HeaderGridViewCompat mGridView;
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
+    ActionBar mActionBar;
+    private int mLastFirstVisibleItem;
+
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        Log.d(TAG, "onScroll" +
+                        "\n\tfirstVisibleItem: " + firstVisibleItem +
+                        "\tmLastFirstVisibleItem: " + mLastFirstVisibleItem +
+                        "\tvisibleItemCount: " + visibleItemCount +
+                        "\ttotalItemCount: " + totalItemCount
+        );
+
+        final int currentFirstVisibleItem = view.getFirstVisiblePosition();
+
+        if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+            if (mActionBar.isShowing()) {
+                mActionBar.hide();
+            }
+        } else if(currentFirstVisibleItem < mLastFirstVisibleItem) {
+            if (!mActionBar.isShowing()) {
+                mActionBar.show();
+            }
+        }
+
+        mLastFirstVisibleItem = currentFirstVisibleItem;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +84,12 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
+//        setRetainInstance(true);
+
         mDrawingManager = DrawingManager.get(getActivity());
+
         updateItems();
+
     }
 
     public void updateItems() {
@@ -62,9 +101,14 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
-        View v = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
+        mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
 
-        mGridView = (GridView) v.findViewById(R.id.gridView);
+        View v = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
+        View headerView = inflater.inflate(R.layout.grid_view_header, null);
+
+        mGridView = (HeaderGridViewCompat) v.findViewById(R.id.gridView);
+        mGridView.addHeaderView(headerView);
+        mGridView.setOnScrollListener(this);
         setupAdapter();
 
         // On click start DragAndDrawFragment to edit it
@@ -247,7 +291,6 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Log.d(TAG, "getView position: " + position + " item id " + getItem(position).getId() + " convertView " + convertView);
             ViewHolder viewHolder; // view lookup cache stored in tag
             // Check if an existing view is being reused, otherwise inflate the view
             if (convertView == null) {

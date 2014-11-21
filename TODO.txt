@@ -6,13 +6,13 @@ Add material design elements from 3rd party library
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
 
 
-NEXT RELESASE:
+NEXT RELEASE:
 
 Add tablet support
 force files to be stored to SD card if possible (instead of emulated external storage)
 consider moving the app to external storage
 save bitmaps (compressed and full) in async task
-prettify gallery, "chrome tabs overview"-like
 replace deprecated calls for vibration
+prettify gallery, "chrome tabs overview"-like
 
 

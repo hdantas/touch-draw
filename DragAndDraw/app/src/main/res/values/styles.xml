@@ -1,6 +1,8 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Widget.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@drawable/ab_background</item>
+        <!--<item name="background">@color/DarkRed</item>-->
         <!-- colorPrimary is used for the default action bar background -->
         <!--<item name="colorPrimary">@color/orange</item>-->
 
@@ -14,4 +16,9 @@
         <!-- You can also set colorControlNormal, colorControlActivated
              colorControlHighlight & colorSwitchThumbNormal. -->
     </style>
+
+    <style name="Widget.ActionBar.Transparent">
+        <item name="background">@color/transparent</item>
+    </style>
+
 </resources>
