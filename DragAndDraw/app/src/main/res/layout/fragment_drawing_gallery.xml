@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<com.bignerdranch.android.draganddraw.HeaderGridViewCompat
-    android:id="@+id/gridView"
+<com.bignerdranch.android.draganddraw.ObservableScrollView
+    android:id="@+id/scroll_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:columnWidth="@dimen/column_width"
-    android:drawSelectorOnTop="true"
-    android:numColumns="auto_fit"
-    android:stretchMode="spacingWidthUniform">
+    android:layout_height="match_parent">
 
-</com.bignerdranch.android.draganddraw.HeaderGridViewCompat>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <com.bignerdranch.android.draganddraw.ExpandableHeightGridView
+        android:id="@+id/gridView"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="false"
+        android:paddingTop="?attr/actionBarSize"
+        android:columnWidth="@dimen/column_width"
+        android:drawSelectorOnTop="true"
+        android:numColumns="auto_fit"
+        android:stretchMode="spacingWidthUniform">
+        </com.bignerdranch.android.draganddraw.ExpandableHeightGridView>
+
+
+        <include
+            layout="@layout/toolbar_action_bar"/>
+
+    </FrameLayout>
+
+</com.bignerdranch.android.draganddraw.ObservableScrollView>

@@ -8,13 +8,11 @@
     android:orientation="vertical"
     tools:context=".DragAndDrawActivity">
 
-
     <com.bignerdranch.android.draganddraw.BoxDrawingView
         android:id="@+id/viewBox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-
 
     <include
         android:id="@+id/toolBar"

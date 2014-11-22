@@ -3,11 +3,6 @@ package com.bignerdranch.android.draganddraw;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -24,59 +20,23 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class PhotoGalleryFragment extends Fragment implements AbsListView.OnScrollListener {
+public class PhotoGalleryFragment extends Fragment {
     private static final String TAG = PhotoGalleryFragment.class.getSimpleName();
+
     private static final int REQUEST_CHANGE = 0;
 
     private Toast mToast;
-    HeaderGridViewCompat mGridView;
+    ExpandableHeightGridView mGridView;
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
     ActionBar mActionBar;
-    private int mLastFirstVisibleItem;
-
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        Log.d(TAG, "onScroll" +
-                        "\n\tfirstVisibleItem: " + firstVisibleItem +
-                        "\tmLastFirstVisibleItem: " + mLastFirstVisibleItem +
-                        "\tvisibleItemCount: " + visibleItemCount +
-                        "\ttotalItemCount: " + totalItemCount
-        );
-
-        final int currentFirstVisibleItem = view.getFirstVisiblePosition();
-
-        if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-            if (mActionBar.isShowing()) {
-                mActionBar.hide();
-            }
-        } else if(currentFirstVisibleItem < mLastFirstVisibleItem) {
-            if (!mActionBar.isShowing()) {
-                mActionBar.show();
-            }
-        }
-
-        mLastFirstVisibleItem = currentFirstVisibleItem;
-    }
-
+    private Toolbar mToolbarActionBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,11 +64,12 @@ public class PhotoGalleryFragment extends Fragment implements AbsListView.OnScro
         mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
 
         View v = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
-        View headerView = inflater.inflate(R.layout.grid_view_header, null);
 
-        mGridView = (HeaderGridViewCompat) v.findViewById(R.id.gridView);
-        mGridView.addHeaderView(headerView);
-        mGridView.setOnScrollListener(this);
+        mToolbarActionBar = (Toolbar) v.findViewById(R.id.toolbarActionBar);
+        ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbarActionBar);
+
+        mGridView = (ExpandableHeightGridView) v.findViewById(R.id.gridView);
+        mGridView.setExpanded(true);
         setupAdapter();
 
         // On click start DragAndDrawFragment to edit it
@@ -180,7 +141,6 @@ public class PhotoGalleryFragment extends Fragment implements AbsListView.OnScro
 
                 }
             });
-
         }
         return v;
     }
@@ -241,7 +201,11 @@ public class PhotoGalleryFragment extends Fragment implements AbsListView.OnScro
         }
 
         if (mItems != null) {
-            mGridView.setAdapter(new DrawingAdapter(mItems));
+            mGridView.setAdapter(new DrawingAdapter(
+                    getActivity(),
+                    mItems,
+                    mDrawingManager,
+                    mGridView));
         } else {
             mGridView.setAdapter(null);
         }
@@ -265,81 +229,6 @@ public class PhotoGalleryFragment extends Fragment implements AbsListView.OnScro
         protected void onPostExecute(ArrayList<Drawing> galleryItems) {
             mItems = galleryItems;
             setupAdapter();
-        }
-    }
-
-    // View lookup cache for DrawingAdapter
-    private static class ViewHolder {
-        ImageView mImageView;
-        ImageView mViewSelected;
-    }
-
-    private class DrawingAdapter extends ArrayAdapter<Drawing> {
-
-        public DrawingAdapter(ArrayList<Drawing> items) {
-            super(getActivity(), 0, items);
-        }
-
-        @Override
-        public void remove(Drawing object) {
-            Log.d(TAG, "remove drawing with id " + object.getId());
-            mToast.setText("Drawing " + object.getId() + " deleted");
-            mToast.show();
-            mDrawingManager.removeDrawing(object);
-            super.remove(object);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder; // view lookup cache stored in tag
-            // Check if an existing view is being reused, otherwise inflate the view
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.drawing_gallery_overlay_item, parent, false);
-                viewHolder.mImageView = (ImageView) convertView
-                        .findViewById(R.id.drawing_item_imageView);
-                viewHolder.mViewSelected = (ImageView) convertView
-                        .findViewById(R.id.drawing_item_selected);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            final Bitmap bitmap;
-            try {
-                String path = getItem(position).getUri(getActivity()).getPath();
-                FileInputStream fileInputStream = new FileInputStream(path);
-                bitmap = BitmapFactory.decodeStream(fileInputStream);
-                fileInputStream.close();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    updateItemHue(bitmap, position, viewHolder);
-                }
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "Could not load thumbnail", e);
-            } catch (IOException e) {
-                Log.e(TAG, "Could not close file", e);
-            }
-
-
-            return convertView;
-        }
-
-        @TargetApi(11)
-        private void updateItemHue(Bitmap bitmap, int position, ViewHolder viewHolder) {
-            viewHolder.mImageView.setImageBitmap(bitmap);
-
-            if (mGridView.isItemChecked(position)) {
-                ColorFilter filter = new PorterDuffColorFilter(
-                        getResources().getColor(R.color.aqua_translucent),
-                        PorterDuff.Mode.DARKEN);
-                viewHolder.mImageView.setColorFilter(filter);
-                viewHolder.mViewSelected.setVisibility(View.VISIBLE);
-
-            } else {
-                viewHolder.mImageView.clearColorFilter();
-                viewHolder.mViewSelected.setVisibility(View.GONE);
-            }
         }
     }
 }
