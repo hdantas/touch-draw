@@ -43,7 +43,7 @@ public class QuickReturnListView extends ListView {
     public void computeScrollY() {
         mHeight = 0;
         mItemCount = getAdapter().getCount();
-        if (mItemOffsetY == null) {
+        if (mItemOffsetY == null || mItemCount > mItemOffsetY.length) {
             mItemOffsetY = new int[mItemCount];
         }
         for (int i = 0; i < mItemCount; ++i) {

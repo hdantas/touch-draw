@@ -19,7 +19,7 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
     protected abstract Fragment createFragment();
 
     protected int getLayoutResId() {
-        return R.layout.activity_fragment;
+        return R.layout.activity_single_fragment;
     }
 
     @Override

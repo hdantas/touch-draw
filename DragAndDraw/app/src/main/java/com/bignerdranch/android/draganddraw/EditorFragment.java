@@ -36,8 +36,8 @@ import java.util.Date;
 /**
  * Created by nuno on 10/16/14.
  */
-public class DragAndDrawFragment extends Fragment {
-    private static final String TAG = DragAndDrawFragment.class.getSimpleName();
+public class EditorFragment extends Fragment {
+    private static final String TAG = EditorFragment.class.getSimpleName();
 
     public static final String EXTRA_DRAWING_ID =
             "com.bignerdranch.android.criminalintent.extra_drawing_id";
@@ -83,7 +83,7 @@ public class DragAndDrawFragment extends Fragment {
         if (mDrawing != null) {
             mDrawingManager.updateDrawing(mDrawing);
         }
-        Intent intent = new Intent(getActivity(), PhotoGalleryActivity.class);
+        Intent intent = new Intent(getActivity(), DrawingGalleryActivity.class);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
     }
@@ -109,7 +109,7 @@ public class DragAndDrawFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_drag_and_draw, container, false);
+        View v = inflater.inflate(R.layout.fragment_editor, container, false);
 
         mToolbar = (Toolbar) v.findViewById(R.id.toolBar);
 

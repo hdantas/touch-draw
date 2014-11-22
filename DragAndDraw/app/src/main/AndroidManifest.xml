@@ -13,7 +13,7 @@
         android:label="@string/app_name">
         <activity
             android:theme="@style/Theme.AppTheme.NoActionBar"
-            android:name=".PhotoGalleryActivity"
+            android:name=".DrawingGalleryActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -23,9 +23,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DragAndDrawActivity"
+            android:name=".EditorActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".PhotoGalleryActivity"
+            android:parentActivityName=".DrawingGalleryActivity"
             android:screenOrientation="portrait">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

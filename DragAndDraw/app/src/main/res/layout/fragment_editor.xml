@@ -1,8 +1,7 @@
 <RelativeLayout
-    android:id="@+id/fragmentContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragmentContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,16 +10,13 @@
     <com.bignerdranch.android.draganddraw.BoxDrawingView
         android:id="@+id/viewBox"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent"/>
 
     <include
         android:id="@+id/toolBar"
-        layout="@layout/drawing_gallery_toolbar"
+        layout="@layout/toolbar_editor"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/viewBox"
-        />
-
+        android:layout_alignBottom="@id/viewBox"/>
 
 </RelativeLayout>

@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment;
 import android.view.Window;
 
 
-public class PhotoGalleryActivity extends SingleFragmentActivity {
-    private static final String TAG = PhotoGalleryActivity.class.getSimpleName();
+public class DrawingGalleryActivity extends SingleFragmentActivity {
+    private static final String TAG = DrawingGalleryActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,7 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        return new PhotoGalleryFragment();
+        return new DrawingGalleryFragment();
     }
 
 }

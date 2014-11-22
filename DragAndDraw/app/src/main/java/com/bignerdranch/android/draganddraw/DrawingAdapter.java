@@ -13,8 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
@@ -31,15 +31,15 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
     private static Context mContext;
     private static Toast mToast;
     private DrawingManager mDrawingManager;
-    private GridView mGridView;
+    private ListView mListView;
 
     public DrawingAdapter(Context context, ArrayList<Drawing> items,
-                          DrawingManager drawingManager, GridView gridView) {
+                          DrawingManager drawingManager, ListView listView) {
         super(context, 0, items);
         mContext = context;
         mToast = Toast.makeText(mContext, "", Toast.LENGTH_SHORT);
         mDrawingManager = drawingManager;
-        mGridView = gridView;
+        mListView = listView;
     }
 
     // View lookup cache for DrawingAdapter
@@ -64,7 +64,7 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = ((ActionBarActivity) mContext).getLayoutInflater()
-                    .inflate(R.layout.drawing_gallery_overlay_item, parent, false);
+                    .inflate(R.layout.item_drawing_gallery, parent, false);
             viewHolder.mImageView = (ImageView) convertView
                     .findViewById(R.id.drawing_item_imageView);
             viewHolder.mViewSelected = (ImageView) convertView
@@ -96,7 +96,7 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
     private void updateItemHue(Bitmap bitmap, int position, ViewHolder viewHolder) {
         viewHolder.mImageView.setImageBitmap(bitmap);
 
-        if (mGridView.isItemChecked(position)) {
+        if (mListView.isItemChecked(position)) {
             ColorFilter filter = new PorterDuffColorFilter(
                     mContext.getResources().getColor(R.color.aqua_translucent),
                     PorterDuff.Mode.DARKEN);

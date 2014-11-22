@@ -4,14 +4,14 @@ import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 
 
-public class DragAndDrawActivity extends SingleFragmentActivity {
+public class EditorActivity extends SingleFragmentActivity {
 
-    DragAndDrawFragment mDragAndDrawFragment;
+    EditorFragment mDragAndDrawFragment;
 
     @Override
     protected Fragment createFragment() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mDragAndDrawFragment = new DragAndDrawFragment();
+        mDragAndDrawFragment = new EditorFragment();
         return mDragAndDrawFragment;
     }
 
