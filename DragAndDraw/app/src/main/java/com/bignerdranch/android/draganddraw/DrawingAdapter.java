@@ -32,14 +32,16 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
     private static Toast mToast;
     private DrawingManager mDrawingManager;
     private ListView mListView;
+    private boolean mHasHeader;
 
     public DrawingAdapter(Context context, ArrayList<Drawing> items,
-                          DrawingManager drawingManager, ListView listView) {
+                          DrawingManager drawingManager, ListView listView, boolean hasHeader) {
         super(context, 0, items);
         mContext = context;
-        mToast = Toast.makeText(mContext, "", Toast.LENGTH_SHORT);
         mDrawingManager = drawingManager;
         mListView = listView;
+        mHasHeader = hasHeader;
+        mToast = Toast.makeText(mContext, "", Toast.LENGTH_SHORT);
     }
 
     // View lookup cache for DrawingAdapter
@@ -96,7 +98,15 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
     private void updateItemHue(Bitmap bitmap, int position, ViewHolder viewHolder) {
         viewHolder.mImageView.setImageBitmap(bitmap);
 
-        if (mListView.isItemChecked(position)) {
+        boolean isItemChecked;
+        if(mHasHeader) {
+            // +1 since item i = 0 of the list view refers to the header
+            isItemChecked = mListView.isItemChecked(position + 1);
+        } else {
+            isItemChecked = mListView.isItemChecked(position);
+        }
+
+        if (isItemChecked) {
             ColorFilter filter = new PorterDuffColorFilter(
                     mContext.getResources().getColor(R.color.aqua_translucent),
                     PorterDuff.Mode.DARKEN);

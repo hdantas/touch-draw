@@ -20,9 +20,14 @@ android {
     }
 }
 
+repositories {
+    maven { url 'https://github.com/felipecsl/m2repository/raw/master/' }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:21.0.2'
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.felipecsl:quickreturn:1.4.+'
 }

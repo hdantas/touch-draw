@@ -2,13 +2,13 @@
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+    android:layout_height="200dp"
     android:layout_width="match_parent">
 
     <ImageView
         android:id="@+id/drawing_item_imageView"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="@dimen/thumbnail_width"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:contentDescription="@string/drawing_item_content_description"
@@ -16,11 +16,11 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:paddingStart="2dp"
-        android:scaleType="fitCenter"/>
+        android:scaleType="centerInside"/>
 
     <ImageView
         android:id="@+id/drawing_item_selected"
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/ic_action_done"
         android:layout_gravity="center"

@@ -309,7 +309,7 @@ public class EditorFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.drag_and_draw, menu);
+        inflater.inflate(R.menu.menu_editor, menu);
     }
 
     @Override

@@ -24,7 +24,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.HeaderViewListAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -52,26 +51,27 @@ public class DrawingGalleryFragment extends Fragment {
     private Toast mToast;
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
+    DrawingAdapter mDrawingAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         setHasOptionsMenu(true);
-
+        setRetainInstance(true);
         mDrawingManager = DrawingManager.get(getActivity());
         updateItems();
     }
 
     public void updateItems() {
-        Log.i(TAG, "updateItems");
+        Log.d(TAG, "updateItems");
         new FetchItemsTask().execute();
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.i(TAG, "onCreateView");
+        Log.d(TAG, "onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
 
@@ -80,6 +80,7 @@ public class DrawingGalleryFragment extends Fragment {
 
         mHeader = inflater.inflate(R.layout.header, null);
         mPlaceHolder = mHeader.findViewById(R.id.placeholder);
+
         mListView = (QuickReturnListView) view.findViewById(R.id.list_view);
         mListView.addHeaderView(mHeader);
         setupAdapter();
@@ -88,6 +89,7 @@ public class DrawingGalleryFragment extends Fragment {
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
+                        Log.d(TAG, "onGlobalLayout");
                         mQuickReturnHeight = mQuickReturnView.getHeight();
                         mListView.computeScrollY();
                         mCachedVerticalScrollRange = mListView.getListHeight();
@@ -97,13 +99,16 @@ public class DrawingGalleryFragment extends Fragment {
         // On click start DragAndDrawFragment to edit it
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Drawing item = mItems.get(i);
-                Log.d(TAG, "onItemClick with drawing id " + item.getId());
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // position - 1 since position = 0 of the list view refers to the header
+                if(position > 0) {
+                    Drawing item = mItems.get(position - 1);
+                    Log.d(TAG, "onItemClick with drawing id " + item.getId());
 
-                Intent intent = new Intent(getActivity(), EditorActivity.class);
-                intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, item.getId());
-                startActivityForResult(intent, REQUEST_CHANGE);
+                    Intent intent = new Intent(getActivity(), EditorActivity.class);
+                    intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, item.getId());
+                    startActivityForResult(intent, REQUEST_CHANGE);
+                }
             }
         });
 
@@ -111,6 +116,7 @@ public class DrawingGalleryFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
+                Log.d(TAG, "onScroll");
                 mScrollY = 0;
                 int translationY = 0;
 
@@ -182,7 +188,6 @@ public class DrawingGalleryFragment extends Fragment {
             registerForContextMenu(mListView);
         } else {
             // Use contextual action bar on Honeycomb and higher
-            mDrawingManager = DrawingManager.get(getActivity());
             mListView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
             mListView.setMultiChoiceModeListener(new GridView.MultiChoiceModeListener() {
 
@@ -190,7 +195,7 @@ public class DrawingGalleryFragment extends Fragment {
                 @TargetApi(11)
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     MenuInflater inflater = mode.getMenuInflater();
-                    inflater.inflate(R.menu.drawing_gallery_item_context, menu);
+                    inflater.inflate(R.menu.context_menu_drawing_gallery, menu);
                     return true;
                 }
 
@@ -204,12 +209,11 @@ public class DrawingGalleryFragment extends Fragment {
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.menu_item_delete_drawing:
-
-                            DrawingAdapter adapter = (DrawingAdapter) mListView.getAdapter();
-                            for (int i = adapter.getCount(); i >= 0; i--) {
-                                if (mListView.isItemChecked(i)) {
-                                    Log.d(TAG, " onActionItemClicked Delete item in position " + i + " with id " + adapter.getItem(i).getId());
-                                    adapter.remove(adapter.getItem(i));
+                            for (int i = mDrawingAdapter.getCount(); i >= 0; i--) {
+                                // +1 since item i = 0 of the list view refers to the header
+                                if (mListView.isItemChecked(i + 1)) {
+                                    Log.d(TAG, " onActionItemClicked Delete item in position " + i + " with id " + mDrawingAdapter.getItem(i).getId());
+                                    mDrawingAdapter.remove(mDrawingAdapter.getItem(i));
                                 }
                             }
                             mode.finish();
@@ -222,8 +226,7 @@ public class DrawingGalleryFragment extends Fragment {
 
                 @Override
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                    DrawingAdapter adapter = ((DrawingAdapter)((HeaderViewListAdapter)mListView.getAdapter()).getWrappedAdapter());
-                    adapter.notifyDataSetChanged();
+                    mDrawingAdapter.notifyDataSetChanged();
                 }
 
 
@@ -239,19 +242,18 @@ public class DrawingGalleryFragment extends Fragment {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        getActivity().getMenuInflater().inflate(R.menu.drawing_gallery_item_context, menu);
+        getActivity().getMenuInflater().inflate(R.menu.context_menu_drawing_gallery, menu);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = info.position;
-        DrawingAdapter adapter = (DrawingAdapter) mListView.getAdapter();
-        Drawing drawing = adapter.getItem(position);
+        Drawing drawing = mDrawingAdapter.getItem(position);
 
         switch (item.getItemId()) {
             case R.id.menu_item_delete_drawing:
-                adapter.remove(drawing);
+                mDrawingAdapter.remove(drawing);
                 updateItems();
                 return true;
         }
@@ -260,16 +262,16 @@ public class DrawingGalleryFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult requestCode " + requestCode + " resultCode " + resultCode);
         updateItems();
-
-        super.onActivityResult(requestCode, resultCode, data);
+        mListView.performItemClick(mHeader, 0, mHeader.getId());
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.photo_gallery, menu);
+        inflater.inflate(R.menu.actions_drawing_gallery, menu);
     }
 
     @Override
@@ -293,12 +295,16 @@ public class DrawingGalleryFragment extends Fragment {
         }
 
         if (mItems != null) {
-            mListView.setAdapter(new DrawingAdapter(
+            mDrawingAdapter = new DrawingAdapter(
                     getActivity(),
                     mItems,
                     mDrawingManager,
-                    mListView));
+                    mListView,
+                    true);
+            mListView.setAdapter(mDrawingAdapter);
+            Log.d(TAG, "setupAdapter");
         } else {
+            mDrawingAdapter = null;
             mListView.setAdapter(null);
         }
     }
