@@ -2,7 +2,6 @@ package com.bignerdranch.android.draganddraw;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,29 +19,35 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Toast;
-
-import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
-import com.felipecsl.quickreturn.library.QuickReturnAttacher;
-import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
-import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
-import com.felipecsl.quickreturn.library.widget.QuickReturnTargetView;
 
 import java.util.ArrayList;
 
-public class DrawingGalleryFragment extends Fragment implements
-        AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
-    private static final String TAG = DrawingGalleryFragment.class.getSimpleName();
+public class DrawingGalleryFragment_backup extends Fragment {
+    private static final String TAG = DrawingGalleryFragment_backup.class.getSimpleName();
     private static final int REQUEST_CHANGE = 0;
 
-    private ListView mListView;
-    private Toolbar mToolbar;
-    private QuickReturnTargetView topTargetView;
+    private QuickReturnListView mListView;
+    private Toolbar mQuickReturnView;
+    private View mHeader;
+    private View mPlaceHolder;
 
+    private int mCachedVerticalScrollRange;
+    private int mQuickReturnHeight;
+
+    private static final int STATE_ONSCREEN = 0;
+    private static final int STATE_OFFSCREEN = 1;
+    private static final int STATE_RETURNING = 2;
+    private int mState = STATE_ONSCREEN;
+    private int mScrollY;
+    private int mMinRawY = 0;
+
+    private TranslateAnimation anim;
     private Toast mToast;
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
@@ -70,31 +75,121 @@ public class DrawingGalleryFragment extends Fragment implements
 
         View view = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
 
-        mToolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
-        ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        mQuickReturnView = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
+        ((ActionBarActivity) getActivity()).setSupportActionBar(mQuickReturnView);
 
-        mListView = (ListView) view.findViewById(R.id.list_view);
+        mHeader = inflater.inflate(R.layout.header, null);
+        mPlaceHolder = mHeader.findViewById(R.id.placeholder);
+
+        mListView = (QuickReturnListView) view.findViewById(R.id.list_view);
+        mListView.addHeaderView(mHeader);
         setupAdapter();
 
-        final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(mListView);
-        topTargetView = quickReturnAttacher.addTargetView(mToolbar, AbsListViewScrollTarget.POSITION_TOP, dpToPx(getActivity(), 50));
+        mListView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        Log.d(TAG, "onGlobalLayout");
+                        mQuickReturnHeight = mQuickReturnView.getHeight();
+                        mListView.computeScrollY();
+                        mCachedVerticalScrollRange = mListView.getListHeight();
+                    }
+                });
 
-        if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
-            // This is the correct way to register an OnScrollListener.
-            // You have to add it on the QuickReturnAttacher, instead
-            // of on the viewGroup directly.
-            final AbsListViewQuickReturnAttacher attacher = (AbsListViewQuickReturnAttacher) quickReturnAttacher;
-            attacher.addOnScrollListener(this);
-            attacher.setOnItemClickListener(this);
-        }
+        // On click start DragAndDrawFragment to edit it
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // position - 1 since position = 0 of the list view refers to the header
+                if(position > 0) {
+                    Drawing item = mItems.get(position - 1);
+                    Log.d(TAG, "onItemClick with drawing id " + item.getId());
+
+                    Intent intent = new Intent(getActivity(), EditorActivity.class);
+                    intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, item.getId());
+                    startActivityForResult(intent, REQUEST_CHANGE);
+                }
+            }
+        });
+
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                Log.d(TAG, "onScroll");
+                mScrollY = 0;
+                int translationY = 0;
+
+                if (mListView.scrollYIsComputed()) {
+                    mScrollY = mListView.getComputedScrollY();
+                }
+
+                int rawY = mPlaceHolder.getTop()
+                        - Math.min(
+                        mCachedVerticalScrollRange
+                                - mListView.getHeight(), mScrollY);
+
+                switch (mState) {
+                    case STATE_OFFSCREEN:
+                        if (rawY <= mMinRawY) {
+                            mMinRawY = rawY;
+                        } else {
+                            mState = STATE_RETURNING;
+                        }
+                        translationY = rawY;
+                        break;
+
+                    case STATE_ONSCREEN:
+                        if (rawY < -mQuickReturnHeight) {
+                            mState = STATE_OFFSCREEN;
+                            mMinRawY = rawY;
+                        }
+                        translationY = rawY;
+                        break;
+
+                    case STATE_RETURNING:
+                        translationY = (rawY - mMinRawY) - mQuickReturnHeight;
+                        if (translationY > 0) {
+                            translationY = 0;
+                            mMinRawY = rawY - mQuickReturnHeight;
+                        }
+
+                        if (rawY > 0) {
+                            mState = STATE_ONSCREEN;
+                            translationY = rawY;
+                        }
+
+                        if (translationY < -mQuickReturnHeight) {
+                            mState = STATE_OFFSCREEN;
+                            mMinRawY = rawY;
+                        }
+                        break;
+                }
+
+                /** this can be used if the build is below honeycomb **/
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
+                    anim = new TranslateAnimation(0, 0, translationY,
+                            translationY);
+                    anim.setFillAfter(true);
+                    anim.setDuration(0);
+                    mQuickReturnView.startAnimation(anim);
+                } else {
+                    mQuickReturnView.setTranslationY(translationY);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+        });
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Use floating context menus on Froyo and Gingerbread
             registerForContextMenu(mListView);
         } else {
             // Use contextual action bar on Honeycomb and higher
-            mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-            mListView.setMultiChoiceModeListener(new ListView.MultiChoiceModeListener() {
+            mListView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+            mListView.setMultiChoiceModeListener(new GridView.MultiChoiceModeListener() {
 
                 @Override
                 @TargetApi(11)
@@ -145,12 +240,6 @@ public class DrawingGalleryFragment extends Fragment implements
     }
 
 
-    public static int dpToPx(final Context context, final float dp) {
-        // Took from http://stackoverflow.com/questions/8309354/formula-px-to-dp-dp-to-px-android
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) ((dp * scale) + 0.5f);
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         getActivity().getMenuInflater().inflate(R.menu.context_menu_drawing_gallery, menu);
@@ -176,6 +265,7 @@ public class DrawingGalleryFragment extends Fragment implements
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult requestCode " + requestCode + " resultCode " + resultCode);
         updateItems();
+        mListView.performItemClick(mHeader, 0, mHeader.getId());
     }
 
     @Override
@@ -200,28 +290,22 @@ public class DrawingGalleryFragment extends Fragment implements
     }
 
     private void setupAdapter() {
-        Log.d(TAG, "setupAdapter");
         if (getActivity() == null || mListView == null) {
-            Log.d(TAG, "setupAdapter mListView == null");
             return;
         }
 
         if (mItems != null) {
-            Log.d(TAG, "setupAdapter mItems!= null");
-            DrawingAdapter adapter = new DrawingAdapter(
+            mDrawingAdapter = new DrawingAdapter(
                     getActivity(),
                     mItems,
                     mDrawingManager,
                     mListView,
                     true);
-            mDrawingAdapter = adapter;
-//            ArrayAdapter<Drawing> adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery);
-            mListView.setAdapter(new QuickReturnAdapter(adapter, 1));
+            mListView.setAdapter(mDrawingAdapter);
+            Log.d(TAG, "setupAdapter");
         } else {
-            Log.d(TAG, "setupAdapter else");
             mDrawingAdapter = null;
-            ArrayAdapter<Drawing> adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery);
-            mListView.setAdapter(new QuickReturnAdapter(adapter, 1));
+            mListView.setAdapter(null);
         }
     }
 
@@ -245,32 +329,4 @@ public class DrawingGalleryFragment extends Fragment implements
             setupAdapter();
         }
     }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
-
-    // On click start EditorFragment to edit it
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mToast.setText("Item " + position + " clicked");
-        mToast.show();
-
-        if(position >= 0) {
-            Drawing item = mItems.get(position);
-            Log.d(TAG, "onItemClick with drawing id " + item.getId());
-
-            Intent intent = new Intent(getActivity(), EditorActivity.class);
-            intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, item.getId());
-            startActivityForResult(intent, REQUEST_CHANGE);
-        }
-
-    }
-
 }
