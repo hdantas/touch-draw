@@ -1,13 +1,14 @@
 FEATURES TO IMPLEMENT
 
-fancy action bar http://cyrilmottier.com/2013/05/24/pushing-the-actionbar-to-the-next-level/
 Add better support to small devices so that two columns are shown without extra white space
-Add material design elements from 3rd party library
+make the app compatible for old api
+Add material design elements from 3rd party library (¿where?)
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
 
 
 NEXT RELEASE:
 
+Fix bug in quickreturnview lib that prevents the toptargetview from showing up when scrolling up the last item in the list
 Add tablet support
 force files to be stored to SD card if possible (instead of emulated external storage)
 consider moving the app to external storage

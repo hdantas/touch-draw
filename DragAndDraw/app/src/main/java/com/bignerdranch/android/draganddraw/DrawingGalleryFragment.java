@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,6 +48,7 @@ public class DrawingGalleryFragment extends Fragment implements
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
     DrawingAdapter mDrawingAdapter;
+    ArrayAdapter<Drawing> adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,20 +75,38 @@ public class DrawingGalleryFragment extends Fragment implements
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
         ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
 
+        ViewTreeObserver vto = mToolbar.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.d(TAG, "OnCreateView mToolbar.getHeight(): " + mToolbar.getHeight());
+                final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(mListView);
+                topTargetView = quickReturnAttacher.addTargetView(
+                        mToolbar,
+                        AbsListViewScrollTarget.POSITION_TOP,
+                        mToolbar.getHeight()
+                );
+
+                if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+                    // This is the correct way to register an OnScrollListener.
+                    // You have to add it on the QuickReturnAttacher, instead
+                    // of on the viewGroup directly.
+                    final AbsListViewQuickReturnAttacher attacher = (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+                    attacher.addOnScrollListener(DrawingGalleryFragment.this);
+                    attacher.setOnItemClickListener(DrawingGalleryFragment.this);
+                }
+
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                    mToolbar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                } else {
+                    mToolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            }
+        });
+
+
         mListView = (ListView) view.findViewById(R.id.list_view);
         setupAdapter();
-
-        final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(mListView);
-        topTargetView = quickReturnAttacher.addTargetView(mToolbar, AbsListViewScrollTarget.POSITION_TOP, dpToPx(getActivity(), 50));
-
-        if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
-            // This is the correct way to register an OnScrollListener.
-            // You have to add it on the QuickReturnAttacher, instead
-            // of on the viewGroup directly.
-            final AbsListViewQuickReturnAttacher attacher = (AbsListViewQuickReturnAttacher) quickReturnAttacher;
-            attacher.addOnScrollListener(this);
-            attacher.setOnItemClickListener(this);
-        }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Use floating context menus on Froyo and Gingerbread
@@ -143,7 +163,6 @@ public class DrawingGalleryFragment extends Fragment implements
         }
         return view;
     }
-
 
     public static int dpToPx(final Context context, final float dp) {
         // Took from http://stackoverflow.com/questions/8309354/formula-px-to-dp-dp-to-px-android
@@ -206,22 +225,28 @@ public class DrawingGalleryFragment extends Fragment implements
             return;
         }
 
-        if (mItems != null) {
-            Log.d(TAG, "setupAdapter mItems!= null");
-            DrawingAdapter adapter = new DrawingAdapter(
+        if (mDrawingAdapter == null) {
+            Log.d(TAG, "setupAdapter mDrawingAdapter!= null");
+            if(mItems == null) {
+                mItems = new ArrayList<Drawing>();
+            }
+            mDrawingAdapter = new DrawingAdapter(
                     getActivity(),
-                    mItems,
                     mDrawingManager,
+                    R.layout.item_drawing_gallery,
+                    R.id.drawing_item_textView,
                     mListView,
                     true);
-            mDrawingAdapter = adapter;
-//            ArrayAdapter<Drawing> adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery);
-            mListView.setAdapter(new QuickReturnAdapter(adapter, 1));
-        } else {
+            mListView.setAdapter(new QuickReturnAdapter(mDrawingAdapter, 1));
+//            adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery, R.id.drawing_item_textView);
+//            mListView.setAdapter(new QuickReturnAdapter(adapter, 1));
+        } else if(mItems != null) {
             Log.d(TAG, "setupAdapter else");
-            mDrawingAdapter = null;
-            ArrayAdapter<Drawing> adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery);
-            mListView.setAdapter(new QuickReturnAdapter(adapter, 1));
+            mDrawingAdapter.clear();
+            for (Drawing drawing:mItems) {
+                mDrawingAdapter.add(drawing);
+//                adapter.add(drawing);
+            }
         }
     }
 

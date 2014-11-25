@@ -297,8 +297,9 @@ public class DrawingGalleryFragment_backup extends Fragment {
         if (mItems != null) {
             mDrawingAdapter = new DrawingAdapter(
                     getActivity(),
-                    mItems,
                     mDrawingManager,
+                    0, // remove
+                    0, // remove
                     mListView,
                     true);
             mListView.setAdapter(mDrawingAdapter);

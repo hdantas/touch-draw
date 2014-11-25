@@ -20,7 +20,6 @@ import android.widget.Toast;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by nuno on 22/11/14.
@@ -34,9 +33,13 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
     private ListView mListView;
     private boolean mHasHeader;
 
-    public DrawingAdapter(Context context, ArrayList<Drawing> items,
-                          DrawingManager drawingManager, ListView listView, boolean hasHeader) {
-        super(context, 0, items);
+    public DrawingAdapter(Context context,
+                          DrawingManager drawingManager,
+                          int itemLayout,
+                          int textViewResourceId,
+                          ListView listView,
+                          boolean hasHeader) {
+        super(context, itemLayout, textViewResourceId);
         mContext = context;
         mDrawingManager = drawingManager;
         mListView = listView;
@@ -53,8 +56,8 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
     @Override
     public void remove(Drawing object) {
         Log.d(TAG, "remove drawing with id " + object.getId());
-        mToast.setText("Drawing " + object.getId() + " deleted");
-        mToast.show();
+        Toast.makeText(mContext, "Drawing " + object.getId() + " deleted", Toast.LENGTH_SHORT).
+                show();
         mDrawingManager.removeDrawing(object);
         super.remove(object);
     }
@@ -99,7 +102,7 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
         viewHolder.mImageView.setImageBitmap(bitmap);
 
         boolean isItemChecked;
-        if(mHasHeader) {
+        if (mHasHeader) {
             // +1 since item i = 0 of the list view refers to the header
             isItemChecked = mListView.isItemChecked(position + 1);
         } else {

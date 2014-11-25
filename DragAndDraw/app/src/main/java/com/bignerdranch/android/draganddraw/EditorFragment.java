@@ -248,9 +248,9 @@ public class EditorFragment extends Fragment {
             return false;
         }
 
-        int thumbnail_width = (int) getResources().getDimension(R.dimen.thumbnail_width);
-        float ratio = mBoxView.getWidth() / thumbnail_width;
-        int thumbnail_height = (int) (mBoxView.getHeight() / ratio);
+        int thumbnail_height = (int) getResources().getDimension(R.dimen.thumbnail_height);
+        float ratio = mBoxView.getHeight() / thumbnail_height;
+        int thumbnail_width = (int) (mBoxView.getWidth() / ratio);
 
         Bitmap bitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
                 thumbnail_width, thumbnail_height, false);
@@ -277,7 +277,6 @@ public class EditorFragment extends Fragment {
                 + DateFormat.getDateTimeInstance().format(new Date())
                 + "." + mDrawing.getFileFormat().toLowerCase();
         filename = filename.replace(":", "_"); // ':' is an illegal char
-//        File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
         File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
 
         if (file == null) {
