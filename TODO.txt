@@ -3,11 +3,13 @@ FEATURES TO IMPLEMENT
 BUGFIX: thumbnail is not updated if user steps away from the app in between edits
 replace R/T/C buttons with figures that are painted according to the chosen color & alpha
 add logo for app
-Add material design elements from 3rd party library (¿where?)
+
 
 NEXT RELEASE:
+
 BUGFIX: toolbar sometimes acts funny
 improve look of shape radio buttons in older APIs
+Add material design elements from 3rd party library (¿where?)
 Use notifications the same way chrome does on the bottom of the page
 Add tablet support
 force files to be stored to SD card if possible (instead of emulated external storage)
@@ -15,5 +17,3 @@ consider moving the app to external storage
 save bitmaps (compressed and full) in async task
 replace deprecated calls for vibration
 prettify gallery, "chrome tabs overview"-like
-
-

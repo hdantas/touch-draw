@@ -68,6 +68,7 @@ public class DrawingManager {
             drawingArrayList.add(cursor.getDrawing());
             cursor.moveToNext();
         }
+        cursor.close();
         Log.d(TAG, "getAllDrawings queried " + drawingArrayList.size() + " drawings.");
         return drawingArrayList;
     }
