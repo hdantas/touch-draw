@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-
 /**
- * Created by nuno on 1/11/14.
+ * Created by hdantas on 1/11/14.
+ * Model class that encapsulates drawing objects. Each drawing is composed by a list of boxes.
  */
 public class Drawing {
 
@@ -24,7 +24,7 @@ public class Drawing {
 
     public Drawing() {
         mId = -1;
-        mBoxes = new ArrayList<Box>();
+        mBoxes = new ArrayList<>();
         mStartDate = new Date();
         mFilename = UUID.randomUUID().toString() + "." + fileFormat;
 

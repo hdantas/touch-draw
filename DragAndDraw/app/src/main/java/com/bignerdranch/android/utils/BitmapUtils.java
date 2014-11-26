@@ -13,23 +13,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
- * Created by nuno on 8/11/14.
+ * Created by hdantas on 8/11/14.
+ * Convenience class to store and remove bitmaps in/from public or private directories.
+ * It doesn't notify the Media content provider.
  */
 public class BitmapUtils extends FileUtils {
     private static final String TAG = BitmapUtils.class.getSimpleName();
     private static final String DIRECTORY_PICTURES_OLD_API = "DCIM";
 
-    // It will save to external storage if present, else it uses internal storage
     public static File saveBitmapToAlbum
-    (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
-        if (isExternalStorageWritable()) {
-            return saveBitmapToAlbumPublicExternalStorage(context, filename, bitmap, format);
-        } else {
-            return null;
-        }
-    }
-
-    public static File saveBitmapToAlbumPublicExternalStorage
             (Context context, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
         if (isExternalStorageWritable()) {
             return saveBitmap(getAlbumPublicExternalStorageDir(context), filename, bitmap, format);
@@ -43,7 +35,7 @@ public class BitmapUtils extends FileUtils {
         return saveBitmap(getPrivateInternalStorageDir(context), filename, bitmap, format);
     }
 
-    protected static File saveBitmap
+    private static File saveBitmap
             (File dir, String filename, Bitmap bitmap, Bitmap.CompressFormat format) {
         try {
             File file = new File(dir, filename);
@@ -57,7 +49,7 @@ public class BitmapUtils extends FileUtils {
     }
 
     /* Save public files on the external storage (persistent even after app is uninstalled) */
-    public static File getAlbumPublicExternalStorageDir(Context context) {
+    private static File getAlbumPublicExternalStorageDir(Context context) {
         String albumName = context.getResources().getString(R.string.app_name);
         File albumPublicStorage;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {

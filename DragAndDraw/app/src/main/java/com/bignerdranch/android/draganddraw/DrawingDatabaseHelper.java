@@ -13,7 +13,8 @@ import android.util.Log;
 import java.util.Date;
 
 /**
- * Created by nuno on 10/18/14.
+ * Created by hdantas on 10/18/14.
+ * Convenience class to execute SQL commands on the necessary DBs
  */
 public class DrawingDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DrawingDatabaseHelper.class.getSimpleName();

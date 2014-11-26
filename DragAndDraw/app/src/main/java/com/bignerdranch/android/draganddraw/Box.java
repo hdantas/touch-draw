@@ -4,16 +4,17 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 
 /**
- * Created by nuno on 10/16/14.
+ * Created by hdantas on 10/16/14.
+ * Box: model class that encapsulates the each box that makes up a drawing.
  */
-public class Box{
+public class Box {
 
     private long mId;
-    private int mOrder; // order of the box in the drawing
-    private PointF mOrigin;
+    private final int mOrder; // order of the box in the drawing
+    private final PointF mOrigin;
     private PointF mCurrent;
-    private DrawableShape mShape;
-    private Paint mPaint;
+    private final DrawableShape mShape;
+    private final Paint mPaint;
 
     public Box(int order, PointF origin, DrawableShape shape, Paint paint) {
         this(order, origin, origin, shape, paint);

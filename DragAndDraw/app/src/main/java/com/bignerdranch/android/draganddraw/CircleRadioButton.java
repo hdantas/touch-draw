@@ -1,23 +1,25 @@
 package com.bignerdranch.android.draganddraw;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.RadioButton;
 
+import com.nineoldandroids.animation.ObjectAnimator;
+
 /**
- * Created by nuno on 29/10/14.
+ * Created by hdantas on 29/10/14.
+ * Custom RadioButton that "pulses" when pressed
  */
 
 public class CircleRadioButton extends RadioButton {
-    private static final String TAG = CircleRadioButton.class.getSimpleName();
 
-    private static final int PRESSED_COLOR_LIGHTUP = 255 / 25;
+    private static final int PRESSED_COLOR_LIGHT_UP = 255 / 25;
     private static final int PRESSED_RING_ALPHA = 75;
     private static final int DEFAULT_PRESSED_RING_WIDTH_DIP = 4;
     private static final int ANIMATION_TIME_ID = android.R.integer.config_shortAnimTime;
@@ -76,7 +78,7 @@ public class CircleRadioButton extends RadioButton {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         canvas.drawCircle(centerX, centerY, pressedRingRadius + animationProgress, focusPaint);
         canvas.drawCircle(centerX, centerY, outerRadius - pressedRingWidth, circlePaint);
 
@@ -88,11 +90,11 @@ public class CircleRadioButton extends RadioButton {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        centerX = w / 2;
-        centerY = h / 2;
-        outerRadius = Math.min(w, h) / 2;
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        centerX = width / 2;
+        centerY = height / 2;
+        outerRadius = Math.min(width, height) / 2;
         pressedRingRadius = outerRadius - pressedRingWidth - pressedRingWidth / 2;
     }
 
@@ -107,7 +109,7 @@ public class CircleRadioButton extends RadioButton {
 
     public void setColor(int color) {
         this.defaultColor = color;
-        this.pressedColor = getHighlightColor(color, PRESSED_COLOR_LIGHTUP);
+        this.pressedColor = getHighlightColor(color, PRESSED_COLOR_LIGHT_UP);
 
         circlePaint.setColor(defaultColor);
         focusPaint.setColor(defaultColor);

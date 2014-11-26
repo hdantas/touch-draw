@@ -1,10 +1,12 @@
 package com.bignerdranch.android.draganddraw;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,30 +19,33 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 /**
- * Created by nuno on 10/16/14.
+ * Created by hdantas on 10/16/14.
+ * Custom View that allows drawing boxes. It handles touch events and interacts with the toolbar
+ * that changes the attributes of the boxes (ie color, shape and translucency).
  */
-public class BoxDrawingView extends View {
+public class EditView extends View {
 
-    private static final String TAG = BoxDrawingView.class.getSimpleName();
+    private static final String TAG = EditView.class.getSimpleName();
 
     private DrawingManager mDrawingManager;
-    private ArrayList<Box> mBoxes = new ArrayList<Box>();
+    private ArrayList<Box> mBoxes = new ArrayList<>();
     private Box mCurrentBox;
-    private Paint mBoxPaint;
-    private Paint mBackgroundPaint;
+    private final Paint mBoxPaint;
+    private final Paint mBackgroundPaint;
     private DrawableShape mDrawableShape = DrawableShape.RECTANGLE;
-    private Toast mToast;
-    private Path mPath; // to draw triangles
+    private final Toast mToast;
+    private final Path mPath; // to draw triangles
     private Toolbar mToolbar;
     private int[] mToolbarOriginalCoordinates;
 
     // Used when creating the view in code
-    public BoxDrawingView(Context context) {
+    public EditView(Context context) {
         this(context, null);
     }
 
     // Used when inflating the view from XML
-    public BoxDrawingView(Context context, AttributeSet attrs) {
+    @SuppressLint("ShowToast")
+    public EditView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mBoxPaint = new Paint();
@@ -85,14 +90,14 @@ public class BoxDrawingView extends View {
                     break;
 
                 default:
-                    Log.e(TAG, "Unrecognized shape " + box.getShape(), new Exception());
+                    Log.e(TAG, "Unrecognized shape " + box.getShape());
 
             }
         }
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
         PointF curr = new PointF(event.getX(), event.getY());
 
         switch (event.getAction()) {

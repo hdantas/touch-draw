@@ -1,14 +1,11 @@
 package com.bignerdranch.android.draganddraw;
 
 /**
- * Created by nuno on 28/10/14.
+ * Created by hdantas on 28/10/14.
+ * Model class to hold the specific colors used to draw boxes.
  */
-//public enum DrawableColor {
-//    RED, GREEN, BLUE
-//
-//}
 
-public class DrawableColor{
+class DrawableColor{
     public static final int RED = R.color.red;
     public static final int GREEN = R.color.green;
     public static final int BLUE = R.color.blue;

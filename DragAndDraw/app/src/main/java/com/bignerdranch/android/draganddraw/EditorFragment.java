@@ -1,7 +1,7 @@
 package com.bignerdranch.android.draganddraw;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,8 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -34,21 +34,20 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /**
- * Created by nuno on 10/16/14.
+ * Created by hdantas on 10/16/14.
+ * Controller class that describes the fragment containing the drawings' editor
  */
 public class EditorFragment extends Fragment {
     private static final String TAG = EditorFragment.class.getSimpleName();
 
     public static final String EXTRA_DRAWING_ID =
-            "com.bignerdranch.android.criminalintent.extra_drawing_id";
+            "com.bignerdranch.android.draganddraw.extra_drawing_id";
 
     private ColorfulRadioGroup mButtonShape;
     private ToggleButtonGroupTableLayout mButtonColor;
-    private DrawableShape mShape;
-    private Toolbar mToolbar;
     private int mColor;
     private int mAlpha;
-    private BoxDrawingView mBoxView;
+    private EditView mBoxView;
     private SeekBar mAlphaBar;
     private ShakeListener mShaker;
     private Drawing mDrawing;
@@ -77,7 +76,7 @@ public class EditorFragment extends Fragment {
         returnFromIntent();
     }
 
-    public void returnFromIntent() {
+    void returnFromIntent() {
         Log.i(TAG, "returnFromIntent");
         // if mDrawing is null it has been deleted
         if (mDrawing != null) {
@@ -88,6 +87,7 @@ public class EditorFragment extends Fragment {
         getActivity().finish();
     }
 
+    @SuppressLint("ShowToast")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,13 +111,11 @@ public class EditorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_editor, container, false);
 
-        mToolbar = (Toolbar) v.findViewById(R.id.toolBar);
-
-        mBoxView = (BoxDrawingView) v.findViewById(R.id.viewBox);
+        mBoxView = (EditView) v.findViewById(R.id.viewBox);
 
         mBoxView.setDrawingCacheEnabled(true);
         mBoxView.setDrawingManager(mDrawingManager);
-        mBoxView.setToolbar(mToolbar);
+        mBoxView.setToolbar((Toolbar) v.findViewById(R.id.toolBar));
         mBoxView.loadBoxes();
 
 
@@ -175,20 +173,20 @@ public class EditorFragment extends Fragment {
 
     private void updateShape() {
         int checkedId = mButtonShape.getCheckedRadioButtonId();
+        DrawableShape shape;
         switch (checkedId) {
             case R.id.buttonTriangle:
-                mShape = DrawableShape.TRIANGLE;
+                shape = DrawableShape.TRIANGLE;
                 break;
             case R.id.buttonCircle:
-                mShape = DrawableShape.CIRCLE;
+                shape = DrawableShape.CIRCLE;
                 break;
             default:
-                mShape = DrawableShape.RECTANGLE;
+                shape = DrawableShape.RECTANGLE;
         }
 
-//        Log.d(TAG, "UpdatedShape checkedId: " + checkedId + " shape: " + mShape);
         if (mBoxView != null) {
-            mBoxView.setDrawableShape(mShape);
+            mBoxView.setDrawableShape(shape);
         }
     }
 
@@ -222,7 +220,7 @@ public class EditorFragment extends Fragment {
 
     }
 
-    public void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {
+    void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {
         Drawable drawable = seekBar.getProgressDrawable();
 
         int transformedColor = (newColor & 0x00FFFFFF) | (alpha << 24);
@@ -277,7 +275,7 @@ public class EditorFragment extends Fragment {
         String filename = "Drawing " + mDrawing.getId() + " "
                 + DateFormat.getDateTimeInstance().format(new Date())
                 + "." + mDrawing.getFileFormat().toLowerCase();
-        filename = filename.replace(":", "_"); // ':' is an illegal char
+        filename = filename.replace(":", "_"); // ':' is an illegal char for a filename
         File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
 
         if (file == null) {
@@ -285,22 +283,13 @@ public class EditorFragment extends Fragment {
             return false;
         }
 
-
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.DATE_TAKEN, mDrawing.getStartDate().getTime());
-
-        String mime_type = "image/" + mDrawing.getFileFormat().toLowerCase();
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + mime_type);
-
-        values.put(MediaStore.Images.Media.DATA, file.getPath());
-
         mDrawing.setDrawingUri(Uri.fromFile(file));
+        getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                Uri.fromFile(file)));
 
-        Uri mediaUri = getActivity().getContentResolver()
-                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Log.d(TAG, "saveDrawingToGallery path " + file.getPath() +
-                        "\n\turiFromFile: " + Uri.fromFile(file) +
-                        "\n\turiFromMedia: " + mediaUri
+        Log.d(TAG, "saveDrawingToGallery\npath " + file.getPath() +
+                "\tgetExternalStorageDirectory: " + Environment.getExternalStorageDirectory() +
+                "\turiFromFile: " + Uri.fromFile(file)
         );
 
         return true;
@@ -356,6 +345,7 @@ public class EditorFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         } else {
+            //noinspection deprecation
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         }
         shareIntent = Intent.createChooser(shareIntent, getString(R.string.share_drawing_to));

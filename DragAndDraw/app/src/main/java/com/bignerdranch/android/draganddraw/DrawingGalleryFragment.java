@@ -1,8 +1,8 @@
 package com.bignerdranch.android.draganddraw;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
@@ -30,9 +30,13 @@ import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
 import com.felipecsl.quickreturn.library.QuickReturnAttacher;
 import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
 import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
-import com.felipecsl.quickreturn.library.widget.QuickReturnTargetView;
 
 import java.util.ArrayList;
+
+/**
+ * Created by hdantas.
+ * Fragment for the Drawing's gallery.
+ */
 
 public class DrawingGalleryFragment extends Fragment implements
         AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
@@ -41,14 +45,13 @@ public class DrawingGalleryFragment extends Fragment implements
 
     private GridView mGridView;
     private int mGridViewNumColumns;
-    private Toolbar mToolbar;
-    private QuickReturnTargetView topTargetView;
 
     private Toast mToast;
-    ArrayList<Drawing> mItems;
-    DrawingManager mDrawingManager;
-    DrawingGalleryAdapter mDrawingGalleryAdapter;
+    private ArrayList<Drawing> mItems;
+    private DrawingManager mDrawingManager;
+    private DrawingGalleryAdapter mDrawingGalleryAdapter;
 
+    @SuppressLint("ShowToast")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -60,7 +63,7 @@ public class DrawingGalleryFragment extends Fragment implements
         updateItems();
     }
 
-    public void updateItems() {
+    void updateItems() {
         Log.d(TAG, "updateItems");
         new FetchItemsTask().execute();
     }
@@ -74,8 +77,8 @@ public class DrawingGalleryFragment extends Fragment implements
         mGridView = (GridView) view.findViewById(R.id.grid_view);
         mGridViewNumColumns = getResources().getInteger(R.integer.num_columns);
 
-        mToolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
-        ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
+        ((ActionBarActivity) getActivity()).setSupportActionBar(toolbar);
         setupAdapter();
 
         final TypedArray styledAttributes = getActivity().getTheme().
@@ -84,9 +87,9 @@ public class DrawingGalleryFragment extends Fragment implements
         styledAttributes.recycle();
 
         final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(mGridView);
-        Log.d(TAG, "OnCreateView.onGlobalLayout mToolbar.getHeight(): " + toolbarHeight);
-        topTargetView = quickReturnAttacher.addTargetView(
-                mToolbar,
+        Log.d(TAG, "OnCreateView toolbar.getHeight(): " + toolbarHeight);
+        quickReturnAttacher.addTargetView(
+                toolbar,
                 AbsListViewScrollTarget.POSITION_TOP,
                 toolbarHeight
         );
@@ -157,12 +160,6 @@ public class DrawingGalleryFragment extends Fragment implements
         return view;
     }
 
-    public static int dpToPx(final Context context, final float dp) {
-        // Took from http://stackoverflow.com/questions/8309354/formula-px-to-dp-dp-to-px-android
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) ((dp * scale) + 0.5f);
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         getActivity().getMenuInflater().inflate(R.menu.context_menu_drawing_gallery, menu);
@@ -172,7 +169,8 @@ public class DrawingGalleryFragment extends Fragment implements
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = info.position;
-        Drawing drawing = mDrawingGalleryAdapter.getItem(position);
+        // with the toolbar the position of the gridView starts in NUM_COLUMNS instead of 0
+        Drawing drawing = mDrawingGalleryAdapter.getItem(position - mGridViewNumColumns);
 
         switch (item.getItemId()) {
             case R.id.menu_item_delete_drawing:
@@ -221,7 +219,7 @@ public class DrawingGalleryFragment extends Fragment implements
         if (mDrawingGalleryAdapter == null) {
             Log.d(TAG, "setupAdapter mDrawingGalleryAdapter!= null\tNumColumns: " + mGridViewNumColumns);
             if (mItems == null) {
-                mItems = new ArrayList<Drawing>();
+                mItems = new ArrayList<>();
                 mItems.add(new Drawing());
             }
             mDrawingGalleryAdapter = new DrawingGalleryAdapter(
@@ -250,7 +248,7 @@ public class DrawingGalleryFragment extends Fragment implements
         protected ArrayList<Drawing> doInBackground(Void... voids) {
             Activity activity = getActivity();
             if (activity == null) {
-                return new ArrayList<Drawing>();
+                return new ArrayList<>();
             }
 
             ArrayList<Drawing> drawingArrayList = mDrawingManager.getAllDrawings();

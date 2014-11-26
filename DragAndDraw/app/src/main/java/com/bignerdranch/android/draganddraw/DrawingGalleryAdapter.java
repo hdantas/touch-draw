@@ -22,15 +22,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Created by nuno on 22/11/14.
+ * Created by hdantas on 22/11/14.
+ * Controller class to defines the GridView adapter that controls the drawings' gallery.
  */
-public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
+class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
     private static final String TAG = DrawingGalleryAdapter.class.getSimpleName();
 
     private static Context mContext;
-    private DrawingManager mDrawingManager;
-    private GridView mGridView;
-    private int mGridViewNumColumns;
+    private final DrawingManager mDrawingManager;
+    private final GridView mGridView;
+    private final int mGridViewNumColumns;
 
     public DrawingGalleryAdapter(Context context,
                                  DrawingManager drawingManager,
@@ -45,12 +46,6 @@ public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
         mGridViewNumColumns = gridViewNumColumns;
     }
 
-    // View lookup cache for DrawingAdapter
-    private static class ViewHolder {
-        ImageView mImageView;
-        ImageView mViewSelected;
-    }
-
     @Override
     public void remove(Drawing object) {
         Log.d(TAG, "remove drawing with id " + object.getId());
@@ -58,6 +53,12 @@ public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
                 show();
         mDrawingManager.removeDrawing(object);
         super.remove(object);
+    }
+
+    // View lookup cache for DrawingAdapter
+    private static class ViewHolder {
+        ImageView mImageView;
+        ImageView mViewSelected;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
             convertView = ((ActionBarActivity) mContext).getLayoutInflater()
                     .inflate(R.layout.item_drawing_gallery, parent, false);
             viewHolder.mImageView = (ImageView) convertView
-                    .findViewById(R.id.drawing_item_imageView);
+                    .findViewById(R.id.drawing_item_image_view);
             viewHolder.mViewSelected = (ImageView) convertView
                     .findViewById(R.id.drawing_item_selected);
             convertView.setTag(viewHolder);
@@ -83,7 +84,8 @@ public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
             FileInputStream fileInputStream = new FileInputStream(path);
             bitmap = BitmapFactory.decodeStream(fileInputStream);
             fileInputStream.close();
-            updateItemHue(bitmap, position, viewHolder);
+            viewHolder.mImageView.setImageBitmap(bitmap);
+            updateItemHue(position, viewHolder);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Could not load thumbnail", e);
         } catch (IOException e) {
@@ -94,12 +96,12 @@ public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
     }
 
     @TargetApi(11)
-    private void updateItemHue(Bitmap bitmap, int position, ViewHolder viewHolder) {
+    private void updateItemHue(int position, ViewHolder viewHolder) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            viewHolder.mViewSelected.setVisibility(View.GONE);
             return;
         }
 
-        viewHolder.mImageView.setImageBitmap(bitmap);
         // with the toolbar the position of the gridView starts in NUM_COLUMNS instead of 0
         boolean isItemChecked = mGridView.isItemChecked(position + mGridViewNumColumns);
         Log.d(TAG, "updateItemHue position: " + (position + mGridViewNumColumns) + "\tisChecked: " + isItemChecked);

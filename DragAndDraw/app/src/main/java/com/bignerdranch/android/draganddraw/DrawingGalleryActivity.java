@@ -1,18 +1,13 @@
 package com.bignerdranch.android.draganddraw;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Window;
 
+/**
+ * Created by hdantas.
+ * Activity that instantiates the fragment responsible for the gallery of drawings.
+ */
 
 public class DrawingGalleryActivity extends SingleFragmentActivity {
-    private static final String TAG = DrawingGalleryActivity.class.getSimpleName();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     protected Fragment createFragment() {

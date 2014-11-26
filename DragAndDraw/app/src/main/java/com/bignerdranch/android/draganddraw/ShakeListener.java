@@ -14,7 +14,7 @@ import java.lang.UnsupportedOperationException;
  */
 
 // TODO replace deprecated calls
-public class ShakeListener implements SensorListener
+class ShakeListener implements SensorListener
 {
     private static final int FORCE_THRESHOLD = 350;
     private static final int TIME_THRESHOLD = 200;
@@ -26,7 +26,7 @@ public class ShakeListener implements SensorListener
     private float mLastX=-1.0f, mLastY=-1.0f, mLastZ=-1.0f;
     private long mLastTime;
     private OnShakeListener mShakeListener;
-    private Context mContext;
+    private final Context mContext;
     private int mShakeCount = 0;
     private long mLastShake;
     private long mLastForce;

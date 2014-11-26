@@ -1,12 +1,14 @@
 package com.bignerdranch.android.draganddraw;
 
 /**
- * Created by nuno on 29/10/14.
+ * Created by hdantas on 29/10/14.
+ * View class that allows arranging button groups in multiple rows
  */
 
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -51,7 +53,7 @@ public class ToggleButtonGroupTableLayout extends TableLayout implements OnClick
     }
 
     @Override
-    public void addView(View child, int index,
+    public void addView(@NonNull View child, int index,
                         android.view.ViewGroup.LayoutParams params) {
         super.addView(child, index, params);
         isChecked((TableRow) child);
@@ -60,7 +62,7 @@ public class ToggleButtonGroupTableLayout extends TableLayout implements OnClick
 
 
     @Override
-    public void addView(View child, android.view.ViewGroup.LayoutParams params) {
+    public void addView(@NonNull View child, android.view.ViewGroup.LayoutParams params) {
         super.addView(child, params);
         isChecked((TableRow) child);
         setChildrenOnClickListener((TableRow) child);

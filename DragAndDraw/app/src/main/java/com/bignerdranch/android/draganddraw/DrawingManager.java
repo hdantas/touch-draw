@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by nuno on 1/11/14.
+ * Created by hdantas on 1/11/14.
+ * Controller class to allow easier access to drawing objects in the DB.
  */
 public class DrawingManager {
     private static final String TAG = DrawingManager.class.getSimpleName();
 
-    private static final String PREF_CURRENT_DRAWING_ID = "DrawingManager.currentDrawingId";
-
-    private DrawingDatabaseHelper mHelper;
+    private final DrawingDatabaseHelper mHelper;
     private long mCurrentDrawingId;
 
     private static DrawingManager sDrawingManager;
-    private Context mAppContext;
+    private final Context mAppContext;
 
     // The private constructor forces users to use DrawingManager.get(Context
     private DrawingManager(Context appContext) {
@@ -57,12 +56,12 @@ public class DrawingManager {
 
     }
 
-    public DrawingDatabaseHelper.DrawingCursor queryDrawings() {
+    DrawingDatabaseHelper.DrawingCursor queryDrawings() {
         return mHelper.queryDrawings();
     }
 
     public ArrayList<Drawing> getAllDrawings() {
-        ArrayList<Drawing> drawingArrayList = new ArrayList<Drawing>();
+        ArrayList<Drawing> drawingArrayList = new ArrayList<>();
         DrawingDatabaseHelper.DrawingCursor cursor = queryDrawings();
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
@@ -78,7 +77,7 @@ public class DrawingManager {
         Log.d(TAG, "loadDrawing with id " + id);
         return getDrawing(id);
     }
-    public Drawing getDrawing(long id) {
+    Drawing getDrawing(long id) {
         Drawing drawing = null;
         DrawingDatabaseHelper.DrawingCursor cursor = mHelper.queryDrawing(id);
         cursor.moveToFirst();
@@ -122,7 +121,7 @@ public class DrawingManager {
         removeAllBoxes(mCurrentDrawingId);
     }
 
-    public void removeAllBoxes (long drawingId) {
+    void removeAllBoxes(long drawingId) {
         mHelper.removeAllBoxes(drawingId);
     }
 
@@ -133,8 +132,8 @@ public class DrawingManager {
     }
 
     // Retrieve boxes of an arbitrary drawing
-    public ArrayList<Box> getBoxes(long drawingId) {
-        ArrayList<Box> boxes = new ArrayList<Box>();
+    ArrayList<Box> getBoxes(long drawingId) {
+        ArrayList<Box> boxes = new ArrayList<>();
 
         if (drawingId != -1) {
             DrawingDatabaseHelper.BoxCursor cursor = mHelper.queryBoxes(drawingId);

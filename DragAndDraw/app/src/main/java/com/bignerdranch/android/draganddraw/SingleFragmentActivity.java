@@ -4,21 +4,20 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.ViewConfiguration;
-
-import java.lang.reflect.Field;
 
 /**
- * Created by nuno on 10/8/14.
+ * Created by hdantas on 10/8/14.
+ * Controller class that defines an activity
+ * composed of a single fragment.
+ * This skeleton class is extended by all activities.
  */
 public abstract class SingleFragmentActivity extends ActionBarActivity {
 
-    private static String TAG = SingleFragmentActivity.class.getSimpleName();
+    private static final String TAG = SingleFragmentActivity.class.getSimpleName();
 
     protected abstract Fragment createFragment();
 
-    protected int getLayoutResId() {
+    int getLayoutResId() {
         return R.layout.activity_single_fragment;
     }
 
@@ -33,33 +32,5 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
             fragment = createFragment();
             fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
         }
-
-
-//        showOverflowMenu();
     }
-
-    private void showOverflowMenu() {
-        /* Hack to show overflow menu in ALL devices
-         * src: http://stackoverflow.com/questions/9286822/how-to-force-use-of-overflow-menu-on-devices-with-menu-button
-         */
-        try {
-            ViewConfiguration config = ViewConfiguration.get(this);
-            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-
-            if(menuKeyField != null) {
-                menuKeyField.setAccessible(true);
-                menuKeyField.setBoolean(config, false);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error changing config options", e);
-        }
-
-    }
-
-    // Intercept menu button to prevent duplicate menus
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        // Intercept HW menu button clicks to prevent showing duplicate menus
-//        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
-//    }
 }

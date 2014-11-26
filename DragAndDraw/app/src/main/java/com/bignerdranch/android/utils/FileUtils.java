@@ -10,11 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Created by nuno on 8/11/14.
+ * Created by hdantas on 8/11/14.
+ * Convenience class to store and remove files in/from public or private directories.
  */
-public class FileUtils {
+class FileUtils {
     private static final String TAG = FileUtils.class.getSimpleName();
-    private static final String DIRECTORY_PUBLIC = "Public";
 
     public static File saveFileToPrivateInternalStorage
             (Context context, String filename, byte[] fileContent) {
@@ -25,7 +25,7 @@ public class FileUtils {
         return saveFile(context.getCacheDir(), filename, fileContent);
     }
 
-    protected static File saveFile(File dir, String filename, byte[] fileContent) {
+    private static File saveFile(File dir, String filename, byte[] fileContent) {
         try {
             File file = new File(dir, filename);
             FileOutputStream outputStream = new FileOutputStream(file);
@@ -39,7 +39,7 @@ public class FileUtils {
     }
 
     /* Checks if external storage is available for read and write */
-    public static boolean isExternalStorageWritable() {
+    static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
     }
@@ -52,12 +52,12 @@ public class FileUtils {
     }
 
     /* Save files on the private internal storage (removed when app is uninstalled) */
-    public static File getPrivateInternalStorageDir(Context context) {
+    static File getPrivateInternalStorageDir(Context context) {
         return context.getFilesDir();
     }
 
 
-    protected static File makeDir(File dir) {
+    static File makeDir(File dir) {
         if (dir.mkdirs() || dir.isDirectory()) {
             return dir;
         } else {

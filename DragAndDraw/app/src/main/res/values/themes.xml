@@ -2,10 +2,10 @@
 <resources>
 
     <style name="Theme.AppTheme" parent="Theme.AppCompat">
-         <!--colorPrimary is used for the default action bar background-->
+        <!--colorPrimary is used for the default action bar background-->
         <item name="colorPrimary">@color/holo_blue_dark</item>
 
-         <!--colorPrimaryDark is used for the status bar-->
+        <!--colorPrimaryDark is used for the status bar-->
         <item name="colorPrimaryDark">@color/holo_blue_extra_dark</item>
 
         <!-- colorAccent is used as the default value for colorControlActivated

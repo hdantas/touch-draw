@@ -9,7 +9,8 @@ import android.util.Log;
 import android.widget.RadioButton;
 
 /**
- * Created by nuno on 12/11/14.
+ * Created by hdantas on 12/11/14.
+ * Custom radio button that can change color.
  */
 public class ColorfulRadioButton extends RadioButton {
 

@@ -4,8 +4,6 @@
 
     </style>
 
-    <style name="Widget.ActionBar.Transparent">
-        <item name="background">@color/transparent</item>
-    </style>
+
 
 </resources>

@@ -2,9 +2,6 @@
 <resources>
 
     <string name="app_name">DragAndDraw</string>
-    <string name="hello_world">Hello world!</string>
-    <!--<string name="action_settings">Settings</string>-->
-    <string name="action_settings">The quick brown fox jumps over the lazy dog</string>
 
     <string name="rectangle">R</string>
     <string name="triangle">T</string>
