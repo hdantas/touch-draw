@@ -248,16 +248,17 @@ public class EditorFragment extends Fragment {
             return false;
         }
 
-        int thumbnail_height = (int) getResources().getDimension(R.dimen.thumbnail_height);
-        float ratio = mBoxView.getHeight() / thumbnail_height;
-        int thumbnail_width = (int) (mBoxView.getWidth() / ratio);
-
+        int numColumns = getResources().getInteger(R.integer.num_columns);
+        int thumbnail_width = (int) ((mBoxView.getWidth() / numColumns)
+                - getResources().getDimension(R.dimen.item_horizontal_spacing));
+        int thumbnail_height = (int) ((mBoxView.getHeight() / numColumns)
+                - getResources().getDimension(R.dimen.item_vertical_spacing));
         Bitmap bitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
                 thumbnail_width, thumbnail_height, false);
 
+
         Log.d(TAG, "saveDrawing compressed DrawingId " + mDrawing.getId() +
                 " width/height: " + thumbnail_width + "/" + thumbnail_height +
-                " ratio: " + ratio +
                 " filename: " + mDrawing.getFilename());
 
         /* Write bitmap to file using format defined in Drawing */

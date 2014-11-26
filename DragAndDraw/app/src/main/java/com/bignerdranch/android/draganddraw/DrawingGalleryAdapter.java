@@ -13,8 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
@@ -24,27 +24,25 @@ import java.io.IOException;
 /**
  * Created by nuno on 22/11/14.
  */
-public class DrawingAdapter extends ArrayAdapter<Drawing> {
-    private static final String TAG = DrawingAdapter.class.getSimpleName();
+public class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
+    private static final String TAG = DrawingGalleryAdapter.class.getSimpleName();
 
     private static Context mContext;
-    private static Toast mToast;
     private DrawingManager mDrawingManager;
-    private ListView mListView;
-    private boolean mHasHeader;
+    private GridView mGridView;
+    private int mGridViewNumColumns;
 
-    public DrawingAdapter(Context context,
-                          DrawingManager drawingManager,
-                          int itemLayout,
-                          int textViewResourceId,
-                          ListView listView,
-                          boolean hasHeader) {
+    public DrawingGalleryAdapter(Context context,
+                                 DrawingManager drawingManager,
+                                 int itemLayout,
+                                 int textViewResourceId,
+                                 GridView gridView,
+                                 int gridViewNumColumns) {
         super(context, itemLayout, textViewResourceId);
         mContext = context;
         mDrawingManager = drawingManager;
-        mListView = listView;
-        mHasHeader = hasHeader;
-        mToast = Toast.makeText(mContext, "", Toast.LENGTH_SHORT);
+        mGridView = gridView;
+        mGridViewNumColumns = gridViewNumColumns;
     }
 
     // View lookup cache for DrawingAdapter
@@ -85,9 +83,7 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
             FileInputStream fileInputStream = new FileInputStream(path);
             bitmap = BitmapFactory.decodeStream(fileInputStream);
             fileInputStream.close();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                updateItemHue(bitmap, position, viewHolder);
-            }
+            updateItemHue(bitmap, position, viewHolder);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Could not load thumbnail", e);
         } catch (IOException e) {
@@ -99,23 +95,20 @@ public class DrawingAdapter extends ArrayAdapter<Drawing> {
 
     @TargetApi(11)
     private void updateItemHue(Bitmap bitmap, int position, ViewHolder viewHolder) {
-        viewHolder.mImageView.setImageBitmap(bitmap);
-
-        boolean isItemChecked;
-        if (mHasHeader) {
-            // +1 since item i = 0 of the list view refers to the header
-            isItemChecked = mListView.isItemChecked(position + 1);
-        } else {
-            isItemChecked = mListView.isItemChecked(position);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            return;
         }
 
+        viewHolder.mImageView.setImageBitmap(bitmap);
+        // with the toolbar the position of the gridView starts in NUM_COLUMNS instead of 0
+        boolean isItemChecked = mGridView.isItemChecked(position + mGridViewNumColumns);
+        Log.d(TAG, "updateItemHue position: " + (position + mGridViewNumColumns) + "\tisChecked: " + isItemChecked);
         if (isItemChecked) {
             ColorFilter filter = new PorterDuffColorFilter(
                     mContext.getResources().getColor(R.color.aqua_translucent),
                     PorterDuff.Mode.DARKEN);
             viewHolder.mImageView.setColorFilter(filter);
             viewHolder.mViewSelected.setVisibility(View.VISIBLE);
-
         } else {
             viewHolder.mImageView.clearColorFilter();
             viewHolder.mViewSelected.setVisibility(View.GONE);

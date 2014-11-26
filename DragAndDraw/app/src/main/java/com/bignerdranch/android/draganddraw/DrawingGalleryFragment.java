@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,11 +21,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
@@ -40,15 +39,15 @@ public class DrawingGalleryFragment extends Fragment implements
     private static final String TAG = DrawingGalleryFragment.class.getSimpleName();
     private static final int REQUEST_CHANGE = 0;
 
-    private ListView mListView;
+    private GridView mGridView;
+    private int mGridViewNumColumns;
     private Toolbar mToolbar;
     private QuickReturnTargetView topTargetView;
 
     private Toast mToast;
     ArrayList<Drawing> mItems;
     DrawingManager mDrawingManager;
-    DrawingAdapter mDrawingAdapter;
-    ArrayAdapter<Drawing> adapter;
+    DrawingGalleryAdapter mDrawingGalleryAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,51 +69,44 @@ public class DrawingGalleryFragment extends Fragment implements
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
 
-        View view = inflater.inflate(R.layout.fragment_drawing_gallery, container, false);
+        View view = inflater.inflate(R.layout.fragment_drawing_grid, container, false);
+
+        mGridView = (GridView) view.findViewById(R.id.grid_view);
+        mGridViewNumColumns = getResources().getInteger(R.integer.num_columns);
 
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
         ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-
-        ViewTreeObserver vto = mToolbar.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Log.d(TAG, "OnCreateView mToolbar.getHeight(): " + mToolbar.getHeight());
-                final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(mListView);
-                topTargetView = quickReturnAttacher.addTargetView(
-                        mToolbar,
-                        AbsListViewScrollTarget.POSITION_TOP,
-                        mToolbar.getHeight()
-                );
-
-                if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
-                    // This is the correct way to register an OnScrollListener.
-                    // You have to add it on the QuickReturnAttacher, instead
-                    // of on the viewGroup directly.
-                    final AbsListViewQuickReturnAttacher attacher = (AbsListViewQuickReturnAttacher) quickReturnAttacher;
-                    attacher.addOnScrollListener(DrawingGalleryFragment.this);
-                    attacher.setOnItemClickListener(DrawingGalleryFragment.this);
-                }
-
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    mToolbar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                } else {
-                    mToolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            }
-        });
-
-
-        mListView = (ListView) view.findViewById(R.id.list_view);
         setupAdapter();
+
+        final TypedArray styledAttributes = getActivity().getTheme().
+                obtainStyledAttributes(new int[]{R.attr.actionBarSize});
+        int toolbarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+
+        final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(mGridView);
+        Log.d(TAG, "OnCreateView.onGlobalLayout mToolbar.getHeight(): " + toolbarHeight);
+        topTargetView = quickReturnAttacher.addTargetView(
+                mToolbar,
+                AbsListViewScrollTarget.POSITION_TOP,
+                toolbarHeight
+        );
+
+        if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+            // This is the correct way to register an OnScrollListener.
+            // You have to add it on the QuickReturnAttacher, instead
+            // of on the viewGroup directly.
+            final AbsListViewQuickReturnAttacher attacher = (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+            attacher.addOnScrollListener(DrawingGalleryFragment.this);
+            attacher.setOnItemClickListener(DrawingGalleryFragment.this);
+        }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Use floating context menus on Froyo and Gingerbread
-            registerForContextMenu(mListView);
+            registerForContextMenu(mGridView);
         } else {
             // Use contextual action bar on Honeycomb and higher
-            mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-            mListView.setMultiChoiceModeListener(new ListView.MultiChoiceModeListener() {
+            mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+            mGridView.setMultiChoiceModeListener(new GridView.MultiChoiceModeListener() {
 
                 @Override
                 @TargetApi(11)
@@ -134,11 +126,12 @@ public class DrawingGalleryFragment extends Fragment implements
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.menu_item_delete_drawing:
-                            for (int i = mDrawingAdapter.getCount(); i >= 0; i--) {
-                                // +1 since item i = 0 of the list view refers to the header
-                                if (mListView.isItemChecked(i + 1)) {
-                                    Log.d(TAG, " onActionItemClicked Delete item in position " + i + " with id " + mDrawingAdapter.getItem(i).getId());
-                                    mDrawingAdapter.remove(mDrawingAdapter.getItem(i));
+                            for (int i = mDrawingGalleryAdapter.getCount() - 1; i >= 0; i--) {
+                                // with the toolbar the position of the gridView starts in NUM_COLUMNS instead of 0
+                                if (mGridView.isItemChecked(i + mGridViewNumColumns)) {
+                                    Log.d(TAG, "onActionItemClicked Delete item in position " + i +
+                                            " with id " + mDrawingGalleryAdapter.getItem(i).getId());
+                                    mDrawingGalleryAdapter.remove(mDrawingGalleryAdapter.getItem(i));
                                 }
                             }
                             mode.finish();
@@ -151,7 +144,7 @@ public class DrawingGalleryFragment extends Fragment implements
 
                 @Override
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                    mDrawingAdapter.notifyDataSetChanged();
+                    mDrawingGalleryAdapter.notifyDataSetChanged();
                 }
 
 
@@ -179,11 +172,11 @@ public class DrawingGalleryFragment extends Fragment implements
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = info.position;
-        Drawing drawing = mDrawingAdapter.getItem(position);
+        Drawing drawing = mDrawingGalleryAdapter.getItem(position);
 
         switch (item.getItemId()) {
             case R.id.menu_item_delete_drawing:
-                mDrawingAdapter.remove(drawing);
+                mDrawingGalleryAdapter.remove(drawing);
                 updateItems();
                 return true;
         }
@@ -220,31 +213,33 @@ public class DrawingGalleryFragment extends Fragment implements
 
     private void setupAdapter() {
         Log.d(TAG, "setupAdapter");
-        if (getActivity() == null || mListView == null) {
-            Log.d(TAG, "setupAdapter mListView == null");
+        if (getActivity() == null || mGridView == null) {
+            Log.d(TAG, "setupAdapter mGridView == null");
             return;
         }
 
-        if (mDrawingAdapter == null) {
-            Log.d(TAG, "setupAdapter mDrawingAdapter!= null");
-            if(mItems == null) {
+        if (mDrawingGalleryAdapter == null) {
+            Log.d(TAG, "setupAdapter mDrawingGalleryAdapter!= null\tNumColumns: " + mGridViewNumColumns);
+            if (mItems == null) {
                 mItems = new ArrayList<Drawing>();
+                mItems.add(new Drawing());
             }
-            mDrawingAdapter = new DrawingAdapter(
+            mDrawingGalleryAdapter = new DrawingGalleryAdapter(
                     getActivity(),
                     mDrawingManager,
                     R.layout.item_drawing_gallery,
                     R.id.drawing_item_textView,
-                    mListView,
-                    true);
-            mListView.setAdapter(new QuickReturnAdapter(mDrawingAdapter, 1));
+                    mGridView,
+                    mGridViewNumColumns);
+
+            mGridView.setAdapter(new QuickReturnAdapter(mDrawingGalleryAdapter, mGridViewNumColumns));
 //            adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery, R.id.drawing_item_textView);
-//            mListView.setAdapter(new QuickReturnAdapter(adapter, 1));
-        } else if(mItems != null) {
+//            mGridView.setAdapter(new QuickReturnAdapter(adapter, 1));
+        } else if (mItems != null) {
             Log.d(TAG, "setupAdapter else");
-            mDrawingAdapter.clear();
-            for (Drawing drawing:mItems) {
-                mDrawingAdapter.add(drawing);
+            mDrawingGalleryAdapter.clear();
+            for (Drawing drawing : mItems) {
+                mDrawingGalleryAdapter.add(drawing);
 //                adapter.add(drawing);
             }
         }
@@ -287,7 +282,7 @@ public class DrawingGalleryFragment extends Fragment implements
         mToast.setText("Item " + position + " clicked");
         mToast.show();
 
-        if(position >= 0) {
+        if (position >= 0) {
             Drawing item = mItems.get(position);
             Log.d(TAG, "onItemClick with drawing id " + item.getId());
 

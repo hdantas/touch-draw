@@ -3,42 +3,31 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_gravity="center">
 
     <ImageView
         android:id="@+id/drawing_item_imageView"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/thumbnail_height"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:contentDescription="@string/drawing_item_content_description"
-        android:paddingEnd="2dp"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:paddingStart="2dp"
-        android:scaleType="centerInside"/>
+        android:scaleType="centerCrop"/>
 
     <ImageView
         android:id="@+id/drawing_item_selected"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/thumbnail_height"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:contentDescription="@string/drawing_item_selected"
-        android:scaleType="center"
+        android:scaleType="centerInside"
         android:src="@drawable/ic_action_done"
         android:visibility="visible"/>
 
     <TextView
         android:id="@+id/drawing_item_textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-        android:paddingLeft="?attr/listPreferredItemPaddingLeft"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-        android:paddingRight="?attr/listPreferredItemPaddingRight"
-        android:textAppearance="?attr/textAppearanceListItem"
-        />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

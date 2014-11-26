@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <GridView
+        android:id="@+id/grid_view"
+        android:numColumns="@integer/num_columns"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:horizontalSpacing="@dimen/item_horizontal_spacing"
+        android:verticalSpacing="@dimen/item_vertical_spacing"
+        android:background="?attr/colorPrimaryDark"/>
+
+    <include layout="@layout/toolbar_action_bar"/>
+
+</FrameLayout>

@@ -32,7 +32,6 @@ public class BoxDrawingView extends View {
     private Toast mToast;
     private Path mPath; // to draw triangles
     private Toolbar mToolbar;
-    private boolean mCanToolbarSlideUp = false;
     private int[] mToolbarOriginalCoordinates;
 
     // Used when creating the view in code
