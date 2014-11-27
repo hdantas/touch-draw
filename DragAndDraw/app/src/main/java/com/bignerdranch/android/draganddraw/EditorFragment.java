@@ -47,7 +47,7 @@ public class EditorFragment extends Fragment {
     private ToggleButtonGroupTableLayout mButtonColor;
     private int mColor;
     private int mAlpha;
-    private EditView mBoxView;
+    private EditorView mBoxView;
     private SeekBar mAlphaBar;
     private ShakeListener mShaker;
     private Drawing mDrawing;
@@ -64,9 +64,6 @@ public class EditorFragment extends Fragment {
     public void onPause() {
         Log.d(TAG, "onPause: saved " + mDrawingManager.getBoxes().size());
         mShaker.pause();
-        if (mDrawing != null) {
-            saveDrawingCompressed();
-        }
         super.onPause();
     }
 
@@ -78,10 +75,7 @@ public class EditorFragment extends Fragment {
 
     void returnFromIntent() {
         Log.i(TAG, "returnFromIntent");
-        // if mDrawing is null it has been deleted
-        if (mDrawing != null) {
-            mDrawingManager.updateDrawing(mDrawing);
-        }
+        saveDrawing();
         Intent intent = new Intent(getActivity(), DrawingGalleryActivity.class);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
@@ -92,6 +86,7 @@ public class EditorFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
         Bundle extras = getActivity().getIntent().getExtras();
@@ -111,13 +106,10 @@ public class EditorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_editor, container, false);
 
-        mBoxView = (EditView) v.findViewById(R.id.viewBox);
-
-        mBoxView.setDrawingCacheEnabled(true);
+        mBoxView = (EditorView) v.findViewById(R.id.viewBox);
         mBoxView.setDrawingManager(mDrawingManager);
         mBoxView.setToolbar((Toolbar) v.findViewById(R.id.toolBar));
         mBoxView.loadBoxes();
-
 
         mButtonColor = (ToggleButtonGroupTableLayout) v.findViewById(R.id.buttonColor);
         mButtonColor.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +155,6 @@ public class EditorFragment extends Fragment {
                 mBoxView.undoLastBox();
             }
         });
-
 
         updateColor();
         updateShape();
@@ -240,20 +231,28 @@ public class EditorFragment extends Fragment {
         }
     }
 
-    private boolean saveDrawingCompressed() {
-        if (!mBoxView.isDrawingCacheEnabled()) {
-            Log.d(TAG, "saveDrawing Failed to save drawing");
-            return false;
-        }
+    private boolean saveDrawing() {
+        boolean success = true;
 
+        // if mDrawing is null it has been deleted
+        if (mDrawing != null) {
+            success = saveThumbnail();
+            mDrawingManager.updateDrawing(mDrawing);
+        }
+        return success;
+    }
+
+    private boolean saveThumbnail() {
         int numColumns = getResources().getInteger(R.integer.num_columns);
         int thumbnail_width = (int) ((mBoxView.getWidth() / numColumns)
                 - getResources().getDimension(R.dimen.item_horizontal_spacing));
         int thumbnail_height = (int) ((mBoxView.getHeight() / numColumns)
                 - getResources().getDimension(R.dimen.item_vertical_spacing));
-        Bitmap bitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(),
+        mBoxView.setDrawingCacheEnabled(true);
+        mBoxView.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(true),
                 thumbnail_width, thumbnail_height, false);
-
+        mBoxView.setDrawingCacheEnabled(false);
 
         Log.d(TAG, "saveDrawing compressed DrawingId " + mDrawing.getId() +
                 " width/height: " + thumbnail_width + "/" + thumbnail_height +
@@ -270,7 +269,10 @@ public class EditorFragment extends Fragment {
 
     private boolean saveDrawingToGallery() {
 
-        Bitmap bitmap = Bitmap.createBitmap(mBoxView.getDrawingCache());
+        mBoxView.setDrawingCacheEnabled(true);
+        mBoxView.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(mBoxView.getDrawingCache(true));
+        mBoxView.setDrawingCacheEnabled(false);
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         String filename = "Drawing " + mDrawing.getId() + " "
                 + DateFormat.getDateTimeInstance().format(new Date())
@@ -291,7 +293,6 @@ public class EditorFragment extends Fragment {
                 "\tgetExternalStorageDirectory: " + Environment.getExternalStorageDirectory() +
                 "\turiFromFile: " + Uri.fromFile(file)
         );
-
         return true;
     }
 

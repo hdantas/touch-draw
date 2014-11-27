@@ -23,9 +23,9 @@ import java.util.ArrayList;
  * Custom View that allows drawing boxes. It handles touch events and interacts with the toolbar
  * that changes the attributes of the boxes (ie color, shape and translucency).
  */
-public class EditView extends View {
+public class EditorView extends View {
 
-    private static final String TAG = EditView.class.getSimpleName();
+    private static final String TAG = EditorView.class.getSimpleName();
 
     private DrawingManager mDrawingManager;
     private ArrayList<Box> mBoxes = new ArrayList<>();
@@ -39,13 +39,13 @@ public class EditView extends View {
     private int[] mToolbarOriginalCoordinates;
 
     // Used when creating the view in code
-    public EditView(Context context) {
+    public EditorView(Context context) {
         this(context, null);
     }
 
     // Used when inflating the view from XML
     @SuppressLint("ShowToast")
-    public EditView(Context context, AttributeSet attrs) {
+    public EditorView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mBoxPaint = new Paint();
@@ -53,7 +53,6 @@ public class EditView extends View {
         mBackgroundPaint.setColor(getResources().getColor(DrawableColor.BACKGROUND_COLOR));
         mPath = new Path(); // Path is used to draw triangles
         mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
-
     }
 
     @Override
@@ -175,7 +174,6 @@ public class EditView extends View {
     public void setToolbar(Toolbar toolbar) {
         mToolbar = toolbar;
     }
-
 
     private void updateToolbarPosition(float touchY) {
 
