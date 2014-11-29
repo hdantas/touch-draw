@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -45,6 +46,9 @@ public class EditorFragment extends Fragment {
 
     private ColorfulRadioGroup mButtonShape;
     private ToggleButtonGroupTableLayout mButtonColor;
+    private ImageView mRectangleImageView;
+    private ImageView mTriangleImageView;
+    private ImageView mCircleImageView;
     private int mColor;
     private int mAlpha;
     private EditorView mBoxView;
@@ -127,6 +131,10 @@ public class EditorFragment extends Fragment {
             }
         });
 
+        mRectangleImageView = (ImageView) v.findViewById(R.id.imageRectangle);
+        mTriangleImageView = (ImageView) v.findViewById(R.id.imageTriangle);
+        mCircleImageView = (ImageView) v.findViewById(R.id.imageCircle);
+
         mAlphaBar = (SeekBar) v.findViewById(R.id.alphaBar);
         mAlpha = mAlphaBar.getProgress();
         mAlphaBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -206,9 +214,19 @@ public class EditorFragment extends Fragment {
         if (mBoxView != null) {
             mBoxView.setDrawableColor(mColor, mAlpha);
         }
+        setImageViewColor(mRectangleImageView, getResources().getColor(mColor), mAlpha);
+        setImageViewColor(mTriangleImageView, getResources().getColor(mColor), mAlpha);
+        setImageViewColor(mCircleImageView, getResources().getColor(mColor), mAlpha);
         setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
         mButtonShape.setButtonsColor(getResources().getColor(mColor));
 
+
+    }
+
+    void setImageViewColor(ImageView imageView, int newColor, int alpha) {
+        int transformedColor = (newColor & 0x00FFFFFF) | (alpha << 24);
+        ColorFilter filter = new LightingColorFilter(0, transformedColor);
+        imageView.setColorFilter(filter);
     }
 
     void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {

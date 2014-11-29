@@ -4,31 +4,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="80dp"
+    android:background="@color/color_toolbar_editor"
     android:gravity="center"
     android:minHeight="?attr/actionBarSize"
-    android:background="@color/aqua_translucent"
     tools:ignore="Overdraw">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:baselineAligned="false"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/shapeOptions"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            >
+            android:layout_weight="1.5"
+            android:layout_marginRight="5dp"
+            android:orientation="vertical">
 
             <com.bignerdranch.android.draganddraw.ColorfulRadioGroup
                 android:id="@+id/buttonShape"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:orientation="horizontal">
 
                 <com.bignerdranch.android.draganddraw.ColorfulRadioButton
@@ -36,54 +35,83 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:checked="true"
+                    android:checked="true"/>
+
+                <ImageView
+                    android:id="@+id/imageRectangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/rectangle"
+                    android:contentDescription="@string/rectangle"
+                    android:scaleType="fitCenter"
                     android:gravity="center"
-                    android:text="@string/rectangle"/>
+                    android:cropToPadding="true"
+                    android:padding="5dp"/>
 
                 <com.bignerdranch.android.draganddraw.ColorfulRadioButton
                     android:id="@+id/buttonTriangle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center"/>
+
+                <ImageView
+                    android:id="@+id/imageTriangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="top"
+                    android:src="@drawable/triangle"
+                    android:contentDescription="@string/triangle"
                     android:gravity="center"
-                    android:text="@string/triangle"/>
+                    android:scaleType="fitCenter"
+                    android:cropToPadding="true"
+                    android:padding="5dp"/>
 
                 <com.bignerdranch.android.draganddraw.ColorfulRadioButton
                     android:id="@+id/buttonCircle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center"/>
+
+                <ImageView
+                    android:id="@+id/imageCircle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/circle"
+                    android:contentDescription="@string/circle"
                     android:gravity="center"
-                    android:text="@string/circle"/>
+                    android:scaleType="fitCenter"
+                    android:cropToPadding="true"
+                    android:padding="5dp"/>
 
             </com.bignerdranch.android.draganddraw.ColorfulRadioGroup>
 
-            <SeekBar
-                android:id="@+id/alphaBar"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="false"
-                android:max="255"
-                android:paddingEnd="15dp"
-                android:paddingLeft="15dip"
-                android:paddingRight="15dip"
-                android:paddingStart="15dip"
-                android:progress="127"/>
-
+                android:layout_height="40dp">
+                <SeekBar
+                    android:id="@+id/alphaBar"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="255"
+                    android:progress="127"/>
+            </FrameLayout>
         </LinearLayout>
 
         <com.bignerdranch.android.draganddraw.ToggleButtonGroupTableLayout
             android:id="@+id/buttonColor"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            >
+            android:layout_weight="1">
 
             <TableRow
-                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                >
+                android:layout_weight="1">
 
                 <com.bignerdranch.android.draganddraw.CircleRadioButton
                     android:id="@+id/buttonRed"
@@ -93,8 +121,7 @@
                     android:button="@null"
                     android:checked="true"
                     app:cb_color="@color/red"
-                    app:cb_pressedRingWidth="5dip"
-                    />
+                    app:cb_pressedRingWidth="5dip"/>
 
                 <com.bignerdranch.android.draganddraw.CircleRadioButton
                     android:id="@+id/buttonGreen"
@@ -112,15 +139,12 @@
                     android:layout_weight="1"
                     android:button="@null"
                     app:cb_color="@color/blue"
-                    app:cb_pressedRingWidth="5dip"
-                    />
+                    app:cb_pressedRingWidth="5dip"/>
             </TableRow>
 
             <TableRow
-                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                >
+                android:layout_weight="1">
 
                 <com.bignerdranch.android.draganddraw.CircleRadioButton
                     android:id="@+id/buttonOrange"

@@ -10,9 +10,9 @@ Organized by: Willie Tsang
     <color name="holo_blue_extra_dark">#ff005b7c</color>
     <color name="holo_blue_super_dark">#ff003e56</color>
 
-    <color name="test" tools:ignore="UnusedResources">#fff09609</color>
     <color name="transparent">#00000000</color>
     <color name="green_bit_transparent">#0FA4C639</color>
+    <color name="color_toolbar_editor">#8a0099cc</color>
     <color name="aqua_translucent">#8a049183</color>
 
     <!-- Android style -->

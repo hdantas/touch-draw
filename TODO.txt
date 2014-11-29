@@ -1,14 +1,11 @@
 FEATURES TO IMPLEMENT
 
-BUGFIX: thumbnail is not updated if user steps away from the app in between edits
-replace R/T/C buttons with figures that are painted according to the chosen color & alpha
 add logo for app
-
 
 NEXT RELEASE:
 
 BUGFIX: toolbar sometimes acts funny
-improve look of shape radio buttons in older APIs
+Replace shape radio buttons with clickable images
 Add material design elements from 3rd party library (¿where?)
 Use notifications the same way chrome does on the bottom of the page
 Add tablet support
