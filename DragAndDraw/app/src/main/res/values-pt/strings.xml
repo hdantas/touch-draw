@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="rectangle">Rectângulo</string>
+    <string name="triangle">Triângulo</string>
+    <string name="circle">Círculo</string>
+
+    <string name="export_drawing">Guardar Desenho</string>
+    <string name="share_drawing">Partilhar Desenho</string>
+    <string name="share_drawing_to">Partilhar Desenho para</string>
+    <string name="new_drawing">Novo Desenho</string>
+    <string name="delete_drawing">Apagar Desenho</string>
+
+    <string name="drawing_item_content_description">Ícone</string>
+    <string name="drawing_item_selected">Desenho escolhido</string>
+
+</resources>

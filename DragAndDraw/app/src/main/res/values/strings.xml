@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">DragAndDraw</string>
+    <string name="app_name" translatable="false">Touch &amp; Draw</string>
 
-    <string name="rectangle">R</string>
-    <string name="triangle">T</string>
-    <string name="circle">C</string>
+    <string name="rectangle">Rectangle</string>
+    <string name="triangle">Triangle</string>
+    <string name="circle">Circle</string>
 
     <string name="export_drawing">Export Drawing</string>
     <string name="share_drawing">Share Drawing</string>
