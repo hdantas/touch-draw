@@ -6,9 +6,9 @@ Organized by: Willie Tsang
 -->
 <resources xmlns:tools="http://schemas.android.com/tools"
            tools:ignore="UnusedResources">
-    <color name="holo_blue_dark">#ff0099cc</color>
-    <color name="holo_blue_extra_dark">#ff005b7c</color>
-    <color name="holo_blue_super_dark">#ff003e56</color>
+    <color name="holo_blue_dark">#0099cc</color>
+    <color name="holo_blue_extra_dark">#005b7c</color>
+    <color name="holo_blue_super_dark">#003e56</color>
 
     <color name="transparent">#00000000</color>
     <color name="green_bit_transparent">#0FA4C639</color>

@@ -68,6 +68,7 @@ public class EditorFragment extends Fragment {
     public void onPause() {
         Log.d(TAG, "onPause: saved " + mDrawingManager.getBoxes().size());
         mShaker.pause();
+        saveDrawing();
         super.onPause();
     }
 
@@ -79,7 +80,6 @@ public class EditorFragment extends Fragment {
 
     void returnFromIntent() {
         Log.i(TAG, "returnFromIntent");
-        saveDrawing();
         Intent intent = new Intent(getActivity(), DrawingGalleryActivity.class);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
@@ -90,7 +90,6 @@ public class EditorFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
         Bundle extras = getActivity().getIntent().getExtras();

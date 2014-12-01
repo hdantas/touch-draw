@@ -4,6 +4,7 @@ add logo for app
 
 NEXT RELEASE:
 
+When returning from editor show thumbnail (ie scroll to the top)
 BUGFIX: toolbar sometimes acts funny
 Replace shape radio buttons with clickable images
 Add material design elements from 3rd party library (¿where?)

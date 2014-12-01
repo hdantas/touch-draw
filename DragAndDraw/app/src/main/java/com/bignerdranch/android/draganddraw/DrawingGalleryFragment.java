@@ -58,7 +58,6 @@ public class DrawingGalleryFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
         mDrawingManager = DrawingManager.get(getActivity());
         updateItems();
     }
