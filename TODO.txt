@@ -1,7 +1,5 @@
 FEATURES TO IMPLEMENT
 
-add logo for app
-
 NEXT RELEASE:
 
 When returning from editor show thumbnail (ie scroll to the top)
