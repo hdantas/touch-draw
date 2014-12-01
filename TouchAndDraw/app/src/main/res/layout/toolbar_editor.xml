@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@color/color_toolbar_editor"
+    android:gravity="center"
+    android:minHeight="?attr/actionBarSize"
+    tools:ignore="Overdraw">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/shapeOptions"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:layout_marginRight="5dp"
+            android:orientation="vertical">
+
+            <net.henriquedantas.android.touchanddraw.ColorfulRadioGroup
+                android:id="@+id/buttonShape"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+                <net.henriquedantas.android.touchanddraw.ColorfulRadioButton
+                    android:id="@+id/buttonRectangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"/>
+
+                <ImageView
+                    android:id="@+id/imageRectangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/rectangle"
+                    android:contentDescription="@string/rectangle"
+                    android:scaleType="fitCenter"
+                    android:gravity="center"
+                    android:cropToPadding="true"
+                    android:padding="5dp"/>
+
+                <net.henriquedantas.android.touchanddraw.ColorfulRadioButton
+                    android:id="@+id/buttonTriangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
+
+                <ImageView
+                    android:id="@+id/imageTriangle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="top"
+                    android:src="@drawable/triangle"
+                    android:contentDescription="@string/triangle"
+                    android:gravity="center"
+                    android:scaleType="fitCenter"
+                    android:cropToPadding="true"
+                    android:padding="5dp"/>
+
+                <net.henriquedantas.android.touchanddraw.ColorfulRadioButton
+                    android:id="@+id/buttonCircle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"/>
+
+                <ImageView
+                    android:id="@+id/imageCircle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/circle"
+                    android:contentDescription="@string/circle"
+                    android:gravity="center"
+                    android:scaleType="fitCenter"
+                    android:cropToPadding="true"
+                    android:padding="5dp"/>
+
+            </net.henriquedantas.android.touchanddraw.ColorfulRadioGroup>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+                <SeekBar
+                    android:id="@+id/alphaBar"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="255"
+                    android:progress="127"/>
+            </FrameLayout>
+        </LinearLayout>
+
+        <net.henriquedantas.android.touchanddraw.ToggleButtonGroupTableLayout
+            android:id="@+id/buttonColor"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TableRow
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <net.henriquedantas.android.touchanddraw.CircleRadioButton
+                    android:id="@+id/buttonRed"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:checked="true"
+                    app:cb_color="@color/red"
+                    app:cb_pressedRingWidth="5dip"/>
+
+                <net.henriquedantas.android.touchanddraw.CircleRadioButton
+                    android:id="@+id/buttonGreen"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/green"
+                    app:cb_pressedRingWidth="5dip"/>
+
+                <net.henriquedantas.android.touchanddraw.CircleRadioButton
+                    android:id="@+id/buttonBlue"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/blue"
+                    app:cb_pressedRingWidth="5dip"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <net.henriquedantas.android.touchanddraw.CircleRadioButton
+                    android:id="@+id/buttonOrange"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/orange"
+                    app:cb_pressedRingWidth="5dip"
+                    />
+
+                <net.henriquedantas.android.touchanddraw.CircleRadioButton
+                    android:id="@+id/buttonYellow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/Gold"
+                    app:cb_pressedRingWidth="5dip"/>
+
+                <net.henriquedantas.android.touchanddraw.CircleRadioButton
+                    android:id="@+id/buttonPurple"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    app:cb_color="@color/purple"
+                    app:cb_pressedRingWidth="5dip"/>
+            </TableRow>
+        </net.henriquedantas.android.touchanddraw.ToggleButtonGroupTableLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.Toolbar>

@@ -2,20 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8090bf60-4825-4432-8dfb-88206f674f7f" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/values-v11/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/values-v14/styles.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/java/com/bignerdranch/android/draganddraw/DragAndDrawActivity.java" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/java/com/bignerdranch/android/draganddraw/DragAndDrawActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/java/com/bignerdranch/android/draganddraw/DragAndDrawFragment.java" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/java/com/bignerdranch/android/draganddraw/DragAndDrawFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/java/com/bignerdranch/android/draganddraw/SingleFragmentActivity.java" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/java/com/bignerdranch/android/draganddraw/SingleFragmentActivity.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/values-v11/styles.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/values-v14/styles.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/java/com/bignerdranch/android/touchanddraw/TouchAndDrawActivity.java" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/java/com/bignerdranch/android/touchanddraw/TouchAndDrawActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/java/com/bignerdranch/android/touchanddraw/TouchAndDrawFragment.java" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/java/com/bignerdranch/android/touchanddraw/TouchAndDrawFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/java/com/bignerdranch/android/touchanddraw/SingleFragmentActivity.java" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/java/com/bignerdranch/android/touchanddraw/SingleFragmentActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TODO.txt" afterPath="$PROJECT_DIR$/TODO.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/build.gradle" afterPath="$PROJECT_DIR$/DragAndDraw/app/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/menu/drag_and_draw.xml" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/menu/drag_and_draw.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/layout/fragment_drag_and_draw.xml" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/layout/fragment_drag_and_draw.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/values/styles.xml" afterPath="$PROJECT_DIR$/DragAndDraw/app/src/main/res/values/styles.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/build.gradle" afterPath="$PROJECT_DIR$/TouchAndDraw/app/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/menu/touch_and_draw.xml" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/menu/touch_and_draw.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/layout/fragment_touch_and_draw.xml" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/layout/fragment_touch_and_draw.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/values/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/values/styles.xml" afterPath="$PROJECT_DIR$/TouchAndDraw/app/src/main/res/values/styles.xml" />
     </list>
-    <ignored path="drag-draw.iws" />
+    <ignored path="touch-draw.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,7 +32,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
-    <favorites_list name="drag-draw" />
+    <favorites_list name="touch-draw" />
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="4" />
@@ -75,31 +75,31 @@
         <subPane>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="drag-draw" />
+              <option name="myItemId" value="touch-draw" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="drag-draw" />
+              <option name="myItemId" value="touch-draw" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="drag-draw" />
+              <option name="myItemId" value="touch-draw" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="drag-draw" />
+              <option name="myItemId" value="touch-draw" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="drag-draw" />
+              <option name="myItemId" value="touch-draw" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="DragAndDraw" />
+              <option name="myItemId" value="TouchAndDraw" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>

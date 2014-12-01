@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:tools="http://schemas.android.com/tools"
+    package="net.henriquedantas.android.touchanddraw"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/Theme.AppTheme"
+        android:label="@string/app_name">
+        <activity
+            android:theme="@style/Theme.AppTheme.NoActionBar"
+            android:name=".DrawingGalleryActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".EditorActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".DrawingGalleryActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="UnusedAttribute">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DrawingGalleryActivity"/>
+        </activity>
+
+    </application>
+
+</manifest>
