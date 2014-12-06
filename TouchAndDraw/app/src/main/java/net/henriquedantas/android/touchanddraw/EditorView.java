@@ -140,7 +140,7 @@ public class EditorView extends View {
 
     public void undoLastBox() {
         if (mBoxes.size() < 1) {
-            mToast.setText("There are no boxes");
+            mToast.setText("There are no boxes to undo.");
             mToast.show();
             return;
         }

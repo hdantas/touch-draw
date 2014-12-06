@@ -10,6 +10,7 @@
     <string name="share_drawing_to">Partilhar Desenho para</string>
     <string name="new_drawing">Novo Desenho</string>
     <string name="delete_drawing">Apagar Desenho</string>
+    <string name="undo_drawing">Desfazer último objecto</string>
 
     <string name="drawing_item_content_description">Ícone</string>
     <string name="drawing_item_selected">Desenho escolhido</string>

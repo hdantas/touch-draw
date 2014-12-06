@@ -8,6 +8,7 @@
     <string name="circle">Circle</string>
 
     <string name="export_drawing">Export Drawing</string>
+    <string name="undo_drawing">Undo object</string>
     <string name="share_drawing">Share Drawing</string>
     <string name="share_drawing_to">Share Drawing To</string>
     <string name="new_drawing">New Drawing</string>

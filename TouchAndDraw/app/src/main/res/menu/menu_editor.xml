@@ -2,6 +2,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".EditorActivity">
+
     <item
         android:id="@+id/export_drawing"
         android:icon="@android:drawable/ic_menu_save"
@@ -16,5 +17,9 @@
         android:id="@+id/delete_drawing"
         android:title="@string/delete_drawing"
         android:icon="@android:drawable/ic_menu_delete"
+        app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/undo_drawing"
+        android:title="@string/undo_drawing"
         app:showAsAction="ifRoom|withText"/>
 </menu>

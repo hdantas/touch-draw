@@ -15,7 +15,6 @@ import android.os.Environment;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -346,6 +345,7 @@ public class EditorFragment extends Fragment {
                 mToast.setText(toastText);
                 mToast.show();
                 return true;
+
             case R.id.share_drawing:
                 sendShareIntent();
                 mToast.setText(getString(R.string.share_drawing));
@@ -361,6 +361,10 @@ public class EditorFragment extends Fragment {
                 mToast.setText(getString(R.string.delete_drawing));
                 mToast.show();
                 returnFromIntent();
+                return true;
+
+            case R.id.undo_drawing:
+                mBoxView.undoLastBox();
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -1,8 +1,8 @@
 FEATURES TO IMPLEMENT
 
-Make undo more explicit
-Add tablet support
 replace action add with floating button (material design style)
+replace hardcoded strings with resources (en/pt)
+Add tablet support
 
 NEXT RELEASE:
 
