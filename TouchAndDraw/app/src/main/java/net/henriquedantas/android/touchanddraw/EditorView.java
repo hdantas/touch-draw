@@ -7,13 +7,13 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class EditorView extends View {
     private DrawableShape mDrawableShape = DrawableShape.RECTANGLE;
     private final Toast mToast;
     private final Path mPath; // to draw triangles
-    private Toolbar mToolbar;
+    private LinearLayout mToolbar;
     private int[] mToolbarOriginalCoordinates;
 
     // Used when creating the view in code
@@ -171,7 +171,7 @@ public class EditorView extends View {
         }
     }
 
-    public void setToolbar(Toolbar toolbar) {
+    public void setToolbar(LinearLayout toolbar) {
         mToolbar = toolbar;
     }
 

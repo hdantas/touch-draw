@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -60,14 +61,18 @@ public class EditorFragment extends Fragment {
 
     @Override
     public void onResume() {
-        mShaker.resume();
+        if(mShaker != null) {
+            mShaker.resume();
+        }
         super.onResume();
     }
 
     @Override
     public void onPause() {
         Log.d(TAG, "onPause: saved " + mDrawingManager.getBoxes().size());
-        mShaker.pause();
+        if (mShaker != null) {
+            mShaker.pause();
+        }
         saveDrawing();
         super.onPause();
     }
@@ -111,7 +116,7 @@ public class EditorFragment extends Fragment {
 
         mBoxView = (EditorView) v.findViewById(R.id.viewBox);
         mBoxView.setDrawingManager(mDrawingManager);
-        mBoxView.setToolbar((Toolbar) v.findViewById(R.id.toolBar));
+        mBoxView.setToolbar((LinearLayout) v.findViewById(R.id.toolBar));
         mBoxView.loadBoxes();
 
         mButtonColor = (ToggleButtonGroupTableLayout) v.findViewById(R.id.buttonColor);
@@ -155,13 +160,17 @@ public class EditorFragment extends Fragment {
         });
 
         final Vibrator vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        mShaker = new ShakeListener(getActivity());
-        mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
-            public void onShake() {
-                vibe.vibrate(getResources().getInteger(R.integer.vibration_millis));
-                mBoxView.undoLastBox();
-            }
-        });
+        try {
+            mShaker = new ShakeListener(getActivity());
+            mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
+                public void onShake() {
+                    vibe.vibrate(getResources().getInteger(R.integer.vibration_millis));
+                    mBoxView.undoLastBox();
+                }
+            });
+        } catch (UnsupportedOperationException e) {
+            Log.e(TAG, "Accelerometer not supported");
+        }
 
         updateColor();
         updateShape();

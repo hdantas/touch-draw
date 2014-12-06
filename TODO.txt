@@ -1,6 +1,5 @@
 FEATURES TO IMPLEMENT
 
-BUGFIX: buttons clipped in small screens
 BUGFIX: show overflow menu
 Make undo more explicit
 Add tablet support
