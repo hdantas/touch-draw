@@ -213,11 +213,15 @@ public class EditorFragment extends Fragment {
         if (mBoxView != null) {
             mBoxView.setDrawableColor(mColor, mAlpha);
         }
+
         setImageViewColor(mRectangleImageView, getResources().getColor(mColor), mAlpha);
         setImageViewColor(mTriangleImageView, getResources().getColor(mColor), mAlpha);
         setImageViewColor(mCircleImageView, getResources().getColor(mColor), mAlpha);
         setSeekBarColor(mAlphaBar, getResources().getColor(mColor), mAlpha);
-        mButtonShape.setButtonsColor(getResources().getColor(mColor));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mButtonShape.setButtonsColor(getResources().getColor(mColor));
+        }
 
 
     }
@@ -225,7 +229,9 @@ public class EditorFragment extends Fragment {
     void setImageViewColor(ImageView imageView, int newColor, int alpha) {
         int transformedColor = (newColor & 0x00FFFFFF) | (alpha << 24);
         ColorFilter filter = new LightingColorFilter(0, transformedColor);
-        imageView.setColorFilter(filter);
+//        imageView.setColorFilter(filter);
+        imageView.getDrawable().setColorFilter(filter);
+        imageView.invalidate();
     }
 
     void setSeekBarColor(SeekBar seekBar, int newColor, int alpha) {
@@ -246,6 +252,8 @@ public class EditorFragment extends Fragment {
             }
             seekBar.setAlpha(newAlpha);
         }
+
+        seekBar.invalidate();
     }
 
     private boolean saveDrawing() {
@@ -307,8 +315,8 @@ public class EditorFragment extends Fragment {
                 Uri.fromFile(file)));
 
         Log.d(TAG, "saveDrawingToGallery\npath " + file.getPath() +
-                "\tgetExternalStorageDirectory: " + Environment.getExternalStorageDirectory() +
-                "\turiFromFile: " + Uri.fromFile(file)
+                        "\tgetExternalStorageDirectory: " + Environment.getExternalStorageDirectory() +
+                        "\turiFromFile: " + Uri.fromFile(file)
         );
         return true;
     }

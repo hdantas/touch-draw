@@ -1,13 +1,19 @@
 FEATURES TO IMPLEMENT
 
+BUGFIX: buttons clipped in small screens
+BUGFIX: show overflow menu
+Make undo more explicit
+Add tablet support
+replace action add with floating button (material design style)
+
 NEXT RELEASE:
 
+add analytics
 When returning from editor show thumbnail (ie scroll to the top)
 BUGFIX: toolbar sometimes acts funny
 Replace shape radio buttons with clickable images
 Add material design elements from 3rd party library (¿where?)
 Use notifications the same way chrome does on the bottom of the page
-Add tablet support
 force files to be stored to SD card if possible (instead of emulated external storage)
 consider moving the app to external storage
 save bitmaps (compressed and full) in async task
