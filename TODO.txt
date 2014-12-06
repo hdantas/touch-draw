@@ -1,6 +1,5 @@
 FEATURES TO IMPLEMENT
 
-BUGFIX: show overflow menu
 Make undo more explicit
 Add tablet support
 replace action add with floating button (material design style)
