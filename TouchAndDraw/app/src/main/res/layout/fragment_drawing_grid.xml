@@ -3,6 +3,7 @@
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -17,5 +18,16 @@
         android:background="?attr/colorPrimaryDark"/>
 
     <include layout="@layout/toolbar_action_bar"/>
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_white_24dp"
+        app:fab_colorNormal="@color/holo_blue_dark"
+        app:fab_colorPressed="@color/holo_blue_super_dark"
+        app:fab_colorRipple="@color/aqua" />
 
 </FrameLayout>

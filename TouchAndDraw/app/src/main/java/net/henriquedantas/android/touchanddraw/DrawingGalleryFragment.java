@@ -30,6 +30,7 @@ import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
 import com.felipecsl.quickreturn.library.QuickReturnAttacher;
 import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
 import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -57,7 +58,6 @@ public class DrawingGalleryFragment extends Fragment implements
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
-        setHasOptionsMenu(true);
         mDrawingManager = DrawingManager.get(getActivity());
         updateItems();
     }
@@ -75,6 +75,14 @@ public class DrawingGalleryFragment extends Fragment implements
 
         mGridView = (GridView) view.findViewById(R.id.grid_view);
         mGridViewNumColumns = getResources().getInteger(R.integer.num_columns);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewDrawing();
+            }
+        });
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
         ((ActionBarActivity) getActivity()).setSupportActionBar(toolbar);
@@ -100,6 +108,7 @@ public class DrawingGalleryFragment extends Fragment implements
             final AbsListViewQuickReturnAttacher attacher = (AbsListViewQuickReturnAttacher) quickReturnAttacher;
             attacher.addOnScrollListener(DrawingGalleryFragment.this);
             attacher.setOnItemClickListener(DrawingGalleryFragment.this);
+
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -156,6 +165,7 @@ public class DrawingGalleryFragment extends Fragment implements
                 }
             });
         }
+
         return view;
     }
 
@@ -187,25 +197,13 @@ public class DrawingGalleryFragment extends Fragment implements
         updateItems();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.actions_drawing_gallery, menu);
-    }
+    private void createNewDrawing() {
+        Intent intent = new Intent(getActivity(), EditorActivity.class);
+        intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, -1L);
+        startActivityForResult(intent, REQUEST_CHANGE);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.new_drawing:
-                Intent intent = new Intent(getActivity(), EditorActivity.class);
-                intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, -1L);
-                startActivityForResult(intent, REQUEST_CHANGE);
-
-                mToast.setText("Started new activity");
-                mToast.show();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+        mToast.setText("Started new activity");
+        mToast.show();
     }
 
     private void setupAdapter() {
@@ -272,6 +270,7 @@ public class DrawingGalleryFragment extends Fragment implements
     public void onScrollStateChanged(AbsListView view, int scrollState) {
 
     }
+
 
     // On click start EditorFragment to edit it
     @Override

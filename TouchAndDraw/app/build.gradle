@@ -29,5 +29,6 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.2'
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile project(path: ':library')
 }

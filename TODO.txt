@@ -1,11 +1,11 @@
 FEATURES TO IMPLEMENT
 
-replace action add with floating button (material design style)
 replace hardcoded strings with resources (en/pt)
 Add tablet support
 
 NEXT RELEASE:
 
+make floating button slide away
 add analytics
 When returning from editor show thumbnail (ie scroll to the top)
 BUGFIX: toolbar sometimes acts funny
