@@ -14,5 +14,10 @@
 
     <string name="drawing_item_content_description">Ícone</string>
     <string name="drawing_item_selected">Desenho escolhido</string>
+    <string name="drawing_deleted">Desenho %1$d apagado</string>
+    <string name="drawing_saved_failed">Não foi possível guardar desenho</string>
+    <string name="drawing_saved_succeeded">Desenho guardado com sucesso</string>
+    <string name="undo_box">Objecto %1$d removido</string>
+    <string name="undo_no_boxes">Não há objectos para desfazer</string>
 
 </resources>

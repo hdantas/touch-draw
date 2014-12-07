@@ -60,7 +60,7 @@ public class EditorFragment extends Fragment {
 
     @Override
     public void onResume() {
-        if(mShaker != null) {
+        if (mShaker != null) {
             mShaker.resume();
         }
         super.onResume();
@@ -309,7 +309,7 @@ public class EditorFragment extends Fragment {
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         String filename = "Drawing " + mDrawing.getId() + " "
                 + DateFormat.getDateTimeInstance().format(new Date())
-                + "" + mDrawing.getFileFormat().toLowerCase();
+                + "." + mDrawing.getFileFormat().toLowerCase();
         filename = filename.replace(":", "_"); // ':' is an illegal char for a filename
         File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
 
@@ -340,16 +340,14 @@ public class EditorFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.export_drawing:
                 boolean success = saveDrawingToGallery();
-                String toastText =
-                        success ? "Successfully saved drawing" : "Failed to save drawing!";
-                mToast.setText(toastText);
+                String successString = getString(R.string.drawing_saved_succeeded);
+                String failureString = getString(R.string.drawing_saved_succeeded);
+                mToast.setText(success ? successString : failureString);
                 mToast.show();
                 return true;
 
             case R.id.share_drawing:
                 sendShareIntent();
-                mToast.setText(getString(R.string.share_drawing));
-                mToast.show();
                 return true;
 
             case android.R.id.home: // Respond to the action bar's Up/Home button
@@ -357,8 +355,10 @@ public class EditorFragment extends Fragment {
                 return true;
 
             case R.id.delete_drawing:
+                // create toast text before deleting drawing to preserve drawing id
+                String toastText = String.format(getString(R.string.drawing_deleted), mDrawing.getId());
                 deleteDrawing();
-                mToast.setText(getString(R.string.delete_drawing));
+                mToast.setText(toastText);
                 mToast.show();
                 returnFromIntent();
                 return true;

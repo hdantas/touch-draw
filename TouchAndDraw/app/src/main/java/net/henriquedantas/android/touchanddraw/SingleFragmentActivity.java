@@ -29,6 +29,7 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
+        showOverflowMenu();
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
@@ -37,7 +38,6 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
             fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
         }
 
-        showOverflowMenu();
     }
 
     /**

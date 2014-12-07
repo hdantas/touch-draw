@@ -202,8 +202,6 @@ public class DrawingGalleryFragment extends Fragment implements
         intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, -1L);
         startActivityForResult(intent, REQUEST_CHANGE);
 
-        mToast.setText("Started new activity");
-        mToast.show();
     }
 
     private void setupAdapter() {
@@ -275,8 +273,6 @@ public class DrawingGalleryFragment extends Fragment implements
     // On click start EditorFragment to edit it
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mToast.setText("Item " + position + " clicked");
-        mToast.show();
 
         if (position >= 0) {
             Drawing item = mItems.get(position);

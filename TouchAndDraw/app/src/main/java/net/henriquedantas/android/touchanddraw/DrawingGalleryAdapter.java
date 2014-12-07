@@ -49,8 +49,11 @@ class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
     @Override
     public void remove(Drawing object) {
         Log.d(TAG, "remove drawing with id " + object.getId());
-        Toast.makeText(mContext, "Drawing " + object.getId() + " deleted", Toast.LENGTH_SHORT).
-                show();
+        String toastText = String.format(
+                mContext.getResources().getString(R.string.drawing_deleted),
+                object.getId()
+        );
+        Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
         mDrawingManager.removeDrawing(object);
         super.remove(object);
     }

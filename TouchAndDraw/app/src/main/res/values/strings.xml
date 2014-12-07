@@ -12,9 +12,17 @@
     <string name="share_drawing">Share Drawing</string>
     <string name="share_drawing_to">Share Drawing To</string>
     <string name="new_drawing">New Drawing</string>
-    <string name="delete_drawing">Delete Drawing</string>
+    <string name="delete_drawing">Remove drawing</string>
+
+    <string name="drawing_deleted">Drawing %1$d removed</string>
 
     <string name="drawing_item_content_description">Thumbnail preview</string>
     <string name="drawing_item_selected">Drawing selected</string>
+
+    <string name="drawing_saved_succeeded">Successfully saved drawing</string>
+    <string name="drawing_saved_failed">Failed to save drawing</string>
+
+    <string name="undo_no_boxes">There are no objects to undo</string>
+    <string name="undo_box">Removed object %1$d</string>
 
 </resources>

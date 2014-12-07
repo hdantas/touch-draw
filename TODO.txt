@@ -1,10 +1,10 @@
 FEATURES TO IMPLEMENT
 
-replace hardcoded strings with resources (en/pt)
 Add tablet support
 
 NEXT RELEASE:
 
+change color thumb of seekbar in old APIs
 make floating button slide away
 add analytics
 When returning from editor show thumbnail (ie scroll to the top)

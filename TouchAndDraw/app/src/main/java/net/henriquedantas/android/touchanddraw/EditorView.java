@@ -140,7 +140,7 @@ public class EditorView extends View {
 
     public void undoLastBox() {
         if (mBoxes.size() < 1) {
-            mToast.setText("There are no boxes to undo.");
+            mToast.setText(getResources().getString(R.string.undo_no_boxes));
             mToast.show();
             return;
         }
@@ -148,7 +148,7 @@ public class EditorView extends View {
         long boxId = mBoxes.size() - 1;
         mDrawingManager.removeBox(boxId);
         mBoxes.remove((int) boxId); // remove last box
-        mToast.setText("Removed box " + boxId);
+        mToast.setText(String.format(getResources().getString(R.string.undo_box), boxId));
         mToast.show();
         invalidate();
     }
