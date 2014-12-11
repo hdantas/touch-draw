@@ -1,6 +1,11 @@
 package net.henriquedantas.android.touchanddraw;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 
 /**
@@ -8,14 +13,44 @@ import android.view.KeyEvent;
  * Activity that instantiates the fragment responsible for the Drawing's editor.
  */
 
-public class EditorActivity extends SingleFragmentActivity {
+public class EditorActivity extends SingleFragmentActivity
+        implements EditorFragment.Callbacks {
+    private static final String TAG = EditorActivity.class.getSimpleName();
+
+    public static final String EXTRA_DRAWING_ID =
+            "net.henriquedantas.android.touchanddraw.extra_drawing_id";
+
+    @Override
+    public void onDrawingUpdated(long drawingId) {
+    }
+
+    @Override
+    public void onDrawingFinished() {
+        Intent intent = new Intent(this, DrawingGalleryActivity.class);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
 
     private EditorFragment mTouchAndDrawFragment;
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarActionBar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        Log.d(TAG, "onCreate mDrawingId");
+    }
+
+    @Override
     protected Fragment createFragment() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mTouchAndDrawFragment = new EditorFragment();
+        long drawingId = getIntent().getExtras().getLong(EXTRA_DRAWING_ID, -1L);
+        Log.d(TAG, "createFragment drawingId " + drawingId);
+        mTouchAndDrawFragment = EditorFragment.newInstance(drawingId);
         return mTouchAndDrawFragment;
     }
 

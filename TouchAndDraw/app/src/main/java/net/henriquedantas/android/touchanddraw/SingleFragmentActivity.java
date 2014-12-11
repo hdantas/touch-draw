@@ -21,7 +21,7 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
 
     protected abstract Fragment createFragment();
 
-    int getLayoutResId() {
+    protected int getLayoutResId() {
         return R.layout.activity_single_fragment;
     }
 
@@ -37,7 +37,6 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
             fragment = createFragment();
             fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
         }
-
     }
 
     /**

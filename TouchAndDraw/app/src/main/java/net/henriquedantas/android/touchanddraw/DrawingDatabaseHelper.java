@@ -81,6 +81,7 @@ public class DrawingDatabaseHelper extends SQLiteOpenHelper {
     public long insertBox(long drawingId, Box box) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_BOX_ID, drawingId);
+
         cv.put(COLUMN_BOX_ORDER, box.getOrder());
         cv.put(COLUMN_BOX_ORIGIN_X, box.getOrigin().x);
         cv.put(COLUMN_BOX_ORIGIN_Y, box.getOrigin().y);

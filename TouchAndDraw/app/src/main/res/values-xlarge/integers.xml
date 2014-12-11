@@ -1,0 +1,5 @@
+<resources>
+    <integer name="num_columns">1</integer>
+    <integer name="ratio_gallery">1</integer>
+    <integer name="ratio_editor">3</integer>
+</resources>

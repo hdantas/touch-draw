@@ -3,23 +3,26 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".EditorActivity">
 
-    <item
-        android:id="@+id/export_drawing"
-        android:icon="@android:drawable/ic_menu_save"
-        android:title="@string/export_drawing"
-        app:showAsAction="ifRoom|withText" />
-    <item
-        android:id="@+id/share_drawing"
-        android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/share_drawing"
-        app:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/delete_drawing"
-        android:title="@string/delete_drawing"
-        android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/undo_drawing"
-        android:title="@string/undo_drawing"
-        app:showAsAction="ifRoom|withText"/>
+    <group
+        android:id="@+id/editor_menu_items">
+        <item
+            android:id="@+id/save_drawing"
+            android:icon="@android:drawable/ic_menu_save"
+            android:title="@string/save_drawing"
+            app:showAsAction="ifRoom|withText"/>
+        <item
+            android:id="@+id/share_drawing"
+            android:icon="@android:drawable/ic_menu_share"
+            android:title="@string/share_drawing"
+            app:showAsAction="ifRoom|withText"/>
+        <item
+            android:id="@+id/delete_drawing"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:title="@string/delete_drawing"
+            app:showAsAction="ifRoom|withText"/>
+        <item
+            android:id="@+id/undo_drawing"
+            android:title="@string/undo_drawing"
+            app:showAsAction="ifRoom|withText"/>
+    </group>
 </menu>

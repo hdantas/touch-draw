@@ -1,4 +1,6 @@
 <resources>
     <integer name="vibration_millis">300</integer>
     <integer name="num_columns">2</integer>
+    <integer name="ratio_gallery">1</integer>
+    <integer name="ratio_editor">1</integer>
 </resources>

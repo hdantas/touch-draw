@@ -3,14 +3,12 @@ package net.henriquedantas.android.touchanddraw;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ActionMode;
@@ -42,7 +40,6 @@ import java.util.ArrayList;
 public class DrawingGalleryFragment extends Fragment implements
         AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
     private static final String TAG = DrawingGalleryFragment.class.getSimpleName();
-    private static final int REQUEST_CHANGE = 0;
 
     private GridView mGridView;
     private int mGridViewNumColumns;
@@ -51,6 +48,31 @@ public class DrawingGalleryFragment extends Fragment implements
     private ArrayList<Drawing> mItems;
     private DrawingManager mDrawingManager;
     private DrawingGalleryAdapter mDrawingGalleryAdapter;
+
+    private Callbacks mCallBacks;
+
+    /**
+     * Required interface for hosting activities.
+     */
+    public interface Callbacks {
+        void onDrawingSelected(long drawingId);
+        void onDrawingCreated(long drawingId);
+        void onDrawingRemoved(long drawingId);
+        void onDrawingRemoved(ArrayList<Long> drawingIds);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallBacks = (Callbacks) activity;
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallBacks = null;
+    }
 
     @SuppressLint("ShowToast")
     @Override
@@ -70,7 +92,6 @@ public class DrawingGalleryFragment extends Fragment implements
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-
         View view = inflater.inflate(R.layout.fragment_drawing_grid, container, false);
 
         mGridView = (GridView) view.findViewById(R.id.grid_view);
@@ -84,8 +105,7 @@ public class DrawingGalleryFragment extends Fragment implements
             }
         });
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_action_bar);
-        ((ActionBarActivity) getActivity()).setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbarActionBar);
         setupAdapter();
 
         final TypedArray styledAttributes = getActivity().getTheme().
@@ -137,16 +157,20 @@ public class DrawingGalleryFragment extends Fragment implements
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.menu_item_delete_drawing:
+                            ArrayList<Long> drawingsToRemove = new ArrayList<>();
                             for (int i = mDrawingGalleryAdapter.getCount() - 1; i >= 0; i--) {
                                 // with the toolbar the position of the gridView starts in NUM_COLUMNS instead of 0
                                 if (mGridView.isItemChecked(i + mGridViewNumColumns)) {
+                                    Drawing drawingToRemove = mDrawingGalleryAdapter.getItem(i);
                                     Log.d(TAG, "onActionItemClicked Delete item in position " + i +
-                                            " with id " + mDrawingGalleryAdapter.getItem(i).getId());
-                                    mDrawingGalleryAdapter.remove(mDrawingGalleryAdapter.getItem(i));
+                                            " with id " + drawingToRemove.getId());
+                                    drawingsToRemove.add(drawingToRemove.getId());
+                                    mDrawingGalleryAdapter.remove(drawingToRemove);
                                 }
                             }
                             mode.finish();
                             updateItems();
+                            mCallBacks.onDrawingRemoved(drawingsToRemove);
                             return true;
                         default:
                             return false;
@@ -169,6 +193,10 @@ public class DrawingGalleryFragment extends Fragment implements
         return view;
     }
 
+    public void updateUI() {
+        updateItems();
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         getActivity().getMenuInflater().inflate(R.menu.context_menu_drawing_gallery, menu);
@@ -184,6 +212,7 @@ public class DrawingGalleryFragment extends Fragment implements
         switch (item.getItemId()) {
             case R.id.menu_item_delete_drawing:
                 mDrawingGalleryAdapter.remove(drawing);
+                mCallBacks.onDrawingRemoved(drawing.getId());
                 updateItems();
                 return true;
         }
@@ -191,39 +220,38 @@ public class DrawingGalleryFragment extends Fragment implements
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult requestCode " + requestCode + " resultCode " + resultCode);
+    public void onResume() {
+        Log.d(TAG, "onResume");
         updateItems();
+        super.onResume();
     }
 
     private void createNewDrawing() {
-        Intent intent = new Intent(getActivity(), EditorActivity.class);
-        intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, -1L);
-        startActivityForResult(intent, REQUEST_CHANGE);
+        Drawing drawing = mDrawingManager.startNewDrawing();
+        mCallBacks.onDrawingCreated(drawing.getId());
 
     }
 
     private void setupAdapter() {
         Log.d(TAG, "setupAdapter");
-        if (getActivity() == null || mGridView == null) {
-            Log.d(TAG, "setupAdapter mGridView == null");
-            return;
-        }
+
+//        if (getActivity() == null || mGridView == null) {
+//            Log.d(TAG, "setupAdapter mGridView == null");
+//            return;
+//        }
 
         if (mDrawingGalleryAdapter == null) {
             Log.d(TAG, "setupAdapter mDrawingGalleryAdapter!= null\tNumColumns: " + mGridViewNumColumns);
             if (mItems == null) {
                 mItems = new ArrayList<>();
-                mItems.add(new Drawing());
             }
+
             mDrawingGalleryAdapter = new DrawingGalleryAdapter(
                     getActivity(),
                     mDrawingManager,
                     R.layout.item_drawing_gallery,
                     R.id.drawing_item_textView,
-                    mGridView,
-                    mGridViewNumColumns);
+                    mGridView);
 
             mGridView.setAdapter(new QuickReturnAdapter(mDrawingGalleryAdapter, mGridViewNumColumns));
 //            adapter = new ArrayAdapter<Drawing>(getActivity(), R.layout.item_drawing_gallery, R.id.drawing_item_textView);
@@ -269,20 +297,13 @@ public class DrawingGalleryFragment extends Fragment implements
 
     }
 
-
     // On click start EditorFragment to edit it
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
         if (position >= 0) {
-            Drawing item = mItems.get(position);
-            Log.d(TAG, "onItemClick with drawing id " + item.getId());
-
-            Intent intent = new Intent(getActivity(), EditorActivity.class);
-            intent.putExtra(EditorFragment.EXTRA_DRAWING_ID, item.getId());
-            startActivityForResult(intent, REQUEST_CHANGE);
+            Drawing drawing = mItems.get(position);
+            Log.d(TAG, "onItemClick with drawing id " + drawing.getId());
+            mCallBacks.onDrawingSelected(drawing.getId());
         }
-
     }
-
 }

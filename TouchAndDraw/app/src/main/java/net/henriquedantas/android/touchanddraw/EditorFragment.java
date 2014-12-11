@@ -41,9 +41,6 @@ import java.util.Date;
 public class EditorFragment extends Fragment {
     private static final String TAG = EditorFragment.class.getSimpleName();
 
-    public static final String EXTRA_DRAWING_ID =
-            "net.henriquedantas.android.touchanddraw.extra_drawing_id";
-
     private ColorfulRadioGroup mButtonShape;
     private ToggleButtonGroupTableLayout mButtonColor;
     private ImageView mRectangleImageView;
@@ -51,12 +48,42 @@ public class EditorFragment extends Fragment {
     private ImageView mCircleImageView;
     private int mColor;
     private int mAlpha;
-    private EditorView mBoxView;
+    private EditorView mEditorView;
     private SeekBar mAlphaBar;
     private ShakeListener mShaker;
     private Drawing mDrawing;
     private DrawingManager mDrawingManager;
     private Toast mToast;
+
+    private View mEditorLayout;
+    private View mEditorLayoutPlaceholder;
+
+    private Callbacks mCallBacks;
+
+    /**
+     * Required interface for hosting activities.
+     */
+    public interface Callbacks {
+        void onDrawingUpdated(long drawingId);
+        void onDrawingFinished();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallBacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallBacks = null;
+    }
+
+    public void onDrawingUpdated() {
+        saveDrawing();
+        mCallBacks.onDrawingUpdated(mDrawing.getId());
+    }
 
     @Override
     public void onResume() {
@@ -79,14 +106,21 @@ public class EditorFragment extends Fragment {
     public void goBack() {
         // The user has pushed the back button
         Log.i(TAG, "goBack");
-        returnFromIntent();
+        mCallBacks.onDrawingFinished();
     }
 
-    void returnFromIntent() {
-        Log.i(TAG, "returnFromIntent");
-        Intent intent = new Intent(getActivity(), DrawingGalleryActivity.class);
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
+    public static EditorFragment newInstance() {
+        return newInstance(-1);
+    }
+
+    public static EditorFragment newInstance(long drawingId) {
+        Bundle args = new Bundle();
+        args.putLong(EditorActivity.EXTRA_DRAWING_ID, drawingId);
+
+        EditorFragment editorFragment = new EditorFragment();
+        editorFragment.setArguments(args);
+
+        return editorFragment;
     }
 
     @SuppressLint("ShowToast")
@@ -96,16 +130,12 @@ public class EditorFragment extends Fragment {
         setHasOptionsMenu(true);
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
-        Bundle extras = getActivity().getIntent().getExtras();
-        long drawingId = extras.getLong(EXTRA_DRAWING_ID, -1L);
+        long drawingId = getArguments().getLong(EditorActivity.EXTRA_DRAWING_ID, -1L);
 
         mDrawingManager = DrawingManager.get(getActivity());
-        if (drawingId != -1) {
-            mDrawing = mDrawingManager.loadDrawing(drawingId);
+        mDrawing = mDrawingManager.loadDrawing(drawingId);
+        if (mDrawing != null) {
             Log.d(TAG, "onCreate: Loaded Drawing with id " + mDrawing.getId());
-        } else {
-            mDrawing = mDrawingManager.startNewDrawing();
-            Log.d(TAG, "onCreate: Created new Drawing with id " + mDrawing.getId());
         }
     }
 
@@ -113,10 +143,21 @@ public class EditorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_editor, container, false);
 
-        mBoxView = (EditorView) v.findViewById(R.id.viewBox);
-        mBoxView.setDrawingManager(mDrawingManager);
-        mBoxView.setToolbar((LinearLayout) v.findViewById(R.id.toolBar));
-        mBoxView.loadBoxes();
+        mEditorView = (EditorView) v.findViewById(R.id.editorView);
+        mEditorView.setDrawingManager(mDrawingManager);
+        mEditorView.setToolbar((LinearLayout) v.findViewById(R.id.toolbarEditor));
+
+        mEditorLayout = v.findViewById(R.id.editorLayout);
+        mEditorLayoutPlaceholder = v.findViewById(R.id.editorLayoutPlaceholder);
+
+        if (mDrawing == null) {
+            mEditorLayout.setVisibility(View.INVISIBLE);
+            mEditorLayoutPlaceholder.setVisibility(View.VISIBLE);
+        } else {
+            mEditorLayout.setVisibility(View.VISIBLE);
+            mEditorLayoutPlaceholder.setVisibility(View.INVISIBLE);
+            mEditorView.loadBoxes();
+        }
 
         mButtonColor = (ToggleButtonGroupTableLayout) v.findViewById(R.id.buttonColor);
         mButtonColor.setOnClickListener(new View.OnClickListener() {
@@ -164,7 +205,7 @@ public class EditorFragment extends Fragment {
             mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
                 public void onShake() {
                     vibe.vibrate(getResources().getInteger(R.integer.vibration_millis));
-                    mBoxView.undoLastBox();
+                    mEditorView.undoLastBox();
                 }
             });
         } catch (UnsupportedOperationException e) {
@@ -191,8 +232,8 @@ public class EditorFragment extends Fragment {
                 shape = DrawableShape.RECTANGLE;
         }
 
-        if (mBoxView != null) {
-            mBoxView.setDrawableShape(shape);
+        if (mEditorView != null) {
+            mEditorView.setDrawableShape(shape);
         }
     }
 
@@ -218,8 +259,8 @@ public class EditorFragment extends Fragment {
                 mColor = DrawableColor.PURPLE;
         }
 
-        if (mBoxView != null) {
-            mBoxView.setDrawableColor(mColor, mAlpha);
+        if (mEditorView != null) {
+            mEditorView.setDrawableColor(mColor, mAlpha);
         }
 
         setImageViewColor(mRectangleImageView, getResources().getColor(mColor), mAlpha);
@@ -276,20 +317,19 @@ public class EditorFragment extends Fragment {
     }
 
     private boolean saveThumbnail() {
-        int numColumns = getResources().getInteger(R.integer.num_columns);
-        int thumbnail_width = (int) ((mBoxView.getWidth() / numColumns)
-                - getResources().getDimension(R.dimen.item_horizontal_spacing));
-        int thumbnail_height = (int) ((mBoxView.getHeight() / numColumns)
-                - getResources().getDimension(R.dimen.item_vertical_spacing));
-        mBoxView.setDrawingCacheEnabled(true);
-        mBoxView.buildDrawingCache(true);
-        Bitmap bitmap = Bitmap.createScaledBitmap(mBoxView.getDrawingCache(true),
-                thumbnail_width, thumbnail_height, false);
-        mBoxView.setDrawingCacheEnabled(false);
 
-        Log.d(TAG, "saveDrawing compressed DrawingId " + mDrawing.getId() +
-                " width/height: " + thumbnail_width + "/" + thumbnail_height +
-                " filename: " + mDrawing.getFilename());
+        int thumbnail_width = mEditorView.getWidth();
+        int thumbnail_height = mEditorView.getHeight();
+        mEditorView.setDrawingCacheEnabled(true);
+        mEditorView.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(mEditorView.getDrawingCache(true));
+        mEditorView.setDrawingCacheEnabled(false);
+
+        Log.d(TAG, "saveThumbnail\n" +
+                "\tDrawingId " + mDrawing.getId() +
+                "\twidth/height: " + thumbnail_width + "/" + thumbnail_height +
+                "\tfilename: " + mDrawing.getFilename());
+
 
         /* Write bitmap to file using format defined in Drawing */
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
@@ -297,15 +337,19 @@ public class EditorFragment extends Fragment {
                 (getActivity(), mDrawing.getFilename(), bitmap, format);
 
         return file != null;
-
     }
 
     private boolean saveDrawingToGallery() {
 
-        mBoxView.setDrawingCacheEnabled(true);
-        mBoxView.buildDrawingCache(true);
-        Bitmap bitmap = Bitmap.createBitmap(mBoxView.getDrawingCache(true));
-        mBoxView.setDrawingCacheEnabled(false);
+        if (mDrawing == null) {
+            Toast.makeText(getActivity(), getString(R.string.no_drawing_to_save),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        mEditorView.setDrawingCacheEnabled(true);
+        mEditorView.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(mEditorView.getDrawingCache(true));
+        mEditorView.setDrawingCacheEnabled(false);
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         String filename = "Drawing " + mDrawing.getId() + " "
                 + DateFormat.getDateTimeInstance().format(new Date())
@@ -336,12 +380,21 @@ public class EditorFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.setGroupVisible(R.id.editor_menu_items, mDrawing != null);
+        Log.d(TAG, "onPrepareOptionsMenu:\n" +
+                "visibility: " + menu.hasVisibleItems() +
+                "\tmDrawing != null: " + (mDrawing != null));
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.export_drawing:
+            case R.id.save_drawing:
                 boolean success = saveDrawingToGallery();
                 String successString = getString(R.string.drawing_saved_succeeded);
-                String failureString = getString(R.string.drawing_saved_succeeded);
+                String failureString = getString(R.string.drawing_saved_failed);
                 mToast.setText(success ? successString : failureString);
                 mToast.show();
                 return true;
@@ -351,26 +404,29 @@ public class EditorFragment extends Fragment {
                 return true;
 
             case android.R.id.home: // Respond to the action bar's Up/Home button
-                returnFromIntent();
+                mCallBacks.onDrawingFinished();
                 return true;
 
             case R.id.delete_drawing:
-                // create toast text before deleting drawing to preserve drawing id
-                String toastText = String.format(getString(R.string.drawing_deleted), mDrawing.getId());
                 deleteDrawing();
-                mToast.setText(toastText);
-                mToast.show();
-                returnFromIntent();
+                mCallBacks.onDrawingFinished();
                 return true;
 
             case R.id.undo_drawing:
-                mBoxView.undoLastBox();
+                undoDrawing();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void sendShareIntent() {
+
+        if (mDrawing == null) {
+            mToast.setText(R.string.no_drawing_to_share);
+            mToast.show();
+            return;
+        }
+
         saveDrawingToGallery();
         Uri uri = mDrawing.getDrawingUri();
         Log.d(TAG, "sendShareIntent uri: " + uri);
@@ -389,12 +445,32 @@ public class EditorFragment extends Fragment {
         }
         shareIntent = Intent.createChooser(shareIntent, getString(R.string.share_drawing_to));
         startActivity(shareIntent);
+
     }
 
-    private void deleteDrawing() {
-        mDrawingManager.removeDrawing(mDrawing);
-        mDrawing = null;
+    public void deleteDrawing() {
+        // create toast text before deleting drawing to preserve drawing id
+        String toastText;
+        if (mDrawing != null) {
+            toastText = String.format(getString(R.string.drawing_deleted), mDrawing.getId());
+            mDrawingManager.removeDrawing(mDrawing);
+            mDrawing = null;
+        } else {
+            toastText = getString(R.string.no_drawing_to_delete);
+        }
+
+        mToast.setText(toastText);
+        mToast.show();
     }
 
+    private void undoDrawing() {
+        if (mDrawing != null) {
+            mEditorView.undoLastBox();
+        } else {
+            String toastText = getString(R.string.no_drawing_to_undo);
+            mToast.setText(toastText);
+            mToast.show();
+        }
 
+    }
 }

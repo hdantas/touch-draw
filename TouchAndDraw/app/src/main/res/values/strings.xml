@@ -7,14 +7,18 @@
     <string name="triangle">Triangle</string>
     <string name="circle">Circle</string>
 
-    <string name="export_drawing">Export Drawing</string>
+    <string name="save_drawing">Save drawing to gallery</string>
     <string name="undo_drawing">Undo object</string>
-    <string name="share_drawing">Share Drawing</string>
-    <string name="share_drawing_to">Share Drawing To</string>
-    <string name="new_drawing">New Drawing</string>
+    <string name="share_drawing">Share drawing</string>
+    <string name="share_drawing_to">Share drawing to</string>
+    <string name="new_drawing">New drawing</string>
     <string name="delete_drawing">Remove drawing</string>
 
     <string name="drawing_deleted">Drawing %1$d removed</string>
+    <string name="no_drawing_to_delete">No drawings selected for removal.</string>
+    <string name="no_drawing_to_share">Can\'t share drawing. Please select one first.</string>
+    <string name="no_drawing_to_save">Can\'t save drawing to gallery. Please select one first.</string>
+    <string name="no_drawing_to_undo">Can\'t undo. Please select one drawing first.</string>
 
     <string name="drawing_item_content_description">Thumbnail preview</string>
     <string name="drawing_item_selected">Drawing selected</string>
@@ -24,5 +28,7 @@
 
     <string name="undo_no_boxes">There are no objects to undo</string>
     <string name="undo_box">Removed object %1$d</string>
+
+    <string name="no_drawing_selected">No drawing selected. Please choose, or create a new one.</string>
 
 </resources>

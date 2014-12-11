@@ -13,6 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:horizontalSpacing="@dimen/item_horizontal_spacing"
+        android:paddingRight="@dimen/gallery_right_margin"
+        android:paddingLeft="@dimen/gallery_left_margin"
         android:verticalSpacing="@dimen/item_vertical_spacing"
         android:scrollingCache="false"
         android:background="?attr/colorPrimaryDark"/>

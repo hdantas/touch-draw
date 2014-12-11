@@ -1,20 +1,35 @@
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragmentContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <net.henriquedantas.android.touchanddraw.EditorView
-        android:id="@+id/viewBox"
+    <RelativeLayout
+        android:id="@+id/editorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-    <include
-        android:id="@+id/toolBar"
-        layout="@layout/toolbar_editor"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/viewBox"/>
+        <net.henriquedantas.android.touchanddraw.EditorView
+            android:id="@+id/editorView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-</RelativeLayout>
+        <include
+            android:id="@+id/toolbarEditor"
+            layout="@layout/toolbar_editor"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/editor_toolbar_height"
+            android:layout_alignBottom="@id/editorView"/>
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/editorLayoutPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/no_drawing_selected"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:visibility="invisible"/>
+</FrameLayout>

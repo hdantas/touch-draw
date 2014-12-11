@@ -2,6 +2,7 @@ package net.henriquedantas.android.touchanddraw;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
@@ -17,9 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.File;
 
 /**
  * Created by hdantas on 22/11/14.
@@ -31,19 +30,16 @@ class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
     private static Context mContext;
     private final DrawingManager mDrawingManager;
     private final GridView mGridView;
-    private final int mGridViewNumColumns;
 
     public DrawingGalleryAdapter(Context context,
                                  DrawingManager drawingManager,
                                  int itemLayout,
                                  int textViewResourceId,
-                                 GridView gridView,
-                                 int gridViewNumColumns) {
+                                 GridView gridView) {
         super(context, itemLayout, textViewResourceId);
         mContext = context;
         mDrawingManager = drawingManager;
         mGridView = gridView;
-        mGridViewNumColumns = gridViewNumColumns;
     }
 
     @Override
@@ -82,19 +78,39 @@ class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
         }
 
         final Bitmap bitmap;
-        try {
-            String path = getItem(position).getUri(mContext).getPath();
-            FileInputStream fileInputStream = new FileInputStream(path);
-            bitmap = BitmapFactory.decodeStream(fileInputStream);
-            fileInputStream.close();
-            viewHolder.mImageView.setImageBitmap(bitmap);
-            updateItemHue(position, viewHolder);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "Could not load thumbnail", e);
-        } catch (IOException e) {
-            Log.e(TAG, "Could not close file", e);
+        String thumbnailPath = getItem(position).getUri(mContext).getPath();
+        File thumbnail = new File(thumbnailPath);
+
+        float ratio;
+        int thumbnailWidth, thumbnailHeight;
+        int numColumns = mContext.getResources().getInteger(R.integer.num_columns);
+        if(mContext.getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT) { //portrait
+            ratio = numColumns;
+        } else { //landscape
+            int editorRatio = mContext.getResources().getInteger(R.integer.ratio_editor);
+            int galleryRatio = mContext.getResources().getInteger(R.integer.ratio_gallery);
+            ratio = numColumns * editorRatio / galleryRatio;
         }
 
+        if (thumbnail.exists()) {
+            // load thumbnail from storage
+            Bitmap src = BitmapFactory.decodeFile(thumbnailPath);
+            thumbnailWidth = (int) (src.getWidth() / ratio);
+            thumbnailHeight = (int) (src.getHeight() / ratio);
+            bitmap = Bitmap.createScaledBitmap(src, thumbnailWidth, thumbnailHeight, false);
+        } else {
+            // Create white bitmap
+            thumbnailWidth = (int) (mGridView.getWidth() / ratio);
+            thumbnailHeight = (int) (mGridView.getHeight() / ratio);
+
+            Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+            bitmap = Bitmap.createBitmap(thumbnailWidth, thumbnailHeight, conf);
+            bitmap.eraseColor(mContext.getResources().getColor(R.color.white));
+        }
+
+        viewHolder.mImageView.setImageBitmap(bitmap);
+        updateItemHue(position, viewHolder);
         return convertView;
     }
 
@@ -106,8 +122,9 @@ class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
         }
 
         // with the toolbar the position of the gridView starts in NUM_COLUMNS instead of 0
-        boolean isItemChecked = mGridView.isItemChecked(position + mGridViewNumColumns);
-        Log.d(TAG, "updateItemHue position: " + (position + mGridViewNumColumns) + "\tisChecked: " + isItemChecked);
+        int numColumns = mContext.getResources().getInteger(R.integer.num_columns);
+        boolean isItemChecked = mGridView.isItemChecked(position + numColumns);
+        Log.d(TAG, "updateItemHue position: " + (position + numColumns) + "\tisChecked: " + isItemChecked);
         if (isItemChecked) {
             ColorFilter filter = new PorterDuffColorFilter(
                     mContext.getResources().getColor(R.color.aqua_translucent),
@@ -116,7 +133,7 @@ class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
             viewHolder.mViewSelected.setVisibility(View.VISIBLE);
         } else {
             viewHolder.mImageView.clearColorFilter();
-            viewHolder.mViewSelected.setVisibility(View.GONE);
+            viewHolder.mViewSelected.setVisibility(View.INVISIBLE);
         }
     }
 }

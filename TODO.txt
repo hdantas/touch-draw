@@ -1,19 +1,19 @@
-FEATURES TO IMPLEMENT
+RELEASE 1.1 (2):
 
-Add tablet support
 
-NEXT RELEASE:
-
-change color thumb of seekbar in old APIs
-make floating button slide away
-add analytics
-When returning from editor show thumbnail (ie scroll to the top)
-BUGFIX: toolbar sometimes acts funny
-Replace shape radio buttons with clickable images
-Add material design elements from 3rd party library (¿where?)
-Use notifications the same way chrome does on the bottom of the page
-force files to be stored to SD card if possible (instead of emulated external storage)
-consider moving the app to external storage
-save bitmaps (compressed and full) in async task
-replace deprecated calls for vibration
-prettify gallery, "chrome tabs overview"-like
+RELEASE 1.2 (3):
+	clean up code
+	change color thumb of seekbar in old APIs
+	Replace shape radio buttons with clickable images
+	When returning from editor show thumbnail (ie scroll to the top)
+	add analytics
+	Use notifications the same way chrome does on the bottom of the page
+	BUGFIX: toolbar sometimes acts funny
+	make floating button slide away
+	
+	use animations from ActivityCompat and ActivityOptionsCompat (check http://antonioleiva.com/material-design-everywhere/)
+	force files to be stored to SD card if possible (instead of emulated external storage)
+	consider moving the app to external storage
+	save bitmaps (compressed and full) in async task
+	replace deprecated calls for vibration
+	prettify gallery, "chrome tabs overview"-like

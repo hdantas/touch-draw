@@ -7,8 +7,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -37,22 +39,33 @@ public class EditorView extends View {
     private final Path mPath; // to draw triangles
     private LinearLayout mToolbar;
     private int[] mToolbarOriginalCoordinates;
+    private EditorFragment mDetailFragment;
 
     // Used when creating the view in code
     public EditorView(Context context) {
         this(context, null);
     }
 
+
     // Used when inflating the view from XML
     @SuppressLint("ShowToast")
     public EditorView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        ActionBarActivity activity = (ActionBarActivity) context;
+        mDetailFragment = (EditorFragment)
+                activity.getSupportFragmentManager().findFragmentById(R.id.detailFragmentContainer);
         mBoxPaint = new Paint();
         mBackgroundPaint = new Paint();
         mBackgroundPaint.setColor(getResources().getColor(DrawableColor.BACKGROUND_COLOR));
         mPath = new Path(); // Path is used to draw triangles
         mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        Log.d(TAG, "onAttachedToWindow");
+//        onDrawingUpdated();
     }
 
     @Override
@@ -116,6 +129,7 @@ public class EditorView extends View {
 
             case MotionEvent.ACTION_UP:
                 mDrawingManager.insertBox(mCurrentBox);
+                onDrawingUpdated();
                 Log.d(TAG, "onTouchEvent: add box! total: " + mDrawingManager.getBoxes().size());
                 mCurrentBox = null;
                 resetToolbarPosition();
@@ -148,6 +162,7 @@ public class EditorView extends View {
         long boxId = mBoxes.size() - 1;
         mDrawingManager.removeBox(boxId);
         mBoxes.remove((int) boxId); // remove last box
+        onDrawingUpdated();
         mToast.setText(String.format(getResources().getString(R.string.undo_box), boxId));
         mToast.show();
         invalidate();
@@ -187,18 +202,18 @@ public class EditorView extends View {
         }
 
         int threshold = 30;
+        // convert DP to PX
+        float thresholdPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, threshold, getResources().getDisplayMetrics());
 
         int left = mToolbarOriginalCoordinates[0];
         int top = mToolbarOriginalCoordinates[1];
         int right = mToolbarOriginalCoordinates[2];
         int bottom = mToolbarOriginalCoordinates[3];
 
-
-        if (top <= (touchY + threshold)) {
-            top = (int) (touchY + threshold);
+        if (top <= (touchY + thresholdPx)) {
+            top = (int) (touchY + thresholdPx);
             mToolbar.layout(left, top, right, bottom);
         }
-
     }
 
     private void resetToolbarPosition() {
@@ -210,7 +225,6 @@ public class EditorView extends View {
                     mToolbar.getRight(),
                     mToolbar.getBottom()
             };
-
         }
 
         if (mToolbarOriginalCoordinates[1] < mToolbar.getTop()) {
@@ -230,6 +244,13 @@ public class EditorView extends View {
                     mToolbarOriginalCoordinates[2],
                     mToolbarOriginalCoordinates[3]
             );
+        }
+    }
+
+    public void onDrawingUpdated() {
+        if (mDetailFragment != null) {
+            // This is only necessary with 2 panes
+            mDetailFragment.onDrawingUpdated();
         }
     }
 }
