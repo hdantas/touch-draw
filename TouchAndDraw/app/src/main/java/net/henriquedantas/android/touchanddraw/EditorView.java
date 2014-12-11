@@ -39,7 +39,7 @@ public class EditorView extends View {
     private final Path mPath; // to draw triangles
     private LinearLayout mToolbar;
     private int[] mToolbarOriginalCoordinates;
-    private EditorFragment mDetailFragment;
+    private final EditorFragment mDetailFragment;
 
     // Used when creating the view in code
     public EditorView(Context context) {
