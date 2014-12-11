@@ -382,7 +382,12 @@ public class EditorFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.setGroupVisible(R.id.editor_menu_items, mDrawing != null);
+
+        menu.findItem(R.id.item_save_drawing).setVisible(mDrawing != null);
+        menu.findItem(R.id.item_share_drawing).setVisible(mDrawing != null);
+        menu.findItem(R.id.item_delete_drawing).setVisible(mDrawing != null);
+        menu.findItem(R.id.item_undo_drawing).setVisible(mDrawing != null);
+
         Log.d(TAG, "onPrepareOptionsMenu:\n" +
                 "visibility: " + menu.hasVisibleItems() +
                 "\tmDrawing != null: " + (mDrawing != null));
@@ -391,7 +396,7 @@ public class EditorFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save_drawing:
+            case R.id.item_save_drawing:
                 boolean success = saveDrawingToGallery();
                 String successString = getString(R.string.drawing_saved_succeeded);
                 String failureString = getString(R.string.drawing_saved_failed);
@@ -399,7 +404,7 @@ public class EditorFragment extends Fragment {
                 mToast.show();
                 return true;
 
-            case R.id.share_drawing:
+            case R.id.item_share_drawing:
                 sendShareIntent();
                 return true;
 
@@ -407,12 +412,12 @@ public class EditorFragment extends Fragment {
                 mCallBacks.onDrawingFinished();
                 return true;
 
-            case R.id.delete_drawing:
+            case R.id.item_delete_drawing:
                 deleteDrawing();
                 mCallBacks.onDrawingFinished();
                 return true;
 
-            case R.id.undo_drawing:
+            case R.id.item_undo_drawing:
                 undoDrawing();
                 return true;
         }

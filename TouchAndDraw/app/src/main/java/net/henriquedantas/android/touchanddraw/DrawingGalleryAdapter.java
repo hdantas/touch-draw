@@ -2,7 +2,6 @@ package net.henriquedantas.android.touchanddraw;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
@@ -84,10 +83,9 @@ class DrawingGalleryAdapter extends ArrayAdapter<Drawing> {
         float ratio;
         int thumbnailWidth, thumbnailHeight;
         int numColumns = mContext.getResources().getInteger(R.integer.num_columns);
-        if(mContext.getResources().getConfiguration().orientation ==
-                Configuration.ORIENTATION_PORTRAIT) { //portrait
+        if(((ActionBarActivity) mContext).findViewById(R.id.detailFragmentContainer) == null) { //single pane
             ratio = numColumns;
-        } else { //landscape
+        } else { //dual pane
             int editorRatio = mContext.getResources().getInteger(R.integer.ratio_editor);
             int galleryRatio = mContext.getResources().getInteger(R.integer.ratio_gallery);
             ratio = numColumns * editorRatio / galleryRatio;

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="app_name">Toca &amp; Desenha</string>
+
     <string name="rectangle">Rectângulo</string>
     <string name="triangle">Triângulo</string>
     <string name="circle">Círculo</string>
 
-    <string name="save_drawing">Guardar Desenho</string>
-    <string name="share_drawing">Partilhar Desenho</string>
-    <string name="share_drawing_to">Partilhar Desenho para</string>
-    <string name="new_drawing">Novo Desenho</string>
-    <string name="delete_drawing">Apagar Desenho</string>
+    <string name="save_drawing">Guardar desenho na galeria</string>
+    <string name="share_drawing">Partilhar desenho</string>
+    <string name="share_drawing_to">Partilhar desenho para</string>
+    <string name="new_drawing">Novo desenho</string>
+    <string name="delete_drawing">Apagar desenho</string>
     <string name="undo_drawing">Desfazer último objecto</string>
 
     <string name="drawing_item_content_description">Ícone</string>
@@ -24,5 +26,6 @@
     <string name="no_drawing_to_save">Não é possível guadar desenho na galeria. Por favor seleccione um desenho e tente novamente.</string>
     <string name="no_drawing_to_share">Não é possível partilhar desenho. Por favor seleccione um e tente novamente.</string>
     <string name="no_drawing_to_undo">Não é possível desfazer nenhum objecto. Por favor escolha um desenho e tente novamente.</string>
+
 
 </resources>

@@ -8,8 +8,8 @@ android {
         applicationId "net.henriquedantas.android.touchanddraw"
         minSdkVersion 7
         targetSdkVersion 21
-        versionCode 2
-        versionName "1.1"
+        versionCode 4
+        versionName "1.1.2"
     }
 
     compileOptions {

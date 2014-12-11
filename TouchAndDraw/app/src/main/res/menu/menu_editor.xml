@@ -1,28 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".EditorActivity">
-
-    <group
-        android:id="@+id/editor_menu_items">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
         <item
-            android:id="@+id/save_drawing"
+            android:id="@+id/item_save_drawing"
             android:icon="@android:drawable/ic_menu_save"
             android:title="@string/save_drawing"
             app:showAsAction="ifRoom|withText"/>
+
         <item
-            android:id="@+id/share_drawing"
+            android:id="@+id/item_share_drawing"
             android:icon="@android:drawable/ic_menu_share"
             android:title="@string/share_drawing"
             app:showAsAction="ifRoom|withText"/>
         <item
-            android:id="@+id/delete_drawing"
+            android:id="@+id/item_delete_drawing"
             android:icon="@android:drawable/ic_menu_delete"
             android:title="@string/delete_drawing"
             app:showAsAction="ifRoom|withText"/>
         <item
-            android:id="@+id/undo_drawing"
+            android:id="@+id/item_undo_drawing"
             android:title="@string/undo_drawing"
             app:showAsAction="ifRoom|withText"/>
-    </group>
 </menu>
