@@ -26,7 +26,7 @@ public class Drawing {
         mId = -1;
         mBoxes = new ArrayList<>();
         mStartDate = new Date();
-        mFilename = UUID.randomUUID().toString() + "." + fileFormat;
+        mFilename = UUID.randomUUID().toString() + "" + fileFormat;
 
     }
 
@@ -63,7 +63,7 @@ public class Drawing {
     }
 
     public String getSimpleFilename() {
-            return mFilename.replace("." + fileFormat, "");
+            return mFilename.replace("" + fileFormat, "");
     }
 
     public Uri getUri(Context context) {

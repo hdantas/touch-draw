@@ -353,7 +353,7 @@ public class EditorFragment extends Fragment {
         Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(mDrawing.getFileFormat());
         String filename = "Drawing " + mDrawing.getId() + " "
                 + DateFormat.getDateTimeInstance().format(new Date())
-                + "." + mDrawing.getFileFormat().toLowerCase();
+                + "" + mDrawing.getFileFormat().toLowerCase();
         filename = filename.replace(":", "_"); // ':' is an illegal char for a filename
         File file = BitmapUtils.saveBitmapToAlbum(getActivity(), filename, bitmap, format);
 
